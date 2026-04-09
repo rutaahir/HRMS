@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 import pymysql
-pymysql.version_info = (1, 4, 6, "final", 0)
+
 
 pymysql.install_as_MySQLdb()
 
@@ -104,10 +104,7 @@ WSGI_APPLICATION = "attendance_management.wsgi.application"
 #         'PORT': '3306',
 #     }
 # }
-import os
-import pymysql
 
-pymysql.install_as_MySQLdb()
 
 DATABASES = {
     'default': {
@@ -160,26 +157,26 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # settings.py ના એકદમ છેડે
 
 import pymysql
-try:
-    # મેઈન ડેટાબેઝ સાથે કનેક્ટ થાઓ
-    temp_conn = pymysql.connect(
-        host=DATABASES['default']['HOST'],
-        user=DATABASES['default']['USER'],
-        password=DATABASES['default']['PASSWORD'],
-        db=DATABASES['default']['NAME']
-    )
-    with temp_conn.cursor() as cursor:
-        # બધી કંપનીના સ્લગ લઈ આવો
-        cursor.execute("SELECT slug FROM attendance_company")
-        rows = cursor.fetchall()
-        for row in rows:
-            db_alias = f"{row[0]}_db"
-            if db_alias not in DATABASES:
-                DATABASES[db_alias] = DATABASES['default'].copy()
-                DATABASES[db_alias]['NAME'] = db_alias
-    temp_conn.close()
-except Exception as e:
-    print(f"Database loading error: {e}")
+# try:
+#     # મેઈન ડેટાબેઝ સાથે કનેક્ટ થાઓ
+#     temp_conn = pymysql.connect(
+#         host=DATABASES['default']['HOST'],
+#         user=DATABASES['default']['USER'],
+#         password=DATABASES['default']['PASSWORD'],
+#         db=DATABASES['default']['NAME']
+#     )
+#     with temp_conn.cursor() as cursor:
+#         # બધી કંપનીના સ્લગ લઈ આવો
+#         cursor.execute("SELECT slug FROM attendance_company")
+#         rows = cursor.fetchall()
+#         for row in rows:
+#             db_alias = f"{row[0]}_db"
+#             if db_alias not in DATABASES:
+#                 DATABASES[db_alias] = DATABASES['default'].copy()
+#                 DATABASES[db_alias]['NAME'] = db_alias
+#     temp_conn.close()
+# except Exception as e:
+#     print(f"Database loading error: {e}")
     
     
     
