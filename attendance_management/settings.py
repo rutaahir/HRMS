@@ -15,6 +15,7 @@ import os
 
 import pymysql
 
+
 pymysql.install_as_MySQLdb()
 
 
@@ -93,17 +94,31 @@ WSGI_APPLICATION = "attendance_management.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'attendance_main',
+#         'USER': 'root',
+#         'PASSWORD': 'root@123', 
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
+import os
+import pymysql
+
+pymysql.install_as_MySQLdb()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'attendance_main',
-        'USER': 'root',
-        'PASSWORD': 'root@123', 
-        'HOST': '127.0.0.1',
+        'NAME': os.environ.get('MYSQLDATABASE'),
+        'USER': os.environ.get('MYSQLUSER'),
+        'PASSWORD': os.environ.get('MYSQLPASSWORD'),
+        'HOST': os.environ.get('MYSQLHOST'),
         'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
