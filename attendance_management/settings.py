@@ -38,7 +38,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #
 # Application definition
 # settings.py
 FILE_UPLOAD_PERMISSIONS = 0o644
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -60,6 +62,8 @@ MIDDLEWARE = [
     
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = "attendance_management.urls"
