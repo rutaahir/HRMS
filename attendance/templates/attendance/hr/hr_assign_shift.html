@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Shift | HR Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--white);
+            padding: 45px;
+            border-radius: 40px;
+            box-shadow: 0 25px 60px rgba(84, 8, 99, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        /* ===== HEADER ===== */
+        header i {
+            font-size: 2.5rem;
+            color: var(--deep-amethyst);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* ===== EMPLOYEE IDENTITY ===== */
+        .employee-info {
+            background: #fdfaff;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #f1eef9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-gradient, linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple)));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            box-shadow: 0 5px 15px rgba(84, 8, 99, 0.2);
+        }
+
+        .emp-name {
+            font-weight: 700;
+            color: var(--royal-purple);
+            font-size: 1.1rem;
+        }
+
+        /* ===== FORM STYLING ===== */
+        form {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--deep-amethyst);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 5px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            background-color: #f8fafc;
+            color: #334155;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2392487A'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 18px;
+        }
+
+        select:focus {
+            border-color: var(--blush-pink);
+            background-color: var(--white);
+            box-shadow: 0 0 0 5px rgba(228, 155, 166, 0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 16px;
+            border-radius: 18px;
+            border: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 25px rgba(84, 8, 99, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(84, 8, 99, 0.3);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <header>
+        <i class="fas fa-calendar-alt"></i>
+        <h2>Assign Shift</h2>
+        <p class="subtitle">Modify working hours for the employee</p>
+    </header>
+
+    <div class="employee-info">
+        <div class="avatar">{{ target_user.username|first|upper }}</div>
+        <div class="emp-name">@{{ target_user.username }}</div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="shift">Select New Work Shift</label>
+        <div class="select-wrapper">
+            <select name="shift_id" id="shift">
+                <option value="">-- Remove Shift (No Shift) --</option>
+                {% for s in shifts %}
+                <option value="{{ s.id }}" {% if current_shift and current_shift.id == s.id %}selected{% endif %}>
+                    {{ s.name }} ({{ s.start_time }} - {{ s.end_time }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">
+            <i class="fas fa-save"></i> Save Shift Update
+        </button>
+    </form>
+
+    <a href="{% url 'hr_employee_list' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Cancel and Return
+    </a>
+</div>
+
+</body>
+</html>

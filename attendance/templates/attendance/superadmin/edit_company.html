@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Company | Super Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== EDIT CARD ===== */
+        .edit-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--white);
+            padding: 45px;
+            border-radius: 35px;
+            box-shadow: 0 25px 60px rgba(84, 8, 99, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 25px;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* ===== FORM STYLING ===== */
+        .form-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--royal-purple);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            background-color: #f8fafc;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--blush-pink);
+            background-color: var(--white);
+            box-shadow: 0 0 0 5px rgba(228, 155, 166, 0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-save {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="edit-card">
+    <div class="icon-box">
+        <i class="fas fa-edit"></i>
+    </div>
+
+    <h2>Edit Company</h2>
+    <p class="subtitle">Update the official name for this business entity.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="company_name">Organization Name</label>
+            <input type="text" id="company_name" name="company_name" value="{{ company.name }}" placeholder="Enter company name" required>
+        </div>
+
+        <button type="submit" class="btn-save">
+            <i class="fas fa-check-circle"></i> Save Changes
+        </button>
+    </form>
+
+    <a href="/attendance/dashboard/superadmin/" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Directory | Management Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --bg-light: #fdfaff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* Theme Background */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 i {
+            color: var(--royal-purple);
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px 16px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .approved {
+            background: #e6fffa;
+            color: #008080;
+        }
+
+        .pending {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        /* ===== ACTION LINKS ===== */
+        .action-link {
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateY(-1px);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-container {
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .card { padding: 20px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Hide email on mobile */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <header>
+            <h2><i class="fas fa-user-tie"></i> HR Directory</h2>
+            <div class="badge" style="background: var(--pale-blush); color: var(--deep-amethyst);">
+                Total HR: {{ users|length }}
+            </div>
+        </header>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>HR Representative</th>
+                    <th>Email Address</th>
+                    <th>Account Role</th>
+                    <th>Verification</th>
+                    <th>Monitoring</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar">{{ u.user.username|first|upper }}</div>
+                            <span class="username">@{{ u.user.username }}</span>
+                        </div>
+                    </td>
+                    <td style="color: #64748b; font-size: 0.85rem;">{{ u.user.email }}</td>
+                    <td>
+                        <span style="font-weight: 700; color: var(--royal-purple);">{{ u.role }}</span>
+                    </td>
+                    <td>
+                        {% if u.is_approved %}
+                            <span class="badge approved">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </span>
+                        {% else %}
+                            <span class="badge pending">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_view_attendance' u.user.id %}" class="action-link">
+                            <i class="fas fa-calendar-day"></i> View Logs
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <i class="fas fa-users-slash fa-2x mb-3 d-block"></i>
+                        No HR accounts found in the system.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="back-container">
+            <a href="/attendance/dashboard/admin/" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

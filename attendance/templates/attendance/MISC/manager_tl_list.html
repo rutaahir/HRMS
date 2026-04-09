@@ -1,0 +1,300 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    /* ===== THEME STYLES ===== */
+    :root {
+        --primary: #540863;
+        --secondary: #92487A;
+        --bg-color: #FFD3D5;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    body { background-color: var(--bg-color); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+    /* HEADER */
+    .dashboard-header {
+        background: var(--gradient); padding: 3rem 0 5rem;
+        color: white; border-radius: 0 0 40px 40px; margin-bottom: -4rem;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .main-container { max-width: 1200px; margin: 0 auto 3rem; padding: 0 1.5rem; }
+
+    .content-card {
+        background: var(--surface); border-radius: 24px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    /* TABLE RESPONSIVE FIX */
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .pro-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 600px; }
+    .pro-table thead th {
+        background: #f8fafc; color: var(--secondary); font-weight: 700;
+        text-transform: uppercase; font-size: 0.75rem; padding: 1.25rem 1.5rem;
+        border-bottom: 2px solid var(--border);
+    }
+    .pro-table td { padding: 1.25rem 1.5rem; vertical-align: middle; border-bottom: 1px solid var(--border); white-space: nowrap; }
+
+    /* BUTTONS */
+    .btn-manage {
+        background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;
+        padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.85rem;
+        cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-manage:hover { background: #0369a1; color: white; transform: translateY(-2px); }
+
+    /* MODAL STYLES (Split View) */
+    .modal-header-pro { background: var(--gradient); color: white; padding: 1.5rem; border:none; }
+    
+    .squad-management-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        height: 500px; 
+    }
+    
+    .squad-col { padding: 1.5rem; overflow-y: auto; }
+    .squad-col-left { border-right: 1px solid var(--border); background: #fdfaff; }
+    .squad-col-right { background: #fff; }
+
+    .col-title {
+        font-weight: 800; color: var(--primary); text-transform: uppercase;
+        font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 1rem;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .user-card-sm {
+        background: white; border: 1px solid var(--border);
+        padding: 10px; border-radius: 10px; margin-bottom: 10px;
+        display: flex; justify-content: space-between; align-items: center;
+        transition: 0.2s;
+    }
+
+    .btn-add {
+        width: 35px; height: 35px; border-radius: 8px; border: none;
+        background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-remove {
+        width: 35px; height: 35px; border-radius: 8px; border: 1px solid #fecaca;
+        background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVE OVERRIDES
+       ========================================= */
+    @media (max-width: 768px) {
+        .dashboard-header { padding: 2rem 1rem 4rem; text-align: center; }
+        .dashboard-header .d-flex { flex-direction: column; gap: 1.5rem; }
+        
+        /* Modal Responsive */
+        .squad-management-grid {
+            grid-template-columns: 1fr; /* Stack columns vertically */
+            height: auto;
+            max-height: 80vh;
+        }
+        
+        .squad-col { height: 300px; } /* Give each section its own scroll */
+        .squad-col-left { border-right: none; border-bottom: 2px solid var(--border); }
+        
+        .modal-dialog { margin: 0.5rem; }
+        
+        .pro-table { min-width: 500px; } /* Slightly less aggressive scroll */
+    }
+    /* Fix for both Add and Revoke buttons to be identical in size */
+.btn-add, .btn-remove {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.8rem !important;
+    transition: 0.2s;
+    cursor: pointer;
+    border: none;
+    text-decoration: none !important; /* Removes underline from link */
+}
+
+/* Specific Red Style for Revoke */
+.btn-remove {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+}
+
+.btn-remove:hover {
+    background: #dc2626 !important;
+    color: white !important;
+}
+
+/* Specific Green Style for Add */
+.btn-add {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+.btn-add:hover {
+    background: #15803d !important;
+    color: white !important;
+}
+</style>
+
+<div class="dashboard-header">
+    <div class="container main-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="animate__animated animate__fadeInLeft">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-crown fa-2x"></i>
+                    <div class="text-start">
+                        <h2 class="mb-0 fw-bold">Team Leaders</h2>
+                        <p class="mb-0 opacity-75 small">Manage Assignments</p>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'manager_dashboard' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="main-container animate__animated animate__fadeInUp">
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="pro-table">
+                <thead>
+                    <tr>
+                        <th>Team Leader</th>
+                        <th>Status</th>
+                        <th>Squad Size</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tl in team_leaders %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" 
+                                     style="width:40px; height:40px; background:linear-gradient(135deg, #6366f1, #a855f7); flex-shrink:0;">
+                                    {{ tl.user.username|slice:":1"|upper }}
+                                </div>
+                                <div class="text-start">
+                                    <div class="fw-bold text-dark small">{% if tl.user.first_name %}{{ tl.user.first_name }} {{ tl.user.last_name }}{% else %}{{ tl.user.username }}{% endif %}</div>
+                                    <small class="text-muted">{{ tl.user.email|truncatechars:20 }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-success bg-opacity-10 text-success border border-success px-2 rounded-pill small">Active</span></td>
+                        <td>
+                            <button type="button" class="btn-manage" data-bs-toggle="modal" data-bs-target="#manageSquadModal-{{ tl.user.id }}">
+                                <i class="fas fa-users"></i> <span>{{ tl.squad_count }} Staff</span>
+                            </button>
+                        </td>
+                        <td class="text-end">
+                            <form action="{% url 'revoke_team_leader' tl.user.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-2 fw-bold" onclick="return confirm('Revoke TL status?');">
+                                    <i class="fas fa-user-minus"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for tl in team_leaders %}
+<div class="modal fade" id="manageSquadModal-{{ tl.user.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+            <div class="modal-header-pro d-flex justify-content-between align-items-center">
+                <div class="text-start">
+                    <h6 class="modal-title fw-bold mb-0">Manage Squad</h6>
+                    <small class="opacity-75">Leader: {{ tl.user.username }}</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <div class="squad-management-grid">
+                    <div class="squad-col squad-col-left">
+                        <div class="col-title">
+                            <span>Available</span>
+                            <span class="badge bg-secondary">{{ unassigned_employees.count }}</span>
+                        </div>
+                        {% for emp in unassigned_employees %}
+                        <div class="user-card-sm">
+                            <div class="text-start overflow-hidden">
+                                <div class="fw-bold text-dark small text-truncate">{{ emp.user.username }}</div>
+                            </div>
+                            <form action="{% url 'manager_assign_squad' %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="leader_id" value="{{ tl.user.id }}">
+                                <input type="hidden" name="employee_ids" value="{{ emp.user.id }}">
+                                <button type="submit" class="btn-add"><i class="fas fa-plus small"></i></button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="squad-col squad-col-right">
+    <div class="col-title">
+        <span>Current Squad</span>
+        <span class="badge bg-primary">{{ tl.squad_count }}</span>
+    </div>
+    
+    {% for member in tl.squad_list %}
+    <div class="user-card-sm border-start border-primary border-3">
+        <div class="text-start overflow-hidden me-2">
+            <div class="fw-bold text-dark small text-truncate">
+                {% if member.user.first_name %}
+                    {{ member.user.first_name }}
+                {% else %}
+                    {{ member.user.username }}
+                {% endif %}
+            </div>
+            <div style="font-size: 0.65rem;" class="text-muted text-truncate">{{ member.user.email }}</div>
+        </div>
+
+        <a href="{% url 'manager_revoke_squad' member.user.id %}" 
+           class="btn-remove" 
+           onclick="return confirm('Remove {{ member.user.username }} from squad?');"
+           title="Revoke Member">
+            <i class="fas fa-times"></i>
+        </a>
+    </div>
+    {% empty %}
+    <div class="text-center py-4 text-muted small">
+        <p>Squad is empty.</p>
+    </div>
+    {% endfor %}
+</div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 py-2">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

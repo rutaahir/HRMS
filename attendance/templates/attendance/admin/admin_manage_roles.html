@@ -1,0 +1,257 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Set background color to match theme */
+    body {
+        background-color: var(--pale-blush); 
+    }
+
+    .manage-roles-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* ===== HEADER AREA ===== */
+    .page-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-header h2 {
+        color: var(--deep-amethyst);
+        font-size: 1.8rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+    }
+
+    .company-tag {
+        background: var(--white);
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--royal-purple);
+        box-shadow: 0 4px 12px rgba(84, 8, 99, 0.05);
+    }
+
+    /* ===== MAIN BOX CARD ===== */
+    .box {
+        background: var(--white);
+        padding: 35px;
+        border-radius: 30px;
+        box-shadow: 0 20px 45px rgba(84, 8, 99, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        overflow-x: auto;
+    }
+
+    /* ===== MODERN TABLE STYLING ===== */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .custom-table th {
+        text-align: left;
+        padding: 16px;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .custom-table td {
+        padding: 18px 16px;
+        font-size: 0.95rem;
+        color: #334155;
+        border-bottom: 1px solid #f8fafc;
+        vertical-align: middle;
+    }
+
+    .custom-table tr:hover td {
+        background-color: #fdfaff;
+    }
+
+    /* User Identity Style */
+    .user-name {
+        font-weight: 700;
+        color: var(--deep-amethyst);
+        display: block;
+    }
+
+    .user-email {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    /* Current Role Badge */
+    .current-role-badge {
+        background: var(--pale-blush);
+        color: var(--deep-amethyst);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        display: inline-block;
+    }
+
+    /* ===== FORM ELEMENTS ===== */
+    .role-select {
+        padding: 10px 35px 10px 15px;
+        border-radius: 12px;
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        color: #334155;
+        font-weight: 600;
+        font-size: 0.9rem;
+        outline: none;
+        cursor: pointer;
+        transition: var(--transition);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2392487A'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 18px;
+        width: 100%;
+        min-width: 200px;
+    }
+
+    .role-select:focus {
+        border-color: var(--blush-pink);
+        background-color: var(--white);
+    }
+
+    .btn-update {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(84, 8, 99, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(84, 8, 99, 0.3);
+        color: white;
+    }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 25px;
+        text-decoration: none;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .back-link:hover {
+        color: var(--deep-amethyst);
+        transform: translateX(-5px);
+    }
+
+    @media (max-width: 900px) {
+        .box { padding: 20px; }
+        .custom-table th:nth-child(2), .custom-table td:nth-child(2) { display: none; }
+        .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+</style>
+
+<div class="manage-roles-container">
+    <header class="page-header">
+        <h2><i class="fas fa-user-shield"></i> Manage User Access</h2>
+        <div class="company-tag">
+            <i class="fas fa-building me-1"></i> {{ request.user.profile.company.name }}
+        </div>
+    </header>
+
+    <div class="box">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>User Identity</th>
+                    <th>Email Address</th>
+                    <th>Active Role</th>
+                    <th>Assign New Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <span class="user-name">@{{ u.user.username }}</span>
+                    </td>
+                    <td class="user-email">{{ u.user.email }}</td>
+                    <td>
+                        <span class="current-role-badge">{{ u.display_role }}</span>
+                    </td>
+                    
+                    <td>
+                        <form method="POST" id="form-{{ u.user.id }}" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ u.user.id }}">
+                            <select name="role_id" class="role-select"> 
+                                <option value="">-- Remove All Roles (Employee) --</option>
+                                {% for r in roles %}
+                                    <option value="{{ r.id }}" {% if r in u.user.groups.all %}selected{% endif %}>
+                                        {{ r.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    
+                    <td>
+                        <button type="submit" form="form-{{ u.user.id }}" class="btn-update">
+                            <i class="fas fa-sync-alt"></i> Update
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 50px; color: #94a3b8;">
+                        <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
+                        No users found to manage.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{% url 'admin_dashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

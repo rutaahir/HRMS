@@ -1,0 +1,266 @@
+{% extends "base/base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #540863 0%, #92487A 100%);
+        --glass-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .verify-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 60px rgba(84, 8, 99, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .card-header-custom {
+        background: var(--primary-gradient);
+        padding: 40px 20px;
+        text-align: center;
+        color: white;
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .step {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+    }
+
+    .step.active {
+        background: white;
+        box-shadow: 0 0 10px white;
+    }
+
+    /* OTP Modern Style */
+    .otp-wrapper {
+        position: relative;
+    }
+
+    #otp_input {
+        letter-spacing: 12px;
+        font-size: 2rem;
+        font-weight: 800;
+        border: 2px solid #eef0f2;
+        border-radius: 16px;
+        background: #fcfcfd;
+        transition: all 0.3s ease;
+        color: #540863;
+    }
+
+    #otp_input:focus {
+        border-color: #92487A;
+        background: white;
+        box-shadow: 0 0 15px rgba(146, 72, 122, 0.1);
+    }
+
+    /* Status Icon Inner Overlay */
+    .status-icon-overlay {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    .form-label-custom {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #92487A;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-submit-custom {
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 14px;
+        padding: 14px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit-custom:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+    }
+
+    .btn-submit-custom:disabled {
+        background: #d1d1d1;
+        cursor: not-allowed;
+    }
+
+    /* Password Reveal Animation */
+    .password-section {
+        display: none; /* JS will show this */
+    }
+
+    .back-dashboard {
+        color: #6c757d;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    .back-dashboard:hover {
+        color: #540863;
+    }
+</style>
+
+<div class="container verify-container py-5">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-5">
+            
+            <div class="glass-card animate__animated animate__fadeInUp">
+                <div class="card-header-custom">
+                    <div class="step-indicator">
+                        <div class="step active" id="step1"></div>
+                        <div class="step" id="step2"></div>
+                    </div>
+                    <h3 class="fw-bold mb-1">Security Shield</h3>
+                    <p class="small mb-0 opacity-75">Verification required to update password</p>
+                </div>
+
+                <div class="card-body p-4 p-lg-5">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} border-0 shadow-sm mb-4" style="border-radius: 12px;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'profile_verify_otp' %}" id="password_change_form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label-custom mb-3 d-block text-center">Identity Code</label>
+                            <div class="otp-wrapper">
+                                <input type="text" id="otp_input" name="otp" class="form-control text-center" 
+                                       placeholder="••••••" maxlength="6" required autocomplete="off">
+                                <div id="otp_status_icon" class="status-icon-overlay"></div>
+                            </div>
+                            <div id="otp_help" class="text-center small mt-3 fw-semibold text-muted">
+                                We've sent a 6-digit code to your inbox.
+                            </div>
+                        </div>
+
+                        <div class="password-section animate__animated" id="password_section">
+                            <hr class="my-4 opacity-25">
+                            
+                            <div class="mb-3">
+                                <label class="form-label-custom">New Secret Key</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-lock text-muted"></i></span>
+                                    <input type="password" id="new_pass" name="new_password" class="form-control border-0 bg-light" 
+                                           placeholder="Enter new password" style="padding: 12px; border-radius: 0 10px 10px 0;">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label-custom">Confirm Secret Key</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-shield-alt text-muted"></i></span>
+                                    <input type="password" id="confirm_pass" name="confirm_password" class="form-control border-0 bg-light" 
+                                           placeholder="Repeat your password" style="padding: 12px; border-radius: 0 10px 10px 0;">
+                                </div>
+                            </div>
+
+                            <button type="submit" id="submit_btn" class="btn btn-submit-custom w-100 text-white shadow">
+                                SECURE MY ACCOUNT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'profile' %}" class="back-dashboard text-decoration-none">
+                    <i class="fas fa-chevron-left me-2"></i>Return to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#otp_input').on('input', function() {
+        var otp = $(this).val();
+        var iconContainer = $('#otp_status_icon');
+        var inputField = $('#otp_input');
+        var helpText = $('#otp_help');
+        
+        if (otp.length === 6) {
+            $.ajax({
+                url: "{% url 'ajax_check_otp' %}",
+                data: { 'otp': otp },
+                dataType: 'json',
+                beforeSend: function() {
+                    helpText.html('<i class="fas fa-spinner fa-spin me-2"></i>Authenticating...');
+                },
+                success: function(data) {
+                    if (data.is_valid) {
+                        // Success Logic
+                        iconContainer.html('<i class="fas fa-check-circle text-success fs-3 animate__animated animate__zoomIn"></i>');
+                        inputField.css({'border-color': '#198754', 'background-color': '#f8fff9'});
+                        
+                        // Reveal Password Section
+                        $('#password_section').show().addClass('animate__fadeInUp');
+                        $('#step2').addClass('active');
+                        
+                        // Enable fields
+                        $('#new_pass, #confirm_pass, #submit_btn').prop('disabled', false);
+                        helpText.text('Identity Verified').removeClass('text-muted text-danger').addClass('text-success');
+                    } else {
+                        // Error Logic
+                        iconContainer.html('<i class="fas fa-times-circle text-danger fs-3 animate__animated animate__shakeX"></i>');
+                        inputField.css({'border-color': '#dc3545', 'background-color': '#fff9f9'});
+                        
+                        // Hide/Disable
+                        $('#password_section').hide();
+                        $('#step2').removeClass('active');
+                        $('#new_pass, #confirm_pass, #submit_btn').prop('disabled', true);
+                        helpText.text('Invalid Verification Code').removeClass('text-muted text-success').addClass('text-danger');
+                    }
+                }
+            });
+        } else {
+            // Reset
+            iconContainer.html('');
+            inputField.css({'border-color': '#eef0f2', 'background-color': '#fcfcfd'});
+            $('#password_section').hide();
+            $('#step2').removeClass('active');
+            helpText.text("We've sent a 6-digit code to your inbox.").removeClass('text-success text-danger').addClass('text-muted');
+        }
+    });
+});
+</script>
+
+{% endblock %}

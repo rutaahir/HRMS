@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Super Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ===== SUPREME HEADER ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 45px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15);
+            margin-bottom: 35px;
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 35px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* Profile Initials UI */
+        .user-identity {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.05);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+        }
+
+        .email-text {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="page-header">
+            <div>
+                <h2><i class="fas fa-users-cog me-2"></i> {{ title }}</h2>
+                <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Directory of all registered accounts</p>
+            </div>
+            <span style="background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.8rem;">Super Admin</span>
+        </header>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Profile</th>
+                            <th>Email Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>
+                                <div class="user-identity">
+                                    <div class="avatar">{{ u.user.username|first|upper }}</div>
+                                    <span class="username">@{{ u.user.username }}</span>
+                                </div>
+                            </td>
+                            <td class="email-text">
+                                <i class="far fa-envelope me-2" style="opacity: 0.5;"></i>
+                                {{ u.user.email }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="empty-state">
+                                <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                                No users found in this category.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="/attendance/dashboard/superadmin/" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            background-image: radial-gradient(at 0% 0%, hsla(320,100%,90%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 100%, hsla(280,100%,85%,1) 0, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== REGISTRATION CARD ===== */
+        .register-card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 35px;
+            box-shadow: 0 25px 50px rgba(84, 8, 99, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        .brand-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* ===== FORM STYLING ===== */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--royal-purple);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 52px;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            background-color: #f8fafc;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        input:focus {
+            background-color: var(--white);
+            border-color: var(--blush-pink);
+            box-shadow: 0 0 0 5px rgba(228, 155, 166, 0.15);
+        }
+
+        input:focus + i {
+            color: var(--deep-amethyst);
+        }
+
+        /* ===== BUTTON ===== */
+        .btn-register {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 25px rgba(84, 8, 99, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+            filter: brightness(1.1);
+        }
+
+        /* Alert Message */
+        .msg-alert {
+            background: #fff1f2;
+            color: #e11d48;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid #ffe4e6;
+        }
+
+        /* ===== FOOTER ===== */
+        .extra {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .extra a {
+            color: var(--royal-purple);
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 5px;
+            transition: var(--transition);
+        }
+
+        .extra a:hover {
+            color: var(--deep-amethyst);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 40px 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="register-card">
+    <div class="brand-icon">
+        <i class="fas fa-user-plus"></i>
+    </div>
+
+    <h2>Create Account</h2>
+    <p class="subtitle">Join our smart workforce management today</p>
+
+    {% if msg %}
+    <div class="msg-alert">
+        <i class="fas fa-exclamation-circle me-2"></i> {{ msg }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+    
+        <div class="form-group">
+            <i class="fas fa-id-card"></i> <input type="text" name="first_name" placeholder="First Name" required>
+        </div>
+    
+        <div class="form-group">
+            <i class="fas fa-id-card-alt"></i> <input type="text" name="last_name" placeholder="Last Name" required>
+        </div>
+    
+        <div class="form-group">
+            <i class="fas fa-user"></i>
+            <input type="text" name="username" placeholder="Choose Username" required>
+        </div>
+    
+        <div class="form-group">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" placeholder="Email Address" required>
+        </div>
+
+        <div class="form-group">
+            <i class="fas fa-phone input-icon"></i>
+            <input type="text" name="phone" id="phoneField" placeholder="Phone Number (10 digits)" 
+                   pattern="\d{10}" maxlength="10" required 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+    
+        <div class="form-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" placeholder="Create Password" required>
+        </div>
+    
+        <button type="submit" class="btn-register">
+            Get Started
+        </button>
+    </form>
+
+    <div class="extra">
+        Already have an account? 
+        <a href="{% url 'login' company.slug %}">Login here</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,679 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== AMETHYST MANAGER DASHBOARD THEME ===== */
+:root {
+    --deep-amethyst: #540863;
+    --royal-purple: #92487A;
+    --blush-pink: #E49BA6;
+    --pale-blush: #FFD3D5;
+    --white: #ffffff;
+    
+    --primary-gradient: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+    --accent-gradient: linear-gradient(135deg, var(--royal-purple) 0%, var(--blush-pink) 100%);
+    --soft-shadow: 0 10px 30px rgba(84, 8, 99, 0.08);
+}
+
+/* 🔥 Global Screen Lock for Mobile Bleed Prevention */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page Background */
+.dashboard-wrapper {
+    background-color: var(--pale-blush);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Header Section */
+.dashboard-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 3rem 0 5.5rem 0;
+    border-radius: 0 0 40px 40px;
+    box-shadow: 0 15px 35px rgba(84, 8, 99, 0.2);
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.welcome-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 120%; 
+    max-width: none;
+}
+
+/* --- STATS CARDS GRID --- */
+.stats-container {
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 1.5rem;
+}
+
+/* Clickable Cards Styling */
+.stat-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: 22px;
+    padding: 1.8rem;
+    box-shadow: var(--soft-shadow);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 100%; 
+}
+
+.stat-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15); border-color: var(--royal-purple); }
+
+.stat-icon {
+    width: 65px; height: 65px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    background: var(--pale-blush); color: var(--deep-amethyst);
+    flex-shrink: 0;
+}
+
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--deep-amethyst); line-height: 1.1; }
+.stat-label { font-size: 0.9rem; font-weight: 600; color: #64748b; text-transform: uppercase; }
+
+/* Content Panels */
+.attendance-panel {
+    background: var(--white);
+    border-radius: 28px;
+    padding: 2rem;
+    box-shadow: var(--soft-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    height: 100%;
+}
+
+.panel-title {
+    color: var(--deep-amethyst); font-weight: 700;
+    border-left: 5px solid var(--royal-purple); padding-left: 15px;
+    margin-bottom: 1.5rem; font-size: 1.2rem;
+}
+
+/* Quick Actions Grid */
+.actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+.action-btn {
+    background: #fdfaff; border-radius: 18px; padding: 1.2rem;
+    text-align: center; text-decoration: none; transition: 0.3s;
+    border: 1px solid #f1e6f5; display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+}
+.action-btn i { font-size: 1.5rem; color: var(--royal-purple); }
+.action-btn span { font-size: 0.85rem; font-weight: 600; color: var(--deep-amethyst); }
+.action-btn:hover { background: var(--white); border-color: var(--blush-pink); transform: translateY(-5px); }
+
+/* Team Table Styling */
+.table-responsive { border-radius: 15px; overflow-x: auto; width: 100%; }
+.custom-table { width: 100%; border-collapse: collapse; background: #fdfaff; min-width: 600px; }
+.custom-table th { background: var(--deep-amethyst); color: white; padding: 15px; text-align: left; font-size: 0.85rem; white-space: nowrap; }
+.custom-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; white-space: nowrap;}
+
+/* Buttons */
+.btn-royal {
+    background: var(--primary-gradient); color: white; padding: 12px 20px;
+    border-radius: 14px; font-weight: 700; border: none; transition: 0.3s; cursor: pointer;
+    font-size: 1.05rem;
+}
+.btn-royal:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2); color: white;}
+
+/* Action Buttons */
+.btn-tl-action {
+    padding: 6px 12px; font-size: 0.8rem; font-weight: 600; border-radius: 8px; border:none; cursor: pointer; transition: 0.2s;
+}
+.btn-make-tl { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+.btn-make-tl:hover { background: #bae6fd; }
+
+.btn-assign { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.btn-assign:hover { background: #bbf7d0; }
+
+/* Notification Dots */
+.unread-dot { height: 8px; width: 8px; background-color: #ff4d4d; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.notif-item { padding: 10px; border-bottom: 1px solid #eee; }
+
+/* MODAL STYLING */
+.modal-content-custom { border-radius: 20px; border: none; }
+.modal-header-custom { background: var(--primary-gradient); color: white; border-radius: 20px 20px 0 0; padding: 1.5rem; }
+.checkbox-card { border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; margin-bottom: 8px; transition: 0.2s; background: #f8fafc; cursor: pointer; }
+.checkbox-card:hover { background: #f1f5f9; border-color: var(--royal-purple); }
+
+.checkin-time-badge {
+    background: #f0fdf4;
+    border: 2px dashed #22c55e;
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-align: center;
+    animation: fadeInDown 0.5s ease;
+}
+.time-text {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #16a34a;
+    display: block;
+    margin: 5px 0 15px 0;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================================== */
+/* 🔥 MOBILE CSS: THE ULTIMATE RESPONSIVE APP-LIKE FIX 🔥 */
+/* ======================================================== */
+
+@media (max-width: 991px) { 
+    .stats-container { grid-template-columns: repeat(2, 1fr); } 
+}
+
+@media (max-width: 768px) {
+    /* 📱 Container Lock */
+    .dashboard-wrapper { overflow-x: hidden !important; width: 100vw !important; }
+    .container { padding-left: 15px !important; padding-right: 15px !important; width: 100% !important; max-width: 100vw !important; box-sizing: border-box !important;}
+
+    /* 📱 Header adjustments */
+    .dashboard-header {
+        padding: 2rem 1rem 4.5rem 1rem !important; 
+        border-radius: 0 0 25px 25px !important;
+        text-align: center;
+    }
+    
+    .welcome-card {
+        width: 100% !important; /* Override the 120% that breaks the screen */
+        padding: 1.5rem 1rem !important;
+        text-align: center;
+    }
+    
+    .welcome-card .lead {
+        justify-content: center;
+        font-size: 0.85rem !important;
+    }
+    
+    .display-6 { font-size: 1.8rem !important; }
+
+    #liveClock { font-size: 3rem !important; margin-top: 1rem; }
+
+    /* 🔥 2x2 RIGID GRID FOR TOP STATS 🔥 */
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-top: -30px !important;
+        padding: 0 5px !important;
+    }
+
+    .stat-card {
+        padding: 1.2rem 0.5rem !important;
+        border-radius: 16px !important;
+        flex-direction: column !important; /* Stack Icon and Text */
+        justify-content: center !important;
+        text-align: center !important;
+        gap: 10px !important;
+    }
+
+    /* Balance the grid: make the last item span full width if needed */
+    .stat-card:last-child:nth-child(odd) {
+        grid-column: span 2 !important;
+    }
+
+    .stat-icon { width: 45px !important; height: 45px !important; font-size: 1.3rem !important; margin: 0 auto !important; border-radius: 12px !important;}
+    .stat-value { font-size: 1.6rem !important; line-height: 1 !important; margin-bottom: 5px !important; }
+    .stat-label { font-size: 0.75rem !important; letter-spacing: 0 !important; }
+
+    /* 📱 PANELS & LAYOUT FIX */
+    .row.g-4 { gap: 1rem !important; margin-top: 1rem !important; }
+    
+    .attendance-panel {
+        padding: 1.5rem 1.2rem !important;
+        border-radius: 20px !important;
+        margin-bottom: 1.5rem !important; /* Keeps spacing between panels */
+        width: 100% !important;
+        height: auto !important; /* Prevents text from being cut off */
+        box-sizing: border-box !important;
+        display: block !important;
+    }
+
+    .panel-title { font-size: 1.2rem !important; margin-bottom: 1.2rem !important; }
+
+    /* 🔥 ATTENDANCE BUTTONS & CLOCK FIX 🔥 */
+    .checkin-time-badge { 
+        padding: 1.2rem !important; 
+        border-radius: 16px !important; 
+    }
+    .time-text { 
+        font-size: 2rem !important; /* Scales down clock slightly */
+        margin: 5px 0 10px 0 !important;
+    }
+    .btn-royal { 
+        padding: 14px 10px !important; 
+        font-size: 1rem !important; 
+        width: 100% !important; 
+        border-radius: 14px !important;
+    }
+
+    /* 🔥 STRICT 2x2 GRID FOR ACTION LINKS 🔥 */
+    .actions-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Force exactly 2 columns */
+        gap: 12px !important;
+        margin-top: 1rem !important;
+        width: 100% !important;
+    }
+    
+    .action-btn { 
+        padding: 1.2rem 0.5rem !important; 
+        border-radius: 16px !important; 
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .action-btn i { font-size: 1.5rem !important; margin-bottom: 8px !important; }
+    .action-btn span { 
+        font-size: 0.75rem !important; 
+        font-weight: 700 !important; 
+        white-space: nowrap !important; 
+        overflow: hidden !important; 
+        text-overflow: ellipsis !important; /* Adds ... if text is too long */
+        width: 100%;
+    }
+
+    /* Table Responsiveness protection */
+    .table-responsive { margin: 0 -1.2rem !important; padding: 0 1.2rem !important; width: calc(100% + 2.4rem) !important; overflow-x: auto !important;}
+    .custom-table th, .custom-table td { padding: 0.8rem 0.5rem !important; white-space: nowrap !important; font-size: 0.85rem !important;}
+}
+
+/* Extra small screens protection */
+@media (max-width: 380px) {
+    .welcome-card h1 { font-size: 1.5rem !important; }
+    .stat-value { font-size: 1.4rem !important; }
+    .time-text { font-size: 1.7rem !important; }
+}
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="welcome-card">
+                        <h1 class="display-6 fw-bold mb-2">Welcome {{ request.user.username }} 👨‍💼</h1>
+                        <p class="lead mb-0 opacity-90 d-flex flex-wrap align-items-center gap-2">
+                            <span><i class="fas fa-building me-1"></i> {{ company.name }}</span>
+                            
+                            {% if profile.branch %}
+                                <span class="mx-1 d-none d-md-inline">|</span>
+                                <span class="badge bg-white bg-opacity-25 rounded-pill px-3 fw-normal mt-2 mt-md-0 d-inline-block">
+                                    <i class="fas fa-map-marker-alt me-1"></i> 
+                                    {{ profile.branch.name }} ({{ profile.branch.location }})
+                                </span>
+                            {% endif %}
+                            
+                            <span class="mx-1 d-none d-md-inline">|</span>
+                            <span class="mt-2 mt-md-0 d-inline-block"><i class="fas fa-users-cog me-1"></i> Manager</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-5 text-center text-lg-end mt-4 mt-lg-0">
+                    <div class="d-inline-block">
+                        <div class="h2 fw-bold mb-1 text-white" id="liveClock">{% now "H:i" %}</div>
+                        <p class="text-white-50 small fw-bold mb-2">{% now "l, F j, Y" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-container">
+            
+            <a href="{% url 'manager_total_staff' %}" class="stat-link">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="stat-value">{{ total_team }}</div>
+                        <div class="stat-label">Total Staff <i class="fas fa-arrow-right small ms-1"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            {% if team_leader_role_exists %}
+            <a href="{% url 'manager_tl_list' %}" class="stat-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ total_team_leaders }}</div>
+                        <div class="stat-label">Team Leaders <i class="fas fa-arrow-right small ms-1"></i></div>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+
+            <a href="{% url 'manager_present_today' %}" class="stat-link">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #dcfce7; color: #16a34a;">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value text-success">{{ present_today }}</div>
+                        <div class="stat-label">Present Today <i class="fas fa-arrow-right small ms-1"></i></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                {% with request.user.groups.first.role_permissions as role_perms %}
+                <div class="attendance-panel mb-4">
+                    <h3 class="panel-title">Your Attendance</h3>
+                    {% if role_perms.can_self_access %}
+                        
+                        {% if today_record and today_record.check_in %}
+                            <div class="checkin-time-badge mb-4">
+                                <span class="small text-muted text-uppercase fw-bold ls-1">🕒 Checked In At</span>
+                                <span class="time-text">{{ today_record.check_in|time:"g:i A" }}</span>
+                                
+                                {% if not today_record.check_out %}
+                                    <form method="post" action="{% url 'check_out' company.slug %}" class="mt-3 w-100" id="checkout-form">
+    {% csrf_token %}
+    <input type="hidden" name="latitude" id="out-lat">
+    <input type="hidden" name="longitude" id="out-lng">
+    
+    <button type="button" class="btn-royal w-100" style="background: var(--accent-gradient);" onclick="captureGpsAndSubmit('checkout-form', 'out-lat', 'out-lng')">
+        <i class="fas fa-sign-out-alt me-2"></i>Check-Out Now
+    </button>
+</form>
+                                {% else %}
+                                    <div class="mt-3 p-2 bg-success bg-opacity-10 text-success rounded-3 fw-bold border border-success border-opacity-25">
+                                        <i class="fas fa-door-open me-1"></i> Shift Completed
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="mb-4">
+                                <form method="post" action="{% url 'check_in' company.slug %}" class="w-100" id="checkin-form">
+    {% csrf_token %}
+    <input type="hidden" name="latitude" id="in-lat">
+    <input type="hidden" name="longitude" id="in-lng">
+    
+    <button type="button" class="btn-royal w-100 py-3 shadow-lg" onclick="captureGpsAndSubmit('checkin-form', 'in-lat', 'in-lng')">
+        <i class="fas fa-play-circle me-2"></i>Start Your Day
+    </button>
+</form>
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'monthly_attendance' %}" class="btn btn-outline-secondary w-100 border-2 fw-bold rounded-3 py-2 mt-2">
+                            <i class="fas fa-history me-2"></i>View My Attendance
+                        </a>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-lock fa-3x text-light mb-3"></i>
+                            <p class="text-muted small mb-0">Attendance self-service disabled.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="attendance-panel">
+                    <h3 class="panel-title">Management Quick Links</h3>
+                    <div class="actions-grid">
+                        {% if role_perms.can_approve_attendance %}
+                        <a href="{% url 'manager_team_attendance' %}" class="action-btn">
+                            <i class="fas fa-calendar-check"></i><span>Team Attendance</span>
+                        </a>
+                        {% endif %}
+                        
+                        {% if role_perms.can_approve_leave %}
+                        <a href="{% url 'manager_leave_requests' %}" class="action-btn">
+                            <i class="fas fa-envelope-open-text"></i><span>Leave Approvals</span>
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'apply_leave' %}" class="action-btn">
+                            <i class="fas fa-paper-plane"></i><span>Apply Leave</span>
+                        </a>
+                        
+                        {% if role_perms.can_approve_attendance %}
+                        <a href="{% url 'manager_request_correction' %}" class="action-btn">
+                            <i class="fas fa-user-edit"></i><span>Correction Req</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+
+            <div class="col-lg-7">
+                <div class="attendance-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="panel-title mb-0">Direct Reports</h3>
+                        <span class="badge bg-light text-dark">{{ total_team }} Active</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Member Name</th>
+                                    <th>Role</th>
+                                    {% if team_leader_role_exists %}<th>Actions</th>{% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in team %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ item.user.username }}</div>
+                                        <small class="text-muted">{{ item.user.email }}</small>
+                                    </td>
+                                    
+                                    <td>
+                                        {% if item.is_team_leader %}
+                                            <span class="badge" style="background-color: #dcfce7 !important; color: #16a34a !important; border: 1px solid #bbf7d0; padding: 8px 12px; border-radius: 8px; font-weight: 800;">
+                                                <i class="fas fa-crown me-1"></i> Team Leader
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary bg-opacity-25 text-dark" style="padding: 8px 12px; border-radius: 8px;">
+                                                {{ item.role }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    {% if team_leader_role_exists %}
+                                    <td>
+                                        {% if item.is_team_leader %}
+                                        <button class="btn-tl-action btn-assign" 
+                                            onclick="openAssignModal('{{ item.user.id }}', '{{ item.user.username }}', '[{% for member in item.squad_list %}{{ member.user.id }}{% if not forloop.last %},{% endif %}{% endfor %}]')">
+                                            <i class="fas fa-users-cog"></i> Manage Squad
+                                        </button>
+                                        {% else %}
+                                            <form action="{% url 'make_team_leader' item.user.id %}" method="POST" class="d-inline" onsubmit="return confirm('Promote {{ item.user.username }} to Team Leader?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-tl-action btn-make-tl">
+                                                    <i class="fas fa-level-up-alt"></i> Make TL
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center py-4 text-muted">No team members found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link text-danger small fw-bold text-decoration-none">
+                                <i class="fas fa-power-off me-1"></i> Secure Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignTeamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content modal-content-custom">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold"><i class="fas fa-sitemap me-2"></i> Assign to <span id="modalLeaderName"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'assign_team_to_leader' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <input type="hidden" name="leader_id" id="modalLeaderId">
+                    <p class="text-muted small mb-3">Select employees to assign to this Team Leader.</p>
+                    <div style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+                        {% for item in team %}
+                            {% if not item.is_team_leader %}
+                            <div class="checkbox-card d-flex align-items-center">
+                                <input class="form-check-input mt-0 me-3 squad-checkbox" 
+                                       type="checkbox" 
+                                       name="employee_ids" 
+                                       value="{{ item.user.id }}" 
+                                       id="emp_{{ item.user.id }}">
+                                <label class="form-check-label w-100 cursor-pointer" for="emp_{{ item.user.id }}">
+                                    <div class="fw-bold">{{ item.user.username }}</div>
+                                    <div class="small text-muted">{{ item.user.email }}</div>
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% empty %}
+                            <p class="text-center text-muted">No eligible employees found.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light rounded-bottom">
+                    <button type="button" class="btn btn-light text-muted" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-royal">Save Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const liveClock = document.getElementById('liveClock');
+        if(liveClock) {
+            liveClock.textContent = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        }
+    }
+    setInterval(updateClock, 1000);
+
+    function openAssignModal(leaderId, leaderName, currentMembersRaw) {
+    try {
+        document.getElementById('modalLeaderId').value = leaderId;
+        document.getElementById('modalLeaderName').innerText = leaderName;
+        
+        let currentMembers = [];
+        if (typeof currentMembersRaw === 'string') {
+            currentMembers = JSON.parse(currentMembersRaw.replace(/'/g, '"'));
+        } else {
+            currentMembers = currentMembersRaw;
+        }
+
+        const checkboxes = document.querySelectorAll('.squad-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+        });
+
+        if (currentMembers && currentMembers.length > 0) {
+            currentMembers.forEach(memberId => {
+                const checkbox = document.getElementById('emp_' + memberId);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+
+        var myModal = new bootstrap.Modal(document.getElementById('assignTeamModal'));
+        myModal.show();
+
+    } catch (err) {
+        console.error("Modal Error Details:", err);
+        var myModal = new bootstrap.Modal(document.getElementById('assignTeamModal'));
+        myModal.show();
+    }
+}
+
+
+    // 1. Live Clock
+    function updateClock() {
+        const now = new Date();
+        const liveClock = document.getElementById('liveClock');
+        if(liveClock) {
+            liveClock.textContent = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        }
+    }
+    setInterval(updateClock, 1000);
+
+    // 2. 🔥 THE GPS SOLUTION (Step-by-Step Logic)
+    function captureGpsAndSubmit(formId, latFieldId, lngFieldId) {
+        const form = document.getElementById(formId);
+        
+        if (navigator.geolocation) {
+            // This line triggers the "Allow Location" popup in the browser
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success: Put the numbers into the hidden boxes
+                    document.getElementById(latFieldId).value = position.coords.latitude;
+                    document.getElementById(lngFieldId).value = position.coords.longitude;
+                    
+                    // Now that we have the coordinates, submit the form to Django
+                    form.submit();
+                },
+                function(error) {
+                    // Failure: User denied or GPS failed
+                    alert("⚠️ Error: To check in, you must allow Location Access in your browser settings.");
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    }
+
+    
+
+
+
+</script>
+{% endblock %}

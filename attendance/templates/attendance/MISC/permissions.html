@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Permissions | Management Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body { background-color: var(--pale-blush); color: #1e293b; min-height: 100vh; padding: 40px 20px; }
+
+        .container {
+            max-width: 1200px; margin: 0 auto; background: var(--white);
+            padding: 40px; border-radius: 35px; box-shadow: 0 25px 60px rgba(84, 8, 99, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
+
+        h2 { color: var(--deep-amethyst); font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 12px; }
+
+        .save-btn {
+            padding: 12px 28px; border-radius: 14px; border: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2); display: flex; align-items: center; gap: 10px; text-decoration: none;
+        }
+
+        .save-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3); }
+
+        .table-responsive { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+
+        th { text-align: center; padding: 18px; background-color: #f8fafc; color: var(--royal-purple); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
+
+        td { padding: 20px 15px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #f8fafc; vertical-align: middle; text-align: center; }
+
+        .role-name { text-align: left; font-weight: 800; color: var(--deep-amethyst); display: flex; align-items: center; gap: 10px; }
+
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e2e8f0; transition: .4s; border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+
+        input:checked+.slider { background-color: var(--royal-purple); }
+        input:checked+.slider:before { transform: translateX(22px); }
+
+        /* 🚨 THE LOCKING CSS: Grey out disabled toggles */
+        input:disabled+.slider {
+            background-color: #cbd5e1 !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+
+            <header class="page-header">
+                <h2><i class="fas fa-user-shield"></i> Permissions: {{ company.name }}</h2>
+                <button class="save-btn" type="submit"><i class="fas fa-save"></i> Save Changes</button>
+            </header>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>System Roles</th>
+                            <th>User Mgmt</th>
+                            <th>Attendance</th>
+                            <th>Leave Appr.</th>
+                            <th>Shifts</th>
+                            <th>Reports</th>
+                            <th>Team View</th>
+                            <th>Self Access</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for role, perm in data %}
+                        {% with role_name=role.name|cut:company.slug|cut:"_"|lower %}
+                        <tr>
+                            <td>
+                                <div class="role-name">
+                                    <i class="fas fa-id-badge"></i> {{ role.name|cut:company.slug|cut:"_"|title }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_manage_users_{{ role.id }}" 
+                                        {% if perm.can_manage_users %}checked{% endif %}
+                                        {% if role_name == "employee" or role_name == "team leader" %}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_approve_attendance_{{ role.id }}" 
+                                        {% if perm.can_approve_attendance %}checked{% endif %}
+                                        {% if role_name == "employee" or role_name == "team leader" or role_name == "owner"%}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_approve_leave_{{ role.id }}" 
+                                        {% if perm.can_approve_leave %}checked{% endif %}
+                                        {% if role_name == "employee" or role_name == "team leader" or role_name == "owner"%}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_manage_shifts_{{ role.id }}" 
+                                        {% if perm.can_manage_shifts %}checked{% endif %}
+                                        {% if role_name == "employee" or role_name == "team leader" %}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_view_reports_{{ role.id }}" 
+                                        {% if perm.can_view_reports %}checked{% endif %}
+                                        {% if role_name == "employee" %}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_view_team_{{ role.id }}" 
+                                        {% if perm.can_view_team %}checked{% endif %}
+                                        {% if role_name == "employee" %}disabled{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" name="can_self_access_{{ role.id }}" 
+                                        {% if perm.can_self_access %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

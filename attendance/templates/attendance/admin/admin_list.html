@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Directory | Management Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --bg-light: #fdfaff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* Your theme background */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== DIRECTORY CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
+
+        .title-area h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-area p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px 16px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Profile Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--primary-gradient, linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple)));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .approved {
+            background: #e6fffa;
+            color: #008080;
+        }
+
+        .pending {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        /* ===== ACTION LINKS ===== */
+        .management-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-link {
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-link i {
+            font-size: 1rem;
+        }
+
+        .action-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateY(-1px);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-container {
+            margin-top: 35px;
+            text-align: left;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateX(-5px);
+            color: var(--deep-amethyst);
+        }
+
+        @media (max-width: 900px) {
+            .card { padding: 25px 15px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Hide email on mobile */
+            .management-links { flex-direction: column; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <header>
+            <div class="title-area">
+                <h2><i class="fas fa-user-shield"></i> Admin Directory</h2>
+                <p>Manage access levels and monitor activity for system administrators.</p>
+            </div>
+            <div class="badge" style="background: var(--pale-blush); color: var(--deep-amethyst);">
+                Total: {{ users|length }}
+            </div>
+        </header>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Administrator</th>
+                    <th>Contact</th>
+                    <th>Profile Role</th>
+                    <th>Status</th>
+                    <th>Quick Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar">{{ u.user.username|first|upper }}</div>
+                            <span class="username">@{{ u.user.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="color: #64748b; font-size: 0.85rem;">{{ u.user.email }}</span>
+                    </td>
+                    <td>
+                        <span style="font-weight: 700; color: var(--royal-purple); background: #fdf2f8; padding: 4px 10px; border-radius: 8px;">{{ u.role }}</span>
+                    </td>
+                    <td>
+                        {% if u.is_approved %}
+                            <span class="badge approved">
+                                <i class="fas fa-check-double"></i> Verified
+                            </span>
+                        {% else %}
+                            <span class="badge pending">
+                                <i class="fas fa-hourglass-half"></i> Pending
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="management-links">
+                            <a href="{% url 'admin_view_attendance' u.user.id %}" class="action-link">
+                                <i class="fas fa-chart-line"></i> Logs
+                            </a>
+                            <a href="{% url 'admin_assign_role' u.user.id %}" class="action-link" style="color: var(--deep-amethyst);">
+                                <i class="fas fa-user-tag"></i> Role
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                        No administrative profiles found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="back-container">
+            <a href="/attendance/dashboard/admin/" class="btn-back">
+                <i class="fas fa-long-arrow-alt-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

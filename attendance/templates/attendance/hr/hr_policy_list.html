@@ -1,0 +1,345 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 CRITICAL MOBILE LOCKS 🔥 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    html, body {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+
+    .policy-wrapper {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .container {
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    /* ===== SUPREME HEADER ===== */
+    .page-header {
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        padding: 30px 45px;
+        border-radius: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15);
+        margin-bottom: 35px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .page-header h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 0;
+    }
+
+    .header-badge {
+        background: rgba(255,255,255,0.15);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    /* ===== MAIN CARD ===== */
+    .card {
+        background: var(--white);
+        padding: 40px;
+        border-radius: 35px;
+        box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    /* ===== DESKTOP TABLE STYLING ===== */
+    .table-responsive {
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 18px;
+        background-color: #f8fafc;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    td {
+        padding: 22px 18px;
+        font-size: 0.95rem;
+        color: #334155;
+        border-bottom: 1px solid #f8fafc;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background-color: #fdfaff;
+    }
+
+    /* Policy Badges */
+    .company-name {
+        font-weight: 800;
+        color: var(--deep-amethyst);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .company-icon {
+        width: 35px;
+        height: 35px;
+        background: var(--pale-blush);
+        color: var(--deep-amethyst);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .policy-pill {
+        background: #f1f5f9;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 30px;
+        text-decoration: none;
+        color: var(--royal-purple);
+        font-weight: 700;
+        transition: var(--transition);
+    }
+
+    .back-link:hover {
+        color: var(--deep-amethyst);
+        transform: translateX(-5px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        color: #94a3b8;
+    }
+
+    /* =========================================
+       📱 ULTRA RESPONSIVE (TOP TO BOTTOM) TABLE
+       ========================================= */
+    @media (max-width: 768px) {
+        .policy-wrapper {
+            padding: 15px 10px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 25px 20px;
+            border-radius: 25px;
+            gap: 15px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap; 
+        }
+
+        .card {
+            padding: 20px 15px;
+            border-radius: 25px;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+        }
+
+        /* Force table to not behave like a table anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+            width: 100%;
+        }
+
+        /* Hide the top header row visually */
+        thead {
+            display: none;
+        }
+
+        /* Make every row look like a floating card */
+        tbody tr {
+            background: var(--white);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        tr:hover td {
+            background-color: transparent;
+        }
+
+        /* Make every cell a flex row */
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+            padding: 12px 5px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        /* Inject the column names as labels on the left side of the cell */
+        td::before {
+            content: attr(data-label);
+            font-weight: 800;
+            color: var(--royal-purple);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            text-align: left;
+            margin-right: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Fix empty state to not show a label */
+        td.empty-state {
+            display: block;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        td.empty-state::before {
+            display: none;
+        }
+    }
+</style>
+
+<div class="policy-wrapper">
+    <div class="container">
+        
+        <header class="page-header">
+            <div>
+                <h2><i class="fas fa-file-contract me-2"></i> Attendance Policies</h2>
+                <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px; margin-bottom: 0;">Company-wide operational rules and guidelines</p>
+            </div>
+            <span class="header-badge">HR Portal</span>
+        </header>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Associated Company</th>
+                            <th>Required Hours</th>
+                            <th>Late Threshold</th>
+                            <th>Grace Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in policies %}
+                        <tr>
+                            <td data-label="Company">
+                                <div class="company-name">
+                                    <div class="company-icon"><i class="fas fa-building"></i></div>
+                                    {{ p.company.name }}
+                                </div>
+                            </td>
+                            <td data-label="Required Hours">
+                                <span class="policy-pill">
+                                    <i class="fas fa-business-time"></i> {{ p.work_hours_required }} Hours
+                                </span>
+                            </td>
+                            <td data-label="Late Threshold">
+                                <span class="policy-pill" style="color: #e11d48; background: #fff1f2;">
+                                    <i class="fas fa-user-clock"></i> {{ p.late_after_minutes }} Mins
+                                </span>
+                            </td>
+                            <td data-label="Grace Period">
+                                <span class="policy-pill" style="color: #059669; background: #ecfdf5;">
+                                    <i class="fas fa-shield-heart"></i> {{ p.grace_time_minutes }} Mins
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state" data-label="">
+                                <i class="fas fa-clipboard-list fa-3x mb-3 d-block"></i>
+                                No attendance policies found in the system.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="/attendance/dashboard/hr/" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to HR Dashboard
+            </a>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

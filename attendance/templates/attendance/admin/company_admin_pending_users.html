@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approvals | {{ request.user.profile.company.name }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* થીમ બેકગ્રાઉન્ડ */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        /* ===== TABLE CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 45px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .user-identity {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar-box {
+            width: 42px;
+            height: 42px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.05);
+        }
+
+        /* Status Chip */
+        .status-chip {
+            background: #fff8e1;
+            color: #b45309;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Buttons */
+        .btn {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-approve {
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-reject {
+            background-color: var(--danger);
+            color: white;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+        }
+
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-back {
+            background: #f1f5f9;
+            color: #475569;
+            margin-top: 30px;
+        }
+
+        .btn-back:hover {
+            background: #e2e8f0;
+            transform: translateX(-5px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--blush-pink);
+        }
+
+        @media (max-width: 900px) {
+            .page-header { flex-direction: column; text-align: center; gap: 15px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Hide email on mobile */
+            .card { padding: 25px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <div>
+            <h2>Pending Approvals</h2>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">
+                <i class="fas fa-building me-1"></i> {{ request.user.profile.company.name }} | Total: {{ users|length }}
+            </p>
+        </div>
+        <span class="tag">
+            <i class="fas fa-shield-halved me-1"></i> Admin Authorization
+        </span>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>User Details</th>
+                    <th>Email Address</th>
+                    <th>Request Status</th>
+                    <th style="text-align: right;">Final Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-identity">
+                            <div class="avatar-box">{{ u.user.username|first|upper }}</div>
+                            <span style="font-weight: 800; color: var(--deep-amethyst);">@{{ u.user.username }}</span>
+                        </div>
+                    </td>
+                    <td style="color: #64748b; font-size: 0.85rem;">{{ u.user.email }}</td>
+                    <td>
+                        <span class="status-chip">
+                            <i class="fas fa-hourglass-start"></i> Awaiting Verification
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <a href="{% url 'company_admin_approve_user' u.user.id %}" class="btn btn-approve">
+                                <i class="fas fa-check-circle"></i> Approve
+                            </a>
+                            <a href="{% url 'company_admin_reject_user' u.user.id %}" class="btn btn-reject">
+                                <i class="fas fa-times-circle"></i> Reject
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class="fas fa-party-horn"></i>
+                            <p style="font-size: 1.1rem; font-weight: 600;">No pending registration requests!</p>
+                            <p style="font-size: 0.9rem;">Your approval queue is completely clear.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/attendance/dashboard/admin/" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

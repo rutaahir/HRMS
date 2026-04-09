@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Leave History | Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* મુખ્ય થીમ બેકગ્રાઉન્ડ */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15);
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .leave-count {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 30px;
+            box-shadow: 0 20px 45px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 22px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* Date Styling */
+        .date-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--deep-amethyst);
+        }
+
+        .date-icon {
+            color: var(--blush-pink);
+            font-size: 1.1rem;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .pending { background: #fff8e1; color: #b45309; }
+        .approved { background: #e6fffa; color: #008080; }
+        .rejected { background: #fff1f2; color: #e11d48; }
+
+        /* Reason Box */
+        .reason-cell {
+            max-width: 250px;
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* ===== BACK LINK ===== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--pale-blush);
+        }
+
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; text-align: center; gap: 15px; }
+            th:nth-child(3), td:nth-child(3) { display: none; } /* મોબાઈલમાં કારણ છુપાવો */
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <div class="header-info">
+            <h2><i class="fas fa-calendar-alt me-2"></i> My Leave History</h2>
+        </div>
+        <div class="leave-count">
+            Total Requests: {{ leaves|length }}
+        </div>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th style="text-align: right;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in leaves %}
+                <tr>
+                    <td>
+                        <div class="date-box">
+                            <i class="far fa-calendar-plus date-icon"></i>
+                            {{ l.from_date }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="date-box">
+                            <i class="far fa-calendar-minus date-icon"></i>
+                            {{ l.to_date }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="reason-cell" title="{{ l.reason }}">
+                            "{{ l.reason|truncatechars:40 }}"
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        {% if l.status == "PENDING" %}
+                            <span class="status-pill pending">
+                                <i class="fas fa-hourglass-half"></i> Pending
+                            </span>
+                        {% elif l.status == "APPROVED" %}
+                            <span class="status-pill approved">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                        {% else %}
+                            <span class="status-pill rejected">
+                                <i class="fas fa-times-circle"></i> Rejected
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class="fas fa-envelope-open"></i>
+                            <p style="font-weight: 600;">You haven't submitted any leave requests yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="back-link" href="javascript:history.back()">
+            <i class="fas fa-long-arrow-alt-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

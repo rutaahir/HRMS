@@ -1,0 +1,414 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ===== AMETHYST THEME ===== */
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--pale-blush); color: #1e293b; min-height: 100vh; padding: 40px 20px; }
+
+    .container {
+        max-width: 1200px; margin: 0 auto; background: var(--white);
+        padding: 40px; border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        width: 100%;
+        overflow: hidden; /* Prevents internal elements from breaking out */
+    }
+
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9; }
+    h2 { color: var(--deep-amethyst); font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px; margin: 0;}
+    .header-badge { background: var(--pale-blush); color: var(--deep-amethyst); padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; white-space: nowrap;}
+
+    /* 🔥 CUSTOM WIDTH FILTER BAR 🔥 */
+    .filter-wrapper {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: 1px solid #eef2f6;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap; 
+    }
+
+    .search-input-group { 
+        position: relative; 
+        width: 260px; /* 👈 CHANGE THIS NUMBER TO MAKE SEARCH BAR SMALLER/BIGGER */
+    }
+    
+    .search-input-group i {
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+        color: var(--royal-purple); font-size: 0.9rem; opacity: 0.7;
+    }
+    
+    .search-input-group input {
+        width: 100%; padding: 10px 15px 10px 42px; border-radius: 12px;
+        border: 1px solid #f1f5f9; background: #f8fafc; font-size: 0.9rem;
+        outline: none; transition: 0.3s;
+    }
+    
+    .search-input-group input:focus { border-color: var(--royal-purple); background: #ffffff; box-shadow: 0 4px 15px rgba(146, 72, 122, 0.1); }
+
+    .status-select-wrapper { 
+        position: relative; 
+        width: 150px; /* 👈 CHANGE THIS NUMBER TO MAKE DROPDOWN SMALLER/BIGGER */
+    }
+    
+    .status-select-wrapper i {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        color: var(--royal-purple); font-size: 0.8rem; pointer-events: none;
+    }
+    
+    .status-select {
+        width: 100%; padding: 10px 10px 10px 32px; border-radius: 12px;
+        border: 1px solid #f1f5f9; background: #f8fafc; font-size: 0.85rem;
+        font-weight: 600; color: var(--deep-amethyst); cursor: pointer; outline: none; transition: 0.3s;
+    }
+    
+    .status-select:focus { border-color: var(--royal-purple); background: #ffffff; }
+
+    .reset-btn {
+        color: var(--danger); background: #fff1f2; border: 1px solid #ffe4e6;
+        padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; text-decoration: none;
+        display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+    }
+    .reset-btn:hover { transform: scale(1.05); }
+
+    .results-badge {
+        font-size: 0.75rem; font-weight: 800; background: var(--pale-blush);
+        padding: 8px 16px; border-radius: 20px; color: var(--deep-amethyst);
+        white-space: nowrap; margin-left: auto; /* Pushes badge to the far right */
+    }
+    /* 🔥 TABLE RESPONSIVENESS 🔥 */
+    .table-responsive { 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; /* Smooth swipe on mobile */
+        border-radius: 12px;
+    }
+    
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        min-width: 900px; /* Forces scroll on small screens */
+        white-space: nowrap; /* Prevents text from breaking lines awkwardly */
+    }
+    
+    th { text-align: left; padding: 18px; background-color: #f8fafc; color: var(--royal-purple); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #f1f5f9; }
+    td { padding: 20px 18px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+    .row-updated { background-color: #fffbeb !important; }
+    tr:hover td { background-color: #fdfaff; }
+
+    /* User Cell */
+    .user-cell { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 38px; height: 38px; background: var(--pale-blush); color: var(--deep-amethyst); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; }
+
+    /* Badges */
+    .role-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #64748b; text-transform: uppercase; }
+    .status-pill { padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+    .pending { background: #fff8e1; color: #b45309; }
+    .approved { background: #e6fffa; color: #008080; }
+    .rejected { background: #fff1f2; color: #e11d48; }
+    .update-tag { font-size: 10px; background: var(--warning); color: white; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+
+    /* Date & Reason */
+    .date-box { line-height: 1.4; }
+    .old-date { font-size: 0.75rem; color: #94a3b8; text-decoration: line-through; display: block; }
+    .new-date { font-weight: 700; color: var(--deep-amethyst); }
+    .reason-text { max-width: 250px; font-size: 0.85rem; color: #64748b; font-style: italic; line-height: 1.5; white-space: normal; } /* Allows reason to wrap if needed */
+
+    /* Buttons */
+    .btn-group { display: flex; gap: 8px; justify-content: flex-end; }
+    .btn { padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.8rem; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; border: none; cursor: pointer; }
+    .btn-approve { background-color: var(--success); color: white; }
+    .btn-reject { background-color: var(--danger); color: white; }
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    .back-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; text-decoration: none; color: var(--royal-purple); font-weight: 700; transition: var(--transition); }
+    .back-link:hover { color: var(--deep-amethyst); transform: translateX(-5px); }
+
+    /* 🚀 Professional Pagination Styles */
+    .pagination-container { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+    .page-info { font-size: 0.9rem; color: #64748b; font-weight: 600; }
+    .pagination { display: flex; list-style: none; gap: 8px; flex-wrap: wrap; justify-content: center;}
+    .page-item .page-link { display: flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 12px; border-radius: 10px; background: #f8fafc; color: #334155; font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: var(--transition); border: 1px solid transparent; }
+    .page-item .page-link:hover { background: var(--pale-blush); color: var(--deep-amethyst); }
+    .page-item.active .page-link { background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%); color: white; box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2); }
+    .page-item.disabled .page-link { opacity: 0.5; pointer-events: none; background: #f1f5f9; }
+
+    /* 📱 ULTRA RESPONSIVE MOBILE STYLES */
+    @media (max-width: 768px) { 
+        body { padding: 15px 10px; } /* Less padding on the body for mobile */
+        
+        .container { 
+            padding: 20px 15px; 
+            border-radius: 20px; 
+        } 
+        
+        .page-header { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 15px; 
+        }
+        
+        h2 { font-size: 1.5rem; }
+        
+        /* Grid turns into a single column stack on mobile */
+        .filter-bar {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .results-badge {
+            justify-self: center; /* Center the badge on mobile */
+        }
+        
+        .reset-btn {
+            justify-content: center; /* Center text in button */
+        }
+
+        .pagination-container { 
+            flex-direction: column; 
+            gap: 15px; 
+            text-align: center;
+        }
+        
+        .btn-group {
+            flex-direction: column; /* Stacks approve/reject buttons vertically if screen is very small */
+        }
+        .btn {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+
+    <header class="page-header">
+        <h2><i class="fas fa-calendar-alt"></i> Team Leave Requests</h2>
+        <div class="header-badge">Total Requests: {{ total_requests }}</div>
+    </header>
+    
+    <div class="filter-wrapper">
+        <form method="GET" class="filter-bar" id="filterForm">
+            <div class="search-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" id="searchInput" value="{{ request.GET.search|default:'' }}" placeholder="Search employee...">
+            </div>
+
+            <div class="status-select-wrapper">
+                <i class="fas fa-filter"></i>
+                <select name="status" id="statusSelect" class="status-select">
+                    <option value="">Status: All</option>
+                    <option value="PENDING" {% if request.GET.status == 'PENDING' %}selected{% endif %}>🕒 Pending</option>
+                    <option value="APPROVED" {% if request.GET.status == 'APPROVED' %}selected{% endif %}>✅ Approved</option>
+                    <option value="REJECTED" {% if request.GET.status == 'REJECTED' %}selected{% endif %}>❌ Rejected</option>
+                </select>
+            </div>
+
+            {% if request.GET.search or request.GET.status %}
+                <a href="?" class="reset-btn" title="Reset Filters"><i class="fas fa-undo-alt"></i></a>
+            {% endif %}
+
+            {% if total_requests %}
+            <div class="results-badge">
+                {{ total_requests }} results
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Role</th>
+                    <th>Leave From</th>
+                    <th>Leave To</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Decision</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in requests %}
+                <tr class="{% if l.is_updated %}row-updated{% endif %} leave-row">
+                    <td>
+                        <div class="user-cell searchable-name">
+                            <div class="avatar">{{ l.user.username|first|upper }}</div>
+                            <div>
+                                <span style="font-weight: 700; color: var(--deep-amethyst); display: block;">
+                                    {% if l.user.first_name %}{{ l.user.first_name }} {{ l.user.last_name }}{% else %}{{ l.user.username }}{% endif %}
+                                </span>
+                                <small style="color: #64748b;">@{{ l.user.username }}</small>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="role-badge">
+                            {{ l.user.groups.first.name|default:"Member"|cut:"_"|title }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="date-box">
+                            {% if l.old_from_date %}
+                                <span class="old-date">{{ l.old_from_date|date:"d M Y" }}</span>
+                            {% endif %}
+                            <span class="new-date">{{ l.from_date|date:"d M Y" }}</span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="date-box">
+                            {% if l.old_to_date %}
+                                <span class="old-date">{{ l.old_to_date|date:"d M Y" }}</span>
+                            {% endif %}
+                            <span class="new-date">{{ l.to_date|date:"d M Y" }}</span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="reason-text">"{{ l.reason|truncatechars:40 }}"</div>
+                    </td>
+
+                    <td>
+                        <span class="status-pill {{ l.status|lower }}">
+                            <i class="fas {% if l.status == 'PENDING' %}fa-clock{% elif l.status == 'APPROVED' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                            {{ l.status }}
+                        </span>
+                        {% if l.is_updated %}
+                            <br><span class="update-tag">UPDATED</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align: right;">
+                        {% if l.status == "PENDING" %}
+                            <div class="btn-group">
+                                <a href="{% url 'admin_approve_leave' l.id %}" class="btn btn-approve">
+                                    <i class="fas fa-check"></i> Approve
+                                </a>
+                                <a href="{% url 'admin_reject_leave' l.id %}" class="btn btn-reject">
+                                    <i class="fas fa-times"></i> Reject
+                                </a>
+                            </div>
+                        {% else %}
+                            <span style="font-weight: 700; color: #cbd5e1; font-size: 0.8rem;">PROCESSED</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-envelope-open fa-3x mb-3 d-block"></i>
+                        No team leave requests pending in the system.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if requests.has_other_pages %}
+    <div class="pagination-container">
+        <div class="page-info">
+            Showing Page {{ requests.number }} of {{ requests.paginator.num_pages }}
+        </div>
+        
+        <ul class="pagination">
+            {% if requests.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ requests.previous_page_number }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}"><i class="fas fa-chevron-left"></i></a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+            {% endif %}
+
+            {% for num in requests.paginator.page_range %}
+                {% if requests.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                {% elif num > requests.number|add:'-3' and num < requests.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if requests.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ requests.next_page_number }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}"><i class="fas fa-chevron-right"></i></a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <a href="javascript:history.back()" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterForm = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const statusSelect = document.getElementById("statusSelect");
+
+        // 1. Instantly trigger form submission when Dropdown is changed (for database filtering)
+        statusSelect.addEventListener("change", function() {
+            filterForm.submit();
+        });
+
+        // 2. Instant In-Browser Search (Filters rows dynamically without reloading)
+        searchInput.addEventListener("input", function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll(".leave-row");
+            
+            rows.forEach(row => {
+                const nameElement = row.querySelector(".searchable-name");
+                if (nameElement) {
+                    const nameText = nameElement.textContent.toLowerCase();
+                    // Matches on first name, last name, or username
+                    if (nameText.includes(query)) {
+                        row.style.display = ""; 
+                    } else {
+                        row.style.display = "none"; 
+                    }
+                }
+            });
+        });
+
+        // 3. Prevent Enter Key from reloading the page
+        searchInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

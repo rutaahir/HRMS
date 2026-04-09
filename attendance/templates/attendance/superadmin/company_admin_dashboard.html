@@ -1,0 +1,116 @@
+{% extends 'base.html' %} {% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row align-items-center mb-4" style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #007bff;">
+        <div class="col-md-8">
+            <h2 class="mb-0">Managing: <strong>{{ company.name }}</strong></h2>
+            <p class="text-muted">Slug: <code>{{ company.slug }}</code> | Unique Management Dashboard</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'superadmin_dashboard' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to All Companies
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <h5>Total Employees</h5>
+                    <h2 class="display-4">{{ employees.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h5>Dynamic Roles</h5>
+                    <h2 class="display-4">{{ roles.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white shadow text-center">
+                <div class="card-body">
+                    <h5>Quick Actions</h5>
+                    <a href="{% url 'company_create_role' company.slug %}" class="btn btn-light btn-block mb-2 w-100">
+                        <i class="fas fa-plus-circle"></i> Create New Role
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-dark text-white">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-user-tag"></i> Active Roles in {{ company.name }}</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Role Name (Group)</th>
+                                    <th>Permissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for role in roles %}
+                                <tr>
+                                    <td><span class="badge bg-warning text-dark">{{ role.name }}</span></td>
+                                    <td>{{ role.permissions.count }} perms</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="2" class="text-center">No dynamic roles created yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-dark text-white d-flex justify-content-between">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-users"></i> Employee List & Admin Assignment</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Current Role</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for profile in employees %}
+                                <tr>
+                                    <td>{{ profile.user.username }}</td>
+                                    <td>{{ profile.group_role.name|default:"No Role Assigned" }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'company_assign_admin' company.slug %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="user_id" value="{{ profile.user.id }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Make Admin</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center">No employees registered yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

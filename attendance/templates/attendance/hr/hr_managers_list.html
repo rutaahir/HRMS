@@ -1,0 +1,270 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    /* ===== ULTIMATE AMETHYST THEME ===== */
+    :root {
+        --primary: #540863;
+        --secondary: #92487A;
+        --accent: #E49BA6;
+        --bg-color: #FFD3D5;
+        --surface: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    body { background-color: var(--bg-color); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-main); }
+
+    /* HEADER */
+    .dashboard-header {
+        background: var(--gradient); padding: 3rem 0 5rem;
+        color: white; border-radius: 0 0 40px 40px; margin-bottom: -4rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .glass-title-card {
+        background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+        padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); display: inline-block;
+    }
+
+    /* CONTAINER */
+    .main-container { max-width: 1200px; margin: 0 auto 3rem; padding: 0 1.5rem; }
+
+    .content-card {
+        background: var(--surface); border-radius: 24px; box-shadow: var(--shadow-lg);
+        overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* TABLE */
+    .table-responsive { overflow-x: auto; }
+    .pro-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .pro-table thead th {
+        background: #f8fafc; color: var(--secondary); font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.8px; font-size: 0.75rem; padding: 1.25rem 1.5rem; border-bottom: 2px solid var(--border);
+    }
+    .pro-table td { padding: 1.25rem 1.5rem; vertical-align: middle; border-bottom: 1px solid var(--border); color: var(--text-main); }
+
+    /* AVATARS & BADGES */
+    .avatar-box {
+        width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+        color: var(--primary); display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-btn {
+        background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px;
+        font-weight: 600; color: var(--primary); cursor: pointer; transition: 0.2s;
+        box-shadow: var(--shadow-md); display: inline-flex; align-items: center; gap: 8px;
+    }
+    .badge-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); border-color: var(--primary); }
+
+    .btn-view-report {
+        background: var(--surface); color: var(--secondary); font-weight: 600; padding: 8px 16px;
+        border-radius: 10px; border: 1px solid #e2e8f0; transition: all 0.2s; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-view-report:hover { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+    /* MODAL STYLING */
+    .modal-content-pro { border: none; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
+    .modal-header-pro { background: var(--gradient); color: white; padding: 1.5rem; border: none; }
+    
+    .staff-list-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); transition: 0.2s;
+    }
+    .staff-list-item:hover { background-color: #f8fafc; }
+
+    /* BUTTONS */
+    .btn-action-tl {
+        font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; font-weight: 700;
+        text-transform: uppercase; border: none; cursor: pointer; transition: 0.2s;
+        background: #dbeafe; color: #1e40af;
+    }
+    .btn-action-tl:hover { background: #1e40af; color: white; }
+
+    .btn-revoke-tl {
+        font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; font-weight: 700;
+        text-transform: uppercase; border: none; cursor: pointer; transition: 0.2s;
+        background: #fee2e2; color: #991b1b; text-decoration: none; margin-left: 8px;
+    }
+    .btn-revoke-tl:hover { background: #991b1b; color: white; }
+
+</style>
+
+<div class="dashboard-header">
+    <div class="container main-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="glass-title-card animate__animated animate__fadeInLeft">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-users-cog fa-2x"></i>
+                    <div>
+                        <h2 class="mb-0 fw-bold">Managers Directory</h2>
+                        <p class="mb-0 opacity-75 small">Manage roles & view reports</p>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'hr_dashboard_view' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm animate__animated animate__fadeInRight">
+                <i class="fas fa-arrow-left me-2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="main-container animate__animated animate__fadeInUp">
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="pro-table">
+                <thead>
+                    <tr>
+                        <th>Manager Profile</th>
+                        <th>Contact Details</th>
+                        <th>Team Strength</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in managers %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-box">
+                                    {% if m.manager_user.first_name %}
+                                        {{ m.manager_user.first_name|first|upper }}
+                                    {% else %}
+                                        {{ m.manager_user.username|first|upper }}
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark fs-6">
+                                        {% if m.manager_user.first_name %}
+                                            {{ m.manager_user.first_name }} {{ m.manager_user.last_name }}
+                                        {% else %}
+                                            {{ m.manager_user.username }}
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge bg-light text-muted border">Manager</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-muted fw-medium"><i class="far fa-envelope me-2"></i>{{ m.email }}</div>
+                        </td>
+                        <td>
+                            <button type="button" class="badge-btn" data-bs-toggle="modal" data-bs-target="#modal-{{ m.id }}">
+                                <div class="bg-light rounded-circle p-1"><i class="fas fa-users text-primary"></i></div>
+                                <span>{{ m.team_count }} Staff</span>
+                            </button>
+                        </td>
+                        <td class="text-end">
+                            <a href="/attendance/monthly/?user={{ m.id }}" class="btn-view-report">
+                                <i class="fas fa-file-alt"></i> Report
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <div class="text-muted opacity-50">
+                                <i class="fas fa-user-slash fa-3x mb-3"></i>
+                                <h5>No managers found.</h5>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for m in managers %}
+<div class="modal fade" id="modal-{{ m.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-content-pro">
+            <div class="modal-header-pro d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0">Team Details</h5>
+                    <small class="opacity-75">Manager: {{ m.manager_user.first_name|default:m.manager_user.username }}</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-0">
+                <div style="max-height: 400px; overflow-y: auto;">
+                    {% for member in m.team_list %}
+                    <div class="staff-list-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-box" style="width: 40px; height: 40px; font-size: 0.9rem; background: #f1f5f9; color: #64748b;">
+                                {{ member.user.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark">
+                                    {% if member.user.first_name %}
+                                        {{ member.user.first_name }} {{ member.user.last_name }}
+                                    {% else %}
+                                        {{ member.user.username }}
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">{{ member.user.email }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            {% if member.is_team_leader %}
+                                
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                                    <i class="fas fa-crown me-1"></i> Team Leader
+                                </span>
+
+                                {% if team_leader_role_exists %}
+                                <form action="{% url 'revoke_team_leader' member.user.id %}" method="POST" class="m-0" onsubmit="return confirm('Demote this Team Leader back to Employee?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-revoke-tl" title="Revoke Team Leader Role">
+                                        <i class="fas fa-times"></i> Revoke
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                            {% else %}
+                                
+                                <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">Employee</span>
+                                
+                                {% if team_leader_role_exists %}
+                                    <form action="{% url 'make_team_leader' member.user.id %}" method="POST" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-action-tl">
+                                            Make TL <i class="fas fa-level-up-alt ms-1"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-folder-open fa-2x mb-3 opacity-25"></i>
+                        <p>No team members found under this manager.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-light fw-bold text-muted rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

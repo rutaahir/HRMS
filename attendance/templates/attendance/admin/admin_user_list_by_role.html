@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company.name }} — {{ role|title }} Directory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        /* MODAL STYLES */
+    .squad-modal-header {
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+    }
+    .squad-member-row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px; border-bottom: 1px solid #f1f5f9;
+    }
+    .squad-member-row:last-child { border-bottom: none; }
+    .btn-squad-trigger {
+        background: #e0f2fe; color: #0284c7; padding: 6px 14px;
+        border-radius: 12px; font-weight: bold; font-size: 0.8rem;
+        border: 1px solid #bae6fd; cursor: pointer; transition: 0.2s;
+    }
+    .btn-squad-trigger:hover { background: #bae6fd; transform: translateY(-2px); }
+    </script>
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* મુખ્ય થીમ બેકગ્રાઉન્ડ */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .count-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== TABLE CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 45px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.05);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        .email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Role Tag */
+        .role-tag {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            background: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-settings {
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+        }
+
+        .btn-settings:hover {
+            background: var(--blush-pink);
+            color: white;
+        }
+
+        .footer-actions {
+            margin-top: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .page-header { flex-direction: column; text-align: center; gap: 15px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Hide email on mobile */
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <div>
+            <h2>{{ company.name }} — {{ role|title }} Users</h2>
+        </div>
+        <div class="count-badge">
+            <i class="fas fa-users"></i>
+            Total: {{ users|length }}
+        </div>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>User Identity</th>
+                    <th>Email Address</th>
+                    <th>Account Role</th>
+                    {% if role == 'TEAM LEADER' %}
+                <th>Reporting Manager</th>
+                <th>Squad Size</th>
+            {% endif %}
+                    <th>Attendance Log</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ u.user.username|first|upper }}</div>
+                            <div>
+                                <span class="username">@{{ u.user.username }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color: #64748b; font-size: 0.85rem;">{{ u.user.email }}</td>
+                    <td>
+                        <span class="role-tag">{{ u.role }}</span>
+                    </td>
+                    {% if role == 'TEAM LEADER' %}
+                <td>
+                    {% if u.manager %}
+                        <span style="font-weight: 600; color: var(--deep-amethyst);">
+                            <i class="fas fa-user-tie me-1"></i> {{ u.manager.username }}
+                        </span>
+                    {% else %}
+                        <span style="color: #999;">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 0.8rem;">
+                        {{ u.squad_count }} Members
+                    </span>
+                </td>
+            {% endif %}
+
+
+                    <td>
+                        <a href="/attendance/monthly/?user={{ u.user.id }}" class="btn btn-view">
+                            <i class="fas fa-calendar-check"></i> View Report
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                        No {{ role|title }} users found in the system.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer-actions">
+            <a href="/attendance/dashboard/admin/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+
+            <a href="/attendance/admin/manage-roles/" class="btn btn-settings">
+                <i class="fas fa-user-cog"></i> Manage All Roles
+            </a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

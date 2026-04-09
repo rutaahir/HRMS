@@ -1,0 +1,1464 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<style>
+    nav, .navbar, header, .menubar, #main-header {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 2. આખા બોડી સેક્શનને છેક ઉપર અડાડી દો */
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-top: 0 !important; /* Django base.html ની padding reset */
+    }
+
+    /* 3. Hero Section ને બળજબરીપૂર્વક Top 0 પર લાવો */
+    .hero-section {
+        position: relative;
+        top: -65px !important; /* આ આંકડો વધારવો-ઘટાડવો જ્યાં સુધી જગ્યા ના જાય (-80px ટ્રાય કરો) */
+        margin-top: 0 !important;
+        padding-top: 100px !important; /* કન્ટેન્ટને સેન્ટરમાં રાખવા માટે */
+        padding-bottom: 80px !important;
+        border-radius: 0 0 50px 50px;
+    }
+    
+
+    /* 4. કાર્ડ્સને પર્પલ વિભાગ સાથે સેટ કરો */
+    .dashboard-container {
+        margin-top: -160px !important; /* કાર્ડ્સને ઉપર ખેંચવા માટે */
+        position: relative;
+        z-index: 10;
+    }
+    /* ===== THEME CONFIGURATION ===== */
+    :root {
+        --color-primary: #540863;
+        --color-secondary: #92487A;
+        --color-accent: #E49BA6;
+        --color-light: #FFD3D5;
+        --color-bg: #F8F9FD;
+        --color-white: #FFFFFF;
+        --color-text-main: #1A1A1A;
+        --color-text-muted: #6B7280;
+        
+        --shadow-sm: 0 4px 6px rgba(84, 8, 99, 0.05);
+        --shadow-md: 0 10px 30px rgba(84, 8, 99, 0.08);
+        --shadow-lg: 0 20px 50px rgba(84, 8, 99, 0.15);
+        
+        --radius-lg: 24px;
+        --radius-md: 16px;
+    }
+
+    body {
+        background-color: #f3afb9;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--color-text-main);
+        overflow-x: hidden;
+    }
+
+    /* ===== 1. HERO SECTION ===== */
+    .hero-section {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        padding: 3rem 2rem 6rem 2rem;
+        border-radius: 0 0 50px 50px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .hero-bg-pattern {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .glass-badge {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ===== 2. METRICS & CARDS ===== */
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        margin-top: -5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .metric-card {
+        background: var(--color-white);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(255,255,255,0.8);
+        transition: transform 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .metric-card:hover { transform: translateY(-5px); }
+
+    .chart-container {
+        position: relative;
+        height: 180px;
+        width: 100%;
+    }
+
+    /* ===== 3. TABS & NAVIGATION ===== */
+    .nav-pills-custom {
+        background: var(--color-white);
+        padding: 0.5rem;
+        border-radius: 50px;
+        display: inline-flex;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+
+    .nav-pills-custom .nav-link {
+        color: var(--color-text-muted);
+        border-radius: 40px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills-custom .nav-link.active {
+        background: var(--color-primary);
+        color: var(--color-white);
+        box-shadow: 0 4px 15px rgba(84, 8, 99, 0.3);
+    }
+
+    /* ===== 4. TABLES & LISTS ===== */
+    .modern-table-card {
+        background: var(--color-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        border: 1px solid #F0F0F0;
+    }
+
+    .table-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #F0F0F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .modern-table th {
+        background: #FAFAFA;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #EEEEEE;
+    }
+    .modern-table td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #F9F9F9;
+        color: var(--color-text-main);
+    }
+    .modern-table tr:last-child td { border-bottom: none; }
+
+    /* ===== 5. UI COMPONENTS ===== */
+    .btn-gradient {
+        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-gradient:hover { box-shadow: 0 8px 20px rgba(84, 8, 99, 0.3); color: white; transform: translateY(-2px); }
+
+    .btn-glass-action {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #F8F9FA; color: var(--color-text-muted);
+        border: 1px solid #EEE;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+    .btn-glass-action:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .btn-glass-action.danger:hover { background: #DC2626; border-color: #DC2626; }
+    
+    .view-btn-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        background: linear-gradient(135deg, #540863 0%, #92487A 100%);
+        color: #ffffff !important;
+        text-decoration: none !important;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 50px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: 0 4px 15px rgba(84, 8, 99, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Hover Effect */
+    .view-btn-custom:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(84, 8, 99, 0.35);
+        background: linear-gradient(135deg, #92487A 0%, #540863 100%);
+    }
+
+    /* Icon Animation */
+    .view-btn-custom i {
+        font-size: 0.8rem;
+        transition: transform 0.3s ease;
+    }
+    .owner-premium-badge {
+        background: rgba(255, 215, 0, 0.15); /* Gold tint */
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        padding: 6px 16px 6px 8px;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease;
+        border-left: 4px solid #FFD700;
+    }
+
+    .owner-premium-badge:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 215, 0, 0.25);
+        box-shadow: 0 12px 40px rgba(255, 215, 0, 0.2);
+    }
+
+    .owner-icon {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #540863;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+    }
+
+    .owner-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .owner-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        color: #FFD700;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .owner-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1;
+    }
+    .view-btn-custom:hover i {
+        transform: translateX(4px);
+    }
+
+    /* Glossy Shine Effect */
+    .view-btn-custom::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(45deg);
+        transition: 0.5s;
+    }
+
+    .avatar-initials {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        background: var(--color-light);
+        color: var(--color-primary);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 1rem;
+    }
+
+    /* Weekday Selector */
+    .week-selector { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .week-check { display: none; }
+    .week-label {
+        width: 40px; height: 40px; border-radius: 50%;
+        border: 2px solid #EEE; background: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; color: #999; cursor: pointer; transition: 0.2s;
+    }
+    .week-check:checked + .week-label {
+        background: var(--color-primary); color: white; border-color: var(--color-primary);
+        box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+    }
+
+    /* Form Inputs */
+    .form-control-modern {
+        background: #F9FAFB; border: 1px solid #E5E7EB;
+        border-radius: 12px; padding: 12px 16px;
+        width: 100%; transition: 0.3s;
+    }
+    .form-control-modern:focus {
+        background: white; border-color: var(--color-accent);
+        outline: none; box-shadow: 0 0 0 3px rgba(228, 155, 166, 0.2);
+    }
+    /* mobile responsive */
+
+    /* Hero Section Mobile */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1rem 4rem 1rem !important;
+        top: -50px !important;
+    }
+    
+    .hero-section .container-fluid .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .hero-section h1.display-4 {
+        font-size: 2rem !important;
+    }
+    
+    .hero-section .glass-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+    
+    .owner-premium-badge {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+/* Cards Mobile Stacking */
+@media (max-width: 768px) {
+    .dashboard-container {
+        margin-top: -100px !important;
+        padding: 0 1rem;
+    }
+    
+    .row.g-4 {
+        --bs-gutter-y: 1rem;
+    }
+    
+    .metric-card {
+        padding: 1.2rem;
+    }
+    
+    .metric-card .chart-container {
+        height: 150px;
+    }
+}
+/* Mobile Tabs - Scrollable */
+@media (max-width: 768px) {
+    .nav-pills-custom {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding: 0.3rem;
+        border-radius: 30px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    
+    .nav-pills-custom::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+    
+    .nav-pills-custom .nav-link {
+        white-space: nowrap;
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+    
+    .nav-pills-custom .nav-link i {
+        margin-right: 6px;
+    }
+}
+/* Mobile Tables - Card View */
+@media (max-width: 768px) {
+    .modern-table,
+    .modern-table thead,
+    .modern-table tbody,
+    .modern-table th,
+    .modern-table td,
+    .modern-table tr {
+        display: block;
+    }
+    
+    .modern-table thead {
+        display: none; /* Hide headers on mobile */
+    }
+    
+    .modern-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 1rem;
+        background: white;
+    }
+    
+    .modern-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed #f0f0f0;
+    }
+    
+    .modern-table td:last-child {
+        border-bottom: none;
+    }
+    
+    .modern-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-text-muted);
+        font-size: 0.8rem;
+    }
+    
+    /* Add data-label attributes in HTML */
+
+    /* Mobile Buttons & Forms */
+@media (max-width: 768px) {
+    /* Assign Owner Section */
+    .assign-box-luxury {
+        flex-direction: column;
+        max-width: 100%;
+        padding: 12px;
+    }
+    
+    .assign-box-luxury select {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    
+    .btn-luxury-assign {
+        width: 100%;
+    }
+    
+    /* Employee Actions */
+    .emp-row td:last-child .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .emp-row td:last-child form {
+        width: 100%;
+    }
+    
+    .emp-row td:last-child select {
+        width: 100% !important;
+        margin-bottom: 5px;
+    }
+    
+    .emp-row td:last-child button {
+        width: 100%;
+    }
+    
+    /* Glass Action Buttons */
+    .btn-glass-action {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+/* Week Selector Mobile */
+@media (max-width: 768px) {
+    .week-selector {
+        gap: 4px;
+    }
+    
+    .week-label {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}
+/* Modal Mobile */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 10px;
+    }
+    
+    .modal-content {
+        border-radius: 16px !important;
+    }
+    
+    .modal-body {
+        padding: 1.2rem !important;
+    }
+}
+/* Mobile Typography */
+@media (max-width: 768px) {
+    h1.display-4 {
+        font-size: 2rem !important;
+    }
+    
+    h6.fw-bold {
+        font-size: 0.9rem !important;
+    }
+    
+    .small.text-muted {
+        font-size: 0.7rem !important;
+    }
+    
+    .badge {
+        font-size: 0.65rem !important;
+        padding: 4px 10px !important;
+    }
+}
+/* View Button Mobile */
+@media (max-width: 768px) {
+    .view-btn-custom {
+        padding: 6px 15px;
+        font-size: 0.8rem;
+    }
+    
+    .view-btn-custom span {
+        display: inline-block;
+    }
+}
+/* Owner Card Mobile */
+@media (max-width: 768px) {
+    .owner-card-luxury {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .stats-pill-group {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .stats-pill {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+    
+    .btn-reset-luxury {
+        margin-left: auto;
+    }
+}
+/* Mobile Grid */
+@media (max-width: 768px) {
+    .col-lg-4, .col-lg-6, .col-lg-8 {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+    
+    .g-4 {
+        --bs-gutter-x: 1rem;
+    }
+}
+/* Touch Optimization */
+@media (max-width: 768px) {
+    button, 
+    .btn, 
+    .nav-link,
+    .btn-glass-action,
+    .view-btn-custom,
+    select,
+    input[type="checkbox"] + label {
+        min-height: 44px; /* Apple's recommended touch target */
+    }
+    
+    .btn-glass-action {
+        min-width: 44px;
+    }
+    
+    select.form-select-sm {
+        height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+}
+
+</style>
+<div style="height: 0; margin-top: -80px; visibility: hidden;"></div>
+<div class="hero-section">
+    <div class="hero-bg-pattern"></div>
+    <div class="container-fluid px-lg-5">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 position-relative" style="z-index: 2;">
+            <div>
+                <a href="/attendance/dashboard/superadmin/" class="text-white text-decoration-none d-inline-flex align-items-center gap-2 mb-3 fw-bold opacity-75 hover-lift">
+                    <i class="fas fa-arrow-left"></i> Back to Superadmin
+                </a>
+                
+                <h1 class="display-4 fw-bold mb-3">{{ company.name }}</h1>
+                
+                <div class="d-flex gap-3 align-items-center flex-wrap">
+                    <span class="glass-badge"><i class="fas fa-fingerprint"></i> {{ company.slug }}</span>
+                    <span class="glass-badge">
+                        <i class="fas fa-users"></i> 
+                        {% with total_staff=admins_count|add:hr_count|add:managers_count|add:employees|length %}
+    {{ total_staff_count }} Staff Members
+{% endwith %}
+                    </span>
+                    
+                    {% if company_owner %}
+                    <div class="owner-premium-badge">
+                        <div class="owner-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="owner-details">
+                            <span class="owner-label">Company Owner</span>
+                            <span class="owner-name">
+                                {% if company_owner.user.first_name or company_owner.user.last_name %}
+                                    {{ company_owner.user.first_name }} {{ company_owner.user.last_name }}
+                                {% else %}
+                                    {{ company_owner.user.username|title }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-flex gap-3">
+                <button class="btn btn-light fw-bold px-4 py-2 rounded-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#createRoleModal">
+                    <i class="fas fa-plus-circle me-2" style="color: var(--color-primary);"></i> New Role
+                </button>
+                <a href="{% url 'manage_all_role_permissions' company.slug %}" class="btn btn-outline-light fw-bold px-4 py-2 rounded-4">
+                    <i class="fas fa-shield-alt me-2"></i> Permissions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="dashboard-container" >
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <div>
+                    <h6 class="text-uppercase text-muted fw-bold small ls-1">Company Overview</h6>
+                    <div class="d-flex justify-content-between align-items-end mt-2">
+                        <h2 class="display-6 fw-bold mb-0" style="color: var(--color-primary);">{{ employees.count }}</h2>
+                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold">+ Active</span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                    <div class="text-center">
+                        <span class="d-block fw-bold fs-5">{{ roles.count }}</span>
+                        <span class="small text-muted">Roles</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="d-block fw-bold fs-5">{{ branches|length }}</span>
+                        <span class="small text-muted">Branches</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="d-block fw-bold fs-5">{{ shifts.count }}</span>
+                        <span class="small text-muted">Shifts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-uppercase text-muted fw-bold small m-0">Workforce Breakdown</h6>
+                    <i class="fas fa-chart-pie text-muted"></i>
+                </div>
+                <div class="chart-container">
+                    <canvas id="roleChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <h6 class="text-uppercase text-muted fw-bold small mb-3">Quick Configuration</h6>
+                
+                <form action="{% url 'update_company_slug' company.slug %}" method="POST" class="mb-3">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-link text-muted"></i></span>
+                        <input type="text" name="company_slug" value="{{ company.slug }}" class="form-control bg-light border-start-0" placeholder="Slug">
+                        <button class="btn btn-dark"><i class="fas fa-check"></i></button>
+                    </div>
+                </form>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-light border text-start d-flex justify-content-between align-items-center" onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}/accounts/{{ company.slug }}/register/')">
+                        <span class="small"><i class="fas fa-user-plus me-2 text-primary"></i> Copy Register Link</span>
+                        <i class="far fa-copy text-muted"></i>
+                    </button>
+                    <button class="btn btn-light border text-start d-flex justify-content-between align-items-center" onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}/accounts/{{ company.slug }}/login/')">
+                        <span class="small"><i class="fas fa-sign-in-alt me-2 text-primary"></i> Copy Login Link</span>
+                        <i class="far fa-copy text-muted"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <ul class="nav nav-pills-custom" id="mainTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-staff">
+                    <i class="fas fa-users-cog me-2"></i> Staff & Identity
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-policy">
+                    <i class="fas fa-file-contract me-2"></i> Governance
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-ops">
+                    <i class="fas fa-sliders-h me-2"></i> Operations
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content pb-5">
+        
+        <div class="tab-pane fade show active" id="tab-staff">
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="modern-table-card h-100">
+                        <div class="table-header">
+                            <h6 class="fw-bold m-0 text-dark">Defined Roles</h6>
+                            <span class="badge bg-light text-dark">{{ roles.count }}</span>
+                        </div>
+                        <div style="max-height: 500px; overflow-y: auto;">
+                            <table class="modern-table">
+                                <tbody>
+                                    {% for role in roles %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold" style="color: var(--color-primary);">{{ role.name }}</div>
+                                            <div class="small text-muted mt-1 cursor-pointer" onclick="viewPerms('{{ role.name }}', 'perms-{{ role.id }}', '{% url 'manage_role_permissions' company.slug role.id %}')">
+                                                <i class="far fa-eye me-1"></i> View Access
+                                            </div>
+                                            <div id="perms-{{ role.id }}" class="d-none">
+                                                {% with p=role.role_permissions %}
+                                                    <ul class="list-unstyled mb-0 small">
+                                                        {% if p.can_manage_users %}<li><i class="fas fa-check text-success me-2"></i>Manage Users</li>{% endif %}
+                                                        {% if p.can_approve_attendance %}<li><i class="fas fa-check text-success me-2"></i>Approve Attendance</li>{% endif %}
+                                                        {% if p.can_view_reports %}<li><i class="fas fa-check text-success me-2"></i>View Reports</li>{% endif %}
+                                                    </ul>
+                                                {% endwith %}
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'delete_company_role' role.id %}" class="btn-glass-action danger" onclick="return confirm('Delete role?')"><i class="fas fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+
+                    <div class="modern-table-card mb-4">
+                        <div class="table-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold m-0">
+                                <i class="fas fa-users me-2 text-primary"></i> 
+                                Head Office Directory (No Branch)
+                            </h6>
+                            <span class="badge bg-primary-subtle text-primary border px-3">
+                                {{ employees|length }} Members
+                            </span>
+                        </div>
+                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Branch Name</th>
+                                        <th>Location</th>
+                                        <th>Staff Count</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for branch in branches %}
+                                    <tr>
+                                        <td data-label="Branch Name"class="fw-bold text-dark">{{ branch.name }}</td>
+                                        <td data-label="Location" class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ branch.location }}</td>
+                                        
+                                        <td data-label="Staff Count">
+                                            <span class="badge bg-light text-dark border">
+                                                {{ branch.manual_staff_count|default:0 }}
+                                            </span>
+                                        </td>
+                                        
+                                        <td data-label="Action" class="text-end">
+                                            <a href="{% url 'branch_detail' branch.id %}" class="view-btn-custom">
+                                                <span>View Details</span> <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="4" class="text-center text-muted py-3">No branches found.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
+                    
+                    <div class="modern-table-card h-100"style="max-height: 700px;">
+                        <div class="table-header bg-light" >
+                            <h6 class="fw-bold m-0"><i class="fas fa-users me-2 text-primary"></i> Employee Directory</h6>
+                            
+                            <style>
+                                .owner-assign-wrapper {
+                                    background: #fff;
+                                    padding: 4px;
+                                    border-radius: 50px;
+                                    border: 1px solid #e2e8f0;
+                                    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                                    display: flex;
+                                    align-items: center;
+                                    transition: 0.3s;
+                                    max-width: 320px; /* જરૂર મુજબ સાઈઝ સેટ કરો */
+                                    
+                                }
+                            
+                                .owner-assign-wrapper:hover {
+                                    box-shadow: 0 8px 20px rgba(84, 8, 99, 0.15);
+                                    border-color: #E49BA6;
+                                }
+                            
+                                .custom-select-owner {
+                                    border: none;
+                                    background: transparent;
+                                    font-weight: 600;
+                                    color: #540863;
+                                    padding-left: 15px;
+                                    box-shadow: none !important; /* Bootstrap shadow remove */
+                                }
+                                
+                                .custom-select-owner:focus {
+                                    border: none;
+                                    outline: none;
+                                }
+                            
+                                .btn-crown {
+                                    background: linear-gradient(135deg, #540863 0%, #92487A 100%);
+                                    color: white;
+                                    border-radius: 50px;
+                                    padding: 8px 20px;
+                                    border: none;
+                                    font-weight: 600;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    transition: 0.3s;
+                                    white-space: nowrap;
+                                }
+                            
+                                .btn-crown:hover {
+                                    transform: scale(1.05);
+                                    box-shadow: 0 4px 12px rgba(84, 8, 99, 0.3);
+                                    color: #fff;
+                                }
+                            
+                                .fa-crown {
+                                    color: #FFD700; /* Gold Color for Crown */
+                                    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+                                }
+                                /* ===== OWNER SECTION MODERN UI ===== */
+/* ===== ULTIMATE LUXURY OWNER SECTION ===== */
+.owner-card-luxury {
+    background: #FFD3D5 !important;
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 20px !important;
+    padding: 10px 15px !important;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 40px rgba(84, 8, 99, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.owner-card-luxury::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: #FFD3D5;
+    transition: 0.6s;
+}
+
+.owner-card-luxury:hover::before {
+    left: 100%;
+}
+
+.owner-card-luxury:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 20px 60px rgba(84, 8, 99, 0.12);
+}
+
+.vip-badge-outer {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #540863 0%, #92487A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFD700;
+    font-size: 1.3rem;
+    box-shadow: 0 8px 15px rgba(84, 8, 99, 0.2);
+}
+
+.owner-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.owner-meta .title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: var(--color-secondary);
+    margin-bottom: 2px;
+}
+
+.owner-meta .name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    letter-spacing: -0.5px;
+}
+
+.stats-pill-group {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.stats-pill {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #540863;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-reset-luxury {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-reset-luxury:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: rotate(90deg);
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* Assign Form Luxury */
+.assign-box-luxury {
+    background: #92487A;
+    color: white;
+    border: 2px solid #F3F4F6;
+    border-radius: 20px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 450px;
+}
+.btn-glass-action.danger {
+    color: #DC2626;
+    background: #FEF2F2;
+    border: 1px solid #FEE2E2;
+}
+
+.btn-glass-action.danger:hover {
+    background: #DC2626;
+    color: white;
+    border-color: #DC2626;
+}
+.luxury-select {
+    border: none !important;
+    font-weight: 600;
+    color: white;
+    background: transparent !important;
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+.btn-luxury-assign {
+    background: #FFD3D5;
+    color: black;
+    padding: 10px 25px;
+    border-radius: 15px;
+    font-weight: 700;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-luxury-assign:hover {
+    background: #ebb5b8;
+    transform: scale(1.02);
+}
+                            </style>
+                            
+                            <!-- <form action="{% url 'assign_company_owner' company.slug %}" method="POST">
+                                {% csrf_token %}
+                                <div class="owner-assign-wrapper">
+                                    <select name="user_id" class="form-select form-select-sm custom-select-owner" required>
+                                        <option value="" selected disabled>Select New Owner...</option>
+                                        {% for e in employees %}
+                                            <option value="{{ e.user.id }}">{{ e.user.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                            
+                                    <button type="submit" class="btn-crown" title="Assign Ownership">
+                                        <span>Assign</span> <i class="fas fa-crown"></i>
+                                    </button>
+                                </div>
+                            </form> -->
+
+                            <div class="table-header bg-light d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold m-0 text-muted small text-uppercase ls-1">Authority Management</h6>
+                                
+                                {% if company_owner %}
+                                    <div class="owner-card-luxury">
+                                        <div class="vip-badge-outer">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                        
+                                        <div class="owner-meta">
+                                            <span class="title">Company Owner</span>
+                                            <span class="name">
+                                                {% if company_owner.user.first_name %}
+                                                    {{ company_owner.user.first_name }} {{ company_owner.user.last_name }}
+                                                {% else %}
+                                                    {{ company_owner.user.username }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                            
+                                        <div class="stats-pill-group">
+                                            <div class="stats-pill">
+                                                <i class="fas fa-layer-group"></i>
+                                                {{ branches|length }} Branches
+                                            </div>
+                                            <div class="stats-pill">
+                                                <i class="fas fa-user-shield"></i>
+                                                Owner Access
+                                            </div>
+                                        </div>
+                            
+                                        <a href="{% url 'delete_company_owner' company.id %}" 
+                                           class="btn-reset-luxury" 
+                                           title="Reset Ownership"
+                                           onclick="return confirm('DANGER: This action will wipe all branches, roles, and assignments. Continue?')">
+                                            <i class="fas fa-power-off"></i>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <form action="{% url 'assign_company_owner' company.slug %}" method="POST" class="w-100 d-flex justify-content-end">
+                                        {% csrf_token %}
+                                        <div class="assign-box-luxury">
+                                            <select name="user_id" class="form-select luxury-select shadow-none" required>
+                                                <option value="" selected disabled>Identify New Owner...</option>
+                                                {% for e in employees %}
+                                                    <option value="{{ e.user.id }}" style="background: #f3a5a9;">{{ e.user.username|title }}</option>
+                                                {% empty %}
+                                                    <option disabled>No employees available to promote</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="btn-luxury-assign">
+                                                Establish Ownership
+                                            </button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+
+
+                            
+                        </div>
+                        
+                        <div class="table-responsive" style="max-height: 500px;">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Current Role</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in employees %}
+                                    {% if e.user.id != company_owner.user.id %}
+                                            <tr class="emp-row">
+                                                <td data-label="Employee">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="avatar-initials">{{ e.user.username|slice:":1"|upper }}</div>
+                                                        <div>
+                                                            <div class="fw-bold text-dark">{{ e.user.username }}</div>
+                                                            <div class="small text-muted">{{ e.user.email }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Current Role">
+                                                    {% for group in e.user.groups.all %}
+                                                        <span class="badge rounded-pill bg-light text-dark border px-3">{{ group.name }}</span>
+                                                    {% empty %}
+                                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger px-3">No Role</span>
+                                                    {% endfor %}
+                                                </td>
+                                                <td class="text-end" data-label="Actions">
+                                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                                        <form action="{% url 'company_assign_role' company.slug e.user.id %}" method="POST" class="d-inline-flex gap-1">
+                                                            {% csrf_token %}
+                                                            <select name="group_id" class="form-select form-select-sm" style="width: 130px;">
+                                                                <option value="">Revoke</option>
+                                                                {% for r in roles %}<option value="{{ r.id }}">{{ r.name }}</option>{% endfor %}
+                                                            </select>
+                                                            <button class="btn btn-sm btn-primary" title="Update Role"><i class="fas fa-check"></i></button>
+                                                        </form>
+                        
+                                                        <a href="{% url 'safe_delete_user' e.user.id %}" 
+                                                           class="btn-glass-action danger" 
+                                                           title="Permanently Delete User"
+                                                           onclick="return confirm('Are you sure you want to PERMANENTLY delete {{ e.user.username }}? This will clear all attendance, leadership links, and login access.')">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="tab-policy">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="modern-table-card text-center p-5 h-100">
+                        <i class="fas fa-calendar-check fa-3x mb-3" style="color: var(--color-accent);"></i>
+                        <h4 class="fw-bold" style="color: var(--color-primary);">Week-Off Policy</h4>
+                        <p class="text-muted mb-4">Select the default non-working days for this company.</p>
+                        
+                        <form action="{% url 'update_weekoff_policy' company.slug %}" method="POST">
+                            {% csrf_token %}
+                            <div class="week-selector mb-4">
+                                {% for p in policies %}
+                                    <input type="checkbox" name="week_off" value="0" id="d0" class="week-check" {% if '0' in p.week_off_days %}checked{% endif %}><label for="d0" class="week-label">M</label>
+                                    <input type="checkbox" name="week_off" value="1" id="d1" class="week-check" {% if '1' in p.week_off_days %}checked{% endif %}><label for="d1" class="week-label">T</label>
+                                    <input type="checkbox" name="week_off" value="2" id="d2" class="week-check" {% if '2' in p.week_off_days %}checked{% endif %}><label for="d2" class="week-label">W</label>
+                                    <input type="checkbox" name="week_off" value="3" id="d3" class="week-check" {% if '3' in p.week_off_days %}checked{% endif %}><label for="d3" class="week-label">T</label>
+                                    <input type="checkbox" name="week_off" value="4" id="d4" class="week-check" {% if '4' in p.week_off_days %}checked{% endif %}><label for="d4" class="week-label">F</label>
+                                    <input type="checkbox" name="week_off" value="5" id="d5" class="week-check" {% if '5' in p.week_off_days %}checked{% endif %}><label for="d5" class="week-label">S</label>
+                                    <input type="checkbox" name="week_off" value="6" id="d6" class="week-check" {% if '6' in p.week_off_days %}checked{% endif %}><label for="d6" class="week-label">S</label>
+                                {% empty %}
+                                    <p class="text-danger small">No policy created yet.</p>
+                                {% endfor %}
+                            </div>
+                            <button class="btn btn-gradient w-100">Update Schedule</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="modern-table-card h-100">
+                        <div class="table-header">
+                            <h6 class="fw-bold m-0">Attendance Rules</h6>
+                            <a href="{% url 'company_add_policy' company.slug %}" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fas fa-plus"></i> Add New</a>
+                        </div>
+                        <div class="p-4">
+                            {% for p in policies %}
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span class="text-muted">Required Work Hours</span>
+                                    <span class="fw-bold fs-5" style="color: var(--color-primary);">{{ p.work_hours_required }} Hrs</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span class="text-muted">Late Mark After</span>
+                                    <span class="fw-bold text-danger">{{ p.late_after_minutes }} Mins</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Grace Period</span>
+                                    <span class="fw-bold text-success">{{ p.grace_time_minutes }} Mins</span>
+                                </div>
+                                <div class="mt-4 text-end">
+                                    <a href="{% url 'company_edit_policy' p.id %}" class="btn btn-sm btn-light border"><i class="fas fa-pen me-2"></i>Edit Rules</a>
+                                </div>
+                            {% empty %}
+                                <div class="text-center py-4 text-muted">No rules defined.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="modern-table-card">
+                        <div class="table-header">
+                            <h6 class="fw-bold m-0"><i class="fas fa-umbrella-beach me-2 text-warning"></i> Holidays</h6>
+                            <a href="{% url 'company_add_holiday' company.slug %}" class="btn btn-sm btn-primary rounded-pill">Add Holiday</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead><tr><th>Date</th><th>Occasion</th><th class="text-end">Action</th></tr></thead>
+                                <tbody>
+                                    {% for h in holidays %}
+                                    <tr>
+                                        <td class="fw-bold text-primary">{{ h.date }}</td>
+                                        <td>{{ h.name }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'company_edit_holiday' h.id %}" class="btn-glass-action me-1"><i class="fas fa-pen"></i></a>
+                                            <a href="{% url 'company_delete_holiday' h.id %}" class="btn-glass-action danger"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="3" class="text-center py-4 text-muted">No holidays found.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="tab-ops">
+            <div class="modern-table-card">
+                <div class="table-header bg-light">
+                    <h6 class="fw-bold m-0"><i class="fas fa-clock me-2 text-info"></i> Shifts Management</h6>
+                    <a href="{% url 'company_add_shift' company.slug %}" class="btn btn-gradient">Add Shift</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead><tr><th>Shift Name</th><th>Timing</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                            {% for s in shifts %}
+                            <tr>
+                                <td class="fw-bold">{{ s.name }}</td>
+                                <td><span class="badge bg-light text-dark border" style="font-size: 15px;">{{ s.start_time }} - {{ s.end_time }}</span></td>
+                                <td class="text-end">
+                                    <a href="{% url 'company_edit_shift' s.id %}" class="btn-glass-action me-1"><i class="fas fa-pen"></i></a>
+                                    <a href="{% url 'company_delete_shift' s.id %}" class="btn-glass-action danger"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center py-5 text-muted">No shifts configuration found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="createRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header text-white" style="background: var(--color-primary);">
+                <h5 class="modal-title fw-bold">Create Dynamic Role</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" action="{% url 'create_company_role' company.slug %}">
+                    {% csrf_token %}
+                    <label class="form-label fw-bold">Role Name</label>
+                    <select class="form-control-modern mb-3" name="role_name" id="roleSelect" onchange="applyTemplate(this.value)" required>
+                        <option value="" selected disabled>Select...</option>
+                        <option value="Admin">Admin</option>
+                        <option value="HR">HR</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Team Leader">Team Leader</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                    
+                    <div class="d-none">
+                        <input type="checkbox" name="permissions" value="can_manage_users" id="perm_manage">
+                        <input type="checkbox" name="permissions" value="can_approve_attendance" id="perm_approve_att">
+                        <input type="checkbox" name="permissions" value="can_approve_leave" id="perm_approve_leave">
+                        <input type="checkbox" name="permissions" value="can_view_reports" id="perm_reports">
+                        <input type="checkbox" name="permissions" value="can_view_team" id="perm_team">
+                        <input type="checkbox" name="permissions" value="can_self_access" id="perm_self">
+                        <input type="checkbox" name="permissions" value="can_view_policy" id="perm_policy">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gradient w-100 mt-3">Create Role</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewPermsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" style="color: var(--color-primary);">Role Access</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="viewPermBody"></div>
+                <div id="viewPermFooter" class="mt-4 pt-3 border-top"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Chart.js Logic for ALL Company Staff
+    document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('roleChart');
+    if (ctx) {
+        // Django વેરીએબલ્સને સાચી રીતે પાસ કરવા માટે
+        const dataValues = [
+            {{ admins_count|default:0 }},
+            {{ hr_count|default:0 }},
+            {{ managers_count|default:0 }},
+            {{ ho_emp_count|default:0 }}, 
+            {{ total_staff_count|default:0 }}
+        ];
+
+        const dataLabels = ['Admins', 'HR', 'Managers', 'HO Employees', 'Total Staff'];
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: dataLabels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: ['#540863', '#92487A', '#E49BA6', '#FFD3D5', '#CBD5E1'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right', 
+                        labels: { 
+                            usePointStyle: true, 
+                            boxWidth: 8,
+                            font: { size: 11, family: 'Plus Jakarta Sans' }
+                        } 
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+});
+    // 2. Permission Modal Logic
+    function viewPerms(roleName, elementId, editUrl) {
+        document.getElementById('viewPermBody').innerHTML = document.getElementById(elementId).innerHTML;
+        // document.getElementById('viewPermFooter').innerHTML = `
+        //     <a href="${editUrl}" class="btn btn-sm btn-outline-dark w-100 rounded-pill">Edit Permissions</a>
+        // `;
+        new bootstrap.Modal(document.getElementById('viewPermsModal')).show();
+    }
+
+    // 3. Permission Auto-Select Logic (Original Functionality)
+    function applyTemplate(role) {
+        // Reset
+        const ids = ['perm_manage', 'perm_approve_att', 'perm_approve_leave', 'perm_reports', 'perm_team', 'perm_self', 'perm_policy'];
+        ids.forEach(id => { if(document.getElementById(id)) document.getElementById(id).checked = false; });
+
+        // Apply Defaults
+        if(document.getElementById('perm_self')) document.getElementById('perm_self').checked = true;
+        if(document.getElementById('perm_policy')) document.getElementById('perm_policy').checked = true;
+
+        if (role === 'Admin') ids.forEach(id => { if(document.getElementById(id)) document.getElementById(id).checked = true; });
+        else if (role === 'HR') ['perm_manage', 'perm_approve_att', 'perm_approve_leave', 'perm_reports'].forEach(id => document.getElementById(id).checked = true);
+        else if (role === 'Manager') ['perm_approve_att', 'perm_approve_leave', 'perm_team'].forEach(id => document.getElementById(id).checked = true);
+        else if (role === 'Team Leader') if(document.getElementById('perm_team')) document.getElementById('perm_team').checked = true;
+    }
+
+    // 4. Utility: Copy to Clipboard
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        alert("Link copied: " + text); // Simple feedback
+    }
+</script>
+
+{% endblock %}

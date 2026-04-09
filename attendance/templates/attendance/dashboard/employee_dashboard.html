@@ -1,0 +1,764 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* ===== EXACT AMETHYST OLD CSS (COPIED AS IT IS) ===== */
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --primary-gradient: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        --accent-gradient: linear-gradient(135deg, var(--royal-purple) 0%, var(--blush-pink) 100%);
+        --soft-shadow: 0 10px 30px rgba(84, 8, 99, 0.08);
+    }
+
+    .dashboard-wrapper {
+        background-color: var(--pale-blush);
+        min-height: 100vh;
+        padding-bottom: 3rem;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .dashboard-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 3rem 0;
+        border-radius: 0 0 40px 40px;
+        box-shadow: 0 15px 35px rgba(84, 8, 99, 0.2);
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .welcome-card {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(15px);
+        border-radius: 25px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stats-container {
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 22px;
+        padding: 1.8rem;
+        box-shadow: var(--soft-shadow);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        text-align: center;
+        height: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15);
+    }
+
+    .stat-icon {
+        width: 60px; height: 60px; border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin: 0 auto 1.2rem;
+        background: var(--pale-blush); color: var(--deep-amethyst);
+    }
+
+    .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--deep-amethyst); line-height: 1.2; margin-bottom: 0.3rem; }
+    .stat-label { font-size: 0.9rem; font-weight: 600; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .attendance-panel {
+        background: var(--white);
+        border-radius: 28px;
+        padding: 2.5rem;
+        box-shadow: var(--soft-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .panel-title {
+        color: var(--deep-amethyst);
+        font-weight: 700;
+        border-left: 5px solid var(--royal-purple);
+        padding-left: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .time-circle {
+        width: 130px; height: 130px; border-radius: 30px;
+        background: var(--white); border: 4px solid var(--royal-purple);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--deep-amethyst); font-size: 2.8rem; font-weight: 800;
+        margin: 0 auto; box-shadow: 0 10px 25px rgba(146, 72, 122, 0.15);
+    }
+
+    .action-card {
+        background: #fdfaff; border-radius: 22px; padding: 1.8rem;
+        text-align: center; border: 1px solid #f1e6f5;
+        transition: 0.3s; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .action-card:hover { background: var(--white); border-color: var(--blush-pink); transform: translateY(-8px); }
+
+    .action-icon {
+        background: var(--primary-gradient); color: white;
+        width: 65px; height: 65px; border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.2rem; font-size: 1.5rem;
+    }
+
+    .btn-glow {
+        background: var(--primary-gradient); color: white; border: none;
+        padding: 15px 30px; border-radius: 16px; font-weight: 700;
+        box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2); transition: 0.3s;
+    }
+
+    .task-card {
+        background: #ffffff; border-radius: 20px; padding: 1.5rem;
+        border-left: 6px solid #e2e8f0; transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .priority-high-border { border-left-color: #ef4444 !important; }
+    .priority-medium-border { border-left-color: #f59e0b !important; }
+    .btn-task-done { background: #10b981; color: white; border: none; padding: 8px 18px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; transition: 0.2s; }
+
+    .btn-tl-switch {
+        background: rgba(255, 255, 255, 0.15); 
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff !important;
+        padding: 12px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        margin-top: 15px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    /* ===== NEW: ULTRA PROFESSIONAL MOBILE MEDIA QUERIES ===== */
+    @media (max-width: 991px) {
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 2rem 1rem 4rem 1rem; 
+            border-radius: 0 0 30px 30px;
+            text-align: center;
+        }
+        
+        .glass-welcome {
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .glass-welcome .d-flex.align-items-center,
+        .glass-welcome .lead {
+            justify-content: center;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem;
+        }
+
+        /* 2x2 Stats Grid for Mobile */
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 12px;
+            margin-top: -45px;
+            padding: 0 10px;
+        }
+
+        .stat-card {
+            padding: 1rem 0.5rem;
+            border-radius: 16px;
+        }
+
+        .stat-icon {
+            width: 42px; height: 42px; font-size: 1.1rem; margin-bottom: 0.6rem;
+            border-radius: 12px;
+        }
+
+        .stat-value { font-size: 1.25rem; margin-bottom: 0.2rem; }
+        .stat-label { font-size: 0.65rem; letter-spacing: 0; }
+
+        /* Header Clock */
+        .time-circle {
+            width: 80px; height: 80px; font-size: 1.5rem; margin: 0 auto;
+            border-width: 3px; border-radius: 20px;
+        }
+
+        /* Panels & Feature Cards */
+        .attendance-panel {
+            padding: 1.2rem;
+            border-radius: 20px;
+        }
+
+        .action-card {
+            padding: 1.2rem 0.5rem;
+            border-radius: 16px;
+        }
+
+        .action-icon {
+            width: 42px; height: 42px; font-size: 1.1rem; margin-bottom: 0.6rem;
+            border-radius: 12px;
+        }
+        
+        .action-card h6 {
+            font-size: 0.75rem !important;
+        }
+
+        .timeline-container {
+            margin-left: 0 !important;
+            margin-top: 1.5rem;
+        }
+
+        .progress-ring svg {
+            width: 120px; height: 120px;
+        }
+
+        .progress-ring div[style*="margin-top"] {
+            margin-top: -80px !important;
+            font-size: 1.2rem !important;
+        }
+    }
+
+    @media (max-width: 400px) {
+        /* Ensure it STAYS 2x2 on extremely small screens */
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px;
+            padding: 0 8px;
+        }
+        
+        .stat-card { padding: 0.8rem 0.4rem; }
+        .stat-value { font-size: 1.1rem; }
+        .stat-label { font-size: 0.6rem; }
+        
+        .action-card { padding: 1rem 0.4rem; }
+        .action-card h6 { font-size: 0.65rem !important; }
+        
+        .btn-tl-switch {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+    }
+  
+
+.w-100 {
+    width: 65% !important;
+}
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center flex-column-reverse flex-lg-row">
+                <div class="col-lg-8 mt-4 mt-lg-0">
+                    <div class="glass-welcome animate__animated animate__fadeInLeft">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-25 px-3 py-2 rounded-pill fw-bold">
+                                <i class="fas fa-crown me-2"></i> Team Leader
+                            </span>
+                        </div>
+                        <h1 class="display-6 fw-bold mb-2" id="greeting">
+                            Hello, 
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name|title }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}! 👑
+                        </h1>
+                        
+                        <p class="lead mb-0 opacity-90 d-flex flex-wrap align-items-center gap-2 fs-6">
+                            <span><i class="fas fa-calendar-day me-2"></i> {% now "l, F j, Y" %}</span>
+                            
+                            {% if profile.branch %}
+                                <span class="d-none d-md-inline mx-1">|</span>
+                                <span class="badge bg-white bg-opacity-25 rounded-pill px-3 py-2 fw-normal mt-2 mt-md-0 d-inline-block">
+                                    <i class="fas fa-map-marker-alt me-1"></i> 
+                                    {{ profile.branch.name }} ({{ profile.branch.location }})
+                                </span>
+                            {% endif %}
+                    
+                            <span class="d-none d-md-inline mx-1">|</span>
+                            <span class="mt-2 mt-md-0 d-inline-block">
+                                {% if is_team_leader %}
+                                    <i class="fas fa-crown text-warning me-1"></i> 
+                                    <span class="fw-bold text-warning">Team Leader</span>
+                                {% else %}
+                                    <i class="fas fa-user me-1"></i> 
+                                    {{ profile.role|default:"Team Member" }}
+                                {% endif %}
+                            </span>
+                        </p>
+                    
+                        {% if is_team_leader %}
+                            <a href="{% url 'tl_dashboard' company.slug %}" class="btn-tl-switch w-100 w-md-auto justify-content-center mt-3">
+                                <i class="fas fa-users-cog"></i> Switch to Team Leader View
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+                
+                <div class="col-lg-4 text-center text-lg-end mb-3 mb-lg-0">
+                    <div class="time-circle" id="liveClock">{% now "H:i" %}</div>
+                    <p class="mt-3 text-white-50 small fw-bold mb-0"> WORK TIME</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-container">
+            <div class="stat-card animate__animated animate__fadeInUp">
+                <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                <div class="stat-value">{% if attendance and attendance.check_in %}Present{% else %}Absent{% endif %}</div>
+                <div class="stat-label">Daily Status</div>
+            </div>
+            <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <div class="stat-icon" style="background: #fff7ed; color: #ea580c;"><i class="fas fa-sign-in-alt"></i></div>
+                <div class="stat-value">{{ attendance.check_in|time:"g:i A"|default:"--:--" }}</div>
+                <div class="stat-label">Grand Entry</div>
+            </div>
+            <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <div class="stat-icon" style="background: #fdf2f8; color: var(--secondary);"><i class="fas fa-sign-out-alt"></i></div>
+                <div class="stat-value">{{ attendance.check_out|time:"g:i A"|default:"--:--" }}</div>
+                <div class="stat-label">Departure</div>
+            </div>
+            <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-value">{{ work_hours|floatformat:1|default:"0.0" }}h</div>
+                <div class="stat-label">Productive Hours</div>
+            </div>
+        </div>
+
+        <div class="row mt-4 mt-lg-5 g-4">
+            <div class="col-lg-8">
+                <div class="attendance-panel mb-4">
+                    <h3 class="panel-title">My Today's Attendance</h3>
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center mb-4 mb-md-0">
+                            <div class="progress-ring mb-4">
+                                <svg width="140" height="140" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="#f1e6f5" stroke-width="10"></circle>
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--royal-purple)" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="{% widthratio work_hours|default:0 8 314 %}" transform="rotate(-90 60 60)"></circle>
+                                </svg>
+                                <div style="margin-top: -90px; font-size: 1.5rem; font-weight: 800; color: var(--deep-amethyst);">{{ work_hours|floatformat:1|default:0 }}h</div><br>
+                                <div class="text-muted small mt-4 fw-bold">Goal: 8.0 Hours</div>
+                            </div>
+                            <div>
+    {% if not attendance or not attendance.check_in %}
+        <form id="checkInForm" method="post" action="{% url 'check_in' company_slug=company.slug %}">
+            {% csrf_token %}
+            <input type="hidden" name="latitude" id="lat_in">
+            <input type="hidden" name="longitude" id="lng_in">
+            
+            <button type="button" onclick="getLocationAndSubmit('checkInForm', 'lat_in', 'lng_in')" class="btn-glow w-100 position-relative">
+                <i class="fas fa-sign-in-alt me-2" id="icon_checkInForm"></i> 
+                <span id="text_checkInForm">Check-In</span>
+                <span id="loading_checkInForm" class="spinner-border spinner-border-sm position-absolute" style="display:none; right: 15px; top: 15px;" role="status"></span>
+            </button>
+        </form>
+    {% elif not attendance.check_out %}
+        <form id="checkOutForm" method="post" action="{% url 'check_out' company_slug=company.slug %}">
+            {% csrf_token %}
+            <input type="hidden" name="latitude" id="lat_out">
+            <input type="hidden" name="longitude" id="lng_out">
+            
+            <button type="button" onclick="getLocationAndSubmit('checkOutForm', 'lat_out', 'lng_out')" class="btn-glow w-100 position-relative" style="background: var(--accent-gradient);">
+                <i class="fas fa-sign-out-alt me-2" id="icon_checkOutForm"></i> 
+                <span id="text_checkOutForm">Check-Out</span>
+                <span id="loading_checkOutForm" class="spinner-border spinner-border-sm position-absolute" style="display:none; right: 15px; top: 15px;" role="status"></span>
+            </button>
+        </form>
+    {% else %}
+        <button class="btn btn-secondary w-100 fw-bold rounded-3 py-2" disabled>Shift Completed</button>
+    {% endif %}
+</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="timeline-container ms-md-4">
+                                <div class="timeline-item border-start border-4 border-primary ps-3 mb-4"><h6 class="fw-bold mb-1">Check In Time</h6><p class="text-muted mb-0 small">{{ attendance.check_in|time:"g:i A"|default:"Not recorded" }}</p></div>
+                                <div class="timeline-item border-start border-4 border-info ps-3"><h6 class="fw-bold mb-1">Shift Schedule</h6><p class="text-muted mb-0 small">{{ shift.start_time|time:"g:i A"|default:"--:--" }} - {{ shift.end_time|time:"g:i A"|default:"--:--" }}</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if not is_team_leader %}
+                <h5 class="fw-bold text-muted mb-3 mt-5 px-2"><i class="fas fa-bullseye me-2 text-danger"></i>Active Tasks</h5>
+                <div class="row g-4 mb-5">
+                    {% for task in active_tasks %}
+                    <div class="col-md-6">
+                        <div class="task-card {% if task.obj.priority == 'High' %}priority-high-border{% else %}priority-medium-border{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="small fw-bold text-uppercase opacity-50">{{ task.obj.priority }} Priority</span>
+                                    
+                                    {% if task.is_team_task %}
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill ms-2 shadow-sm px-2" 
+                                          style="cursor: pointer; font-size: 0.65rem;" 
+                                          data-bs-toggle="modal" 
+                                          data-bs-target="#teamModal{{ task.obj.id }}">
+                                        <i class="fas fa-users me-1"></i> TEAM
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <span class="small fw-bold text-purple d-flex align-items-center gap-1">
+                                    <i class="far fa-clock"></i>
+                                    <span style="color:#81a4a7;">{{ task.obj.created_at|date:"h:i A" }}</span>
+                                </span>
+                            </div>
+                            
+                            <h6 class="fw-bold mb-2" style="color: var(--deep-amethyst);">{{ task.obj.title }}</h6>
+                            <p class="small text-muted mb-3">{{ task.obj.description|truncatechars:80 }}</p>
+
+                            <div class="small fw-bold text-muted mb-1">
+                                <i class="fas fa-calendar-plus me-1"></i> Assigned: {{ task.obj.created_at|date:"d M, Y" }}
+                            </div>
+                            <div class="small fw-bold text-danger mb-3">
+                                <i class="fas fa-clock me-1"></i> Deadline: {{ task.obj.due_date|date:"d M, H:i" }}
+                            </div>
+
+                            {% if task.obj.status == 'Rejected' %}
+                                <div class="mb-3 p-2 bg-danger-subtle rounded-3 border border-danger border-opacity-25">
+                                    <span class="badge bg-danger mb-1">Rejected ❌</span>
+                                    <p class="small text-danger mt-1 mb-0 italic fw-bold">Reason: {{ task.obj.rejection_note }}</p>
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex align-items-center justify-content-between border-top pt-3 mt-auto">
+                                <button class="btn-task-done w-100" data-bs-toggle="modal" data-bs-target="#submitTask{{ task.obj.id }}">
+                                    <i class="fas fa-cloud-upload-alt me-2"></i> UPLOAD & COMPLETE
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5 bg-white rounded-4 shadow-sm border">
+                        <p class="text-muted fw-bold m-0">No Active Tasks!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <h5 class="fw-bold text-muted mb-3 px-2"><i class="fas fa-cubes me-2"></i>Your Features</h5>
+                <div class="row g-3">
+                    <div class="col-6 col-md-3"><a href="{% url 'apply_leave' %}" class="action-card d-block text-decoration-none"><div class="action-icon"><i class="fas fa-calendar-plus"></i></div><h6 class="fw-bold m-0 text-dark">Apply Leave</h6></a></div>
+                    <div class="col-6 col-md-3"><a href="{% url 'my_leave_requests' %}" class="action-card d-block text-decoration-none"><div class="action-icon"><i class="fas fa-history"></i></div><h6 class="fw-bold m-0 text-dark">Status</h6></a></div>
+                    <div class="col-6 col-md-3"><a href="{% url 'request_correction' %}" class="action-card d-block text-decoration-none"><div class="action-icon"><i class="fas fa-edit"></i></div><h6 class="fw-bold m-0 text-dark">Correction</h6></a></div>
+                    <div class="col-6 col-md-3"><a href="{% url 'monthly_attendance' %}" class="action-card d-block text-decoration-none"><div class="action-icon"><i class="fas fa-file-invoice"></i></div><h6 class="fw-bold m-0 text-dark">My Reports</h6></a></div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="attendance-panel position-sticky" style="top: 100px;">
+                    <div class="text-center mb-4">
+                        <div class="mx-auto mb-3" style="width: 80px; height: 80px; background: var(--pale-blush); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--deep-amethyst); font-size: 2rem; font-weight: bold;">
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name|first|upper }}
+                            {% else %}
+                                {{ request.user.username|first|upper }}
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="fw-bold mb-0 text-dark">
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name|title }} {{ request.user.last_name|title }}
+                            {% else %}
+                                {{ request.user.username|title }}
+                            {% endif %}
+                        </h5>
+                        
+                        <span class="badge bg-light text-dark border mt-2 px-3 py-1 rounded-pill">ID: #{{ request.user.id|stringformat:"04d" }}</span>
+                        <div class="small text-muted mt-2 fw-bold">@{{ request.user.username }}</div>
+                    </div>
+                    
+                    <hr class="opacity-10 border-2 my-3">
+                    
+                    <div class="small">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+                            <span class="text-muted fw-bold"><i class="fas fa-building me-2 opacity-50"></i>Department</span>
+                            <span class="fw-bold text-dark text-end">{{ company.name|default:"General" }}</span>
+                        </div>
+            
+                        {% if current_branch %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+                            <span class="text-muted fw-bold"><i class="fas fa-map-marker-alt me-2 opacity-50"></i>Branch</span>
+                            <div class="text-end">
+                                <div class="fw-bold text-danger">{{ current_branch.name }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+            
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+                            <span class="text-muted fw-bold"><i class="fas fa-id-badge me-2 opacity-50"></i>Role</span>
+                            <span class="fw-bold text-primary badge bg-primary bg-opacity-10 px-2 py-1">{{ request.user.groups.first.name|default:"Team Member" }}</span>
+                        </div>
+            
+                        {% if profile.manager %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+                            <span class="text-muted fw-bold"><i class="fas fa-user-tie me-2 opacity-50"></i>Manager</span>
+                            <span class="fw-bold text-dark">{{ profile.manager.username|title }}</span>
+                        </div>
+                        {% endif %}
+            
+                        {% if profile.team_leader %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted fw-bold"><i class="fas fa-crown me-2 text-warning opacity-75"></i>TL</span>
+                            <span class="fw-bold text-dark">{{ profile.team_leader.username|title }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if not is_team_leader %}
+                <div class="attendance-panel mt-4 text-center p-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--deep-amethyst);">Task History</h6>
+                    <button class="btn btn-outline-primary rounded-pill w-100 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#vaultModal">
+                        <i class="fas fa-folder-open me-2"></i> OPEN History
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="vaultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl px-2">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; overflow: hidden; background: #ffffff;">
+            <div class="modal-header border-0 p-3 p-md-4" style="background: linear-gradient(135deg, #540863 0%, #92487A 100%);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
+                        <i class="fas fa-history fs-5 text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-white mb-0">Task History</h6>
+                        <p class="small text-white-50 mb-0" style="font-size: 0.75rem;">Reviewing {{ completed_tasks.count }} finalized Tasks</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white shadow-none opacity-75" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-0" style="max-height: 60vh; overflow-y: auto; background: #fdfbff;">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="min-width: 800px;">
+                        <thead class="sticky-top bg-white shadow-sm">
+                            <tr class="text-muted small fw-bold uppercase" style="letter-spacing: 0.5px;">
+                                <th class="ps-3 ps-md-4 py-3">Task Title</th>
+                                <th>Timeline</th> 
+                                <th>Submission Info</th>
+                                <th>Note</th> 
+                                <th>Status</th>
+                                <th class="text-end pe-3 pe-md-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in completed_tasks %}
+                            <tr class="border-bottom">
+                                <td class="ps-3 ps-md-4 py-3">
+                                    <div class="fw-bold text-dark mb-0" style="font-size: 0.9rem;">{{ t.title }}</div>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold text-dark"><i class="fas fa-calendar-alt text-primary me-1"></i>{{ t.created_at|date:"d M, y" }}</div>
+                                    <div class="small text-danger fw-bold"><i class="fas fa-hourglass-end me-1"></i>Due: {{ t.due_date|date:"d M" }}</div>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold text-success"><i class="fas fa-check-double me-1"></i>{{ t.submitted_at|date:"d M" }}</div>
+                                    <small class="text-muted">{{ t.submitted_at|date:"h:i A" }}</small>
+                                </td>
+                                <td>
+                                    <div class="small text-muted" style="max-width: 150px;">
+                                        {% if t.completion_note %}<i class="fas fa-quote-left me-1 opacity-25"></i>{{ t.completion_note|truncatechars:20 }}{% else %}No note{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if t.status == 'Verified' %}
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1">VERIFIED ✅</span>
+                                    {% elif t.status == 'Rejected' %}
+                                        <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1">REJECTED ❌</span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1">IN REVIEW 🔔</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3 pe-md-4">
+                                    <button class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleFiles('files{{t.id}}')">
+                                        <i class="fas fa-paperclip me-1"></i> Files
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr id="files{{t.id}}" style="display:none; background: #f8fafc;">
+                                <td colspan="6" class="p-3">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for attachment in t.attachments.all %}
+                                        <div class="p-2 bg-white border rounded shadow-sm d-flex align-items-center gap-2">
+                                            <i class="fas fa-file-pdf text-danger small"></i>
+                                            <span class="small fw-bold text-truncate" style="max-width: 100px;">{{ attachment.file.name|cut:"task_submissions/" }}</span>
+                                            <a href="{{ attachment.file.url }}" download class="btn btn-xs btn-link p-0 ms-2"><i class="fas fa-download"></i></a>
+                                        </div>
+                                        {% empty %}
+                                        <span class="small text-muted italic">No attachments.</span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" class="text-center py-5"><i class="fas fa-ghost fa-2x text-muted opacity-25 mb-2"></i><h6 class="text-muted fw-bold">No History</h6></td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 p-2">
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for task in active_tasks %}
+<div class="modal fade" id="submitTask{{ task.obj.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content border-0 rounded-4 p-3 p-md-4 shadow-lg">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0" style="color: var(--deep-amethyst);">Submit Task</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% url 'update_task_status' task.obj.id %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="file" name="completion_file" multiple class="form-control border-2 p-2" required>
+                </div>
+                <div class="mb-4">
+                    <textarea name="completion_note" class="form-control border-2 p-2" rows="3" placeholder="Explain your work..." required></textarea>
+                </div>
+                <button type="submit" class="btn-glow w-100 py-2">SUBMIT TASK</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if task.is_team_task %}
+<div class="modal fade" id="teamModal{{ task.obj.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered px-3">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-3 px-3">
+                <h6 class="modal-title fw-bold text-primary"><i class="fas fa-users me-2"></i>Mission Squad</h6>
+                <button type="button" class="btn-close small" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                {% for name in task.team_names %}
+                <div class="d-flex align-items-center gap-2 p-2 mb-2 rounded-3 bg-light border">
+                    <div style="width: 25px; height: 25px; background: var(--primary-gradient); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">
+                        {{ name|slice:":1" }}
+                    </div>
+                    <span class="small fw-bold text-dark">{{ name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script>
+function toggleFiles(id) {
+    let row = document.getElementById(id);
+    if(row) row.style.display = (row.style.display === "none") ? "table-row" : "none";
+}
+
+function updateClock() {
+    const now = new Date();
+    const clockElem = document.getElementById('liveClock');
+    if(clockElem){
+        clockElem.textContent = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+    }
+}
+setInterval(updateClock, 1000); updateClock();
+
+function getLocationAndSubmit(formId, latInputId, lngInputId) {
+    const form = document.getElementById(formId);
+    const latInput = document.getElementById(latInputId);
+    const lngInput = document.getElementById(lngInputId);
+    const loadingSpinner = document.getElementById('loading_' + formId);
+    const icon = document.getElementById('icon_' + formId);
+    const text = document.getElementById('text_' + formId);
+
+    // Show loading spinner and change text
+    loadingSpinner.style.display = 'inline-block';
+    icon.style.display = 'none';
+    text.innerText = 'Getting Location...';
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            // Success Callback
+            function(position) {
+                latInput.value = position.coords.latitude;
+                lngInput.value = position.coords.longitude;
+                form.submit();
+            },
+            // Error Callback
+            function(error) {
+                loadingSpinner.style.display = 'none';
+                icon.style.display = 'inline-block';
+                text.innerText = formId === 'checkInForm' ? 'Check-In' : 'Check-Out';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Access Denied: You must allow Location Access in your browser settings to Check-In.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is unavailable. Ensure your device GPS is turned on.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get user location timed out. Please try again.");
+                        break;
+                    default:
+                        alert("An unknown error occurred while detecting location.");
+                        break;
+                }
+            },
+            // High accuracy options
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    } else {
+        alert("Geolocation is not supported by your browser. Please use a modern browser.");
+        loadingSpinner.style.display = 'none';
+        icon.style.display = 'inline-block';
+        text.innerText = formId === 'checkInForm' ? 'Check-In' : 'Check-Out';
+    }
+}
+</script>
+{% endblock %}

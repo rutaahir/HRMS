@@ -1,0 +1,780 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    /* ===== AMETHYST TL THEME (EXACT OLD CSS) ===== */
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --primary-gradient: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        --accent-gradient: linear-gradient(135deg, var(--royal-purple) 0%, var(--blush-pink) 100%);
+        --soft-shadow: 0 10px 30px rgba(84, 8, 99, 0.08);
+    }
+
+    body { background-color: var(--pale-blush); font-family: 'Poppins', sans-serif; }
+
+    /* Header Section (Old Layout) */
+    .dashboard-header {
+        background: var(--primary-gradient);
+        padding: 3rem 0 6rem;
+        border-radius: 0 0 50px 50px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(84, 8, 99, 0.2);
+    }
+    
+    .glass-welcome {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 25px; padding: 2rem;
+    }
+
+    /* Stats Grid (Old Layout) */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem; margin-top: -4rem; position: relative; z-index: 10; padding: 0 1rem;
+    }
+
+    .stat-card {
+        background: white; border-radius: 22px; padding: 1.8rem;
+        box-shadow: var(--soft-shadow); transition: 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.6); display: flex; align-items: center; gap: 1.2rem;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+
+    /* Panels & Tables */
+    .content-panel {
+        background: white; border-radius: 28px; box-shadow: var(--soft-shadow);
+        overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.8); margin-bottom: 2rem;
+    }
+    .progress-track {
+        height: 8px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-grow: 1;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 10px;
+    }
+
+    .panel-header {
+        padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .panel-title {
+        font-weight: 700; color: var(--deep-amethyst); display: flex; align-items: center;
+        gap: 12px; border-left: 5px solid var(--royal-purple); padding-left: 15px;
+    }
+
+    .modern-table { width: 100%; border-collapse: separate; }
+    .modern-table th { background: #fdfaff; color: var(--royal-purple); font-weight: 700; padding: 1.2rem 2rem; }
+    .modern-table td { padding: 1.2rem 2rem; border-bottom: 1px solid #f8f9fa; font-weight: 500; }
+
+    /* New Task Management Component Styling */
+    .evidence-vault-card {
+        background: #f8fafc; border-radius: 18px; padding: 15px; margin-top: 10px;
+        border: 1px solid #edf2f7;
+    }
+    .file-pill {
+        background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+        padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 6px; transition: 0.2s;
+    }
+    .file-pill:hover { border-color: var(--royal-purple); }
+
+    .btn-delegate {
+        background: var(--primary-gradient); color: white !important;
+        border-radius: 15px; padding: 10px 24px; font-weight: 700; border: none;
+    }
+
+    .widget-card { background: white; border-radius: 28px; padding: 2rem; box-shadow: var(--soft-shadow); text-align: center; }
+
+    /* ===== NEW: ULTRA PROFESSIONAL MOBILE MEDIA QUERIES ===== */
+    @media (max-width: 991px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 2rem 1rem 4rem 1rem; 
+            border-radius: 0 0 30px 30px;
+            text-align: center;
+        }
+        
+        .glass-welcome {
+            padding: 1.2rem;
+            text-align: center;
+        }
+        
+        .glass-welcome .d-flex.align-items-center,
+        .glass-welcome .opacity-90 {
+            justify-content: center;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem !important;
+        }
+
+        #liveClock {
+            font-size: 2.8rem !important;
+        }
+
+        /* 2x2 Stats Grid for Mobile */
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 12px;
+            margin-top: -35px;
+            padding: 0 10px;
+        }
+
+        .stat-card {
+            padding: 1rem 0.5rem;
+            border-radius: 16px;
+            flex-direction: column; /* Stack vertically */
+            justify-content: center;
+            gap: 0.6rem;
+            text-align: center;
+        }
+
+        .stat-card .icon-box {
+            width: 42px !important; 
+            height: 42px !important; 
+            font-size: 1.1rem !important; 
+            margin: 0 auto;
+        }
+
+        .stat-card h2 { font-size: 1.35rem !important; margin-bottom: 0; }
+        .stat-card span.fs-6 { font-size: 0.75rem !important; }
+        .stat-card span.small { font-size: 0.65rem !important; letter-spacing: 0; }
+
+        /* Panels & Feature Cards */
+        .content-panel {
+            border-radius: 20px;
+        }
+
+        .panel-header {
+            padding: 1.2rem;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        /* Features 2x2 Grid Tightening */
+        .action-card {
+            padding: 1.2rem 0.5rem;
+            border-radius: 16px;
+        }
+
+        .action-icon {
+            width: 42px; height: 42px; font-size: 1.1rem; margin-bottom: 0.6rem;
+            border-radius: 12px;
+        }
+        
+        .action-card h6 {
+            font-size: 0.75rem !important;
+        }
+
+        .widget-card {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        /* Ensure it STAYS 2x2 on extremely small screens */
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px;
+            padding: 0 8px;
+        }
+        
+        .stat-card { padding: 0.8rem 0.2rem; }
+        .stat-card h2 { font-size: 1.2rem !important; }
+        
+        .action-card { padding: 1rem 0.4rem; }
+        .action-card h6 { font-size: 0.65rem !important; }
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="glass-welcome animate__animated animate__fadeInLeft">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-25 px-3 py-2 rounded-pill fw-bold">
+                                <i class="fas fa-crown me-2"></i> Team Leader
+                            </span>
+                        </div>
+                        <h1 class="display-5 fw-bold mb-2" id="greeting">Welcome Back!</h1>
+                        <p class="opacity-90 mb-0 fs-5">Leading {{ company.name }} Team to success.</p>
+                    </div>
+                </div>
+                <div class="col-lg-5 text-center text-lg-end mt-4 mt-lg-0">
+                    <div class="text-white animate__animated animate__fadeInRight">
+                        <h1 class="fw-bold mb-0" style="font-size: 3.5rem;" id="liveClock">--:--</h1>
+                        <p class="h6 opacity-75 text-uppercase fw-bold">{% now "l, F j, Y" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card animate__animated animate__fadeInUp">
+                <div class="icon-box" style="width: 55px; height: 55px; border-radius: 15px; background: var(--pale-blush); color: var(--deep-amethyst); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0 fw-bold" style="color: var(--deep-amethyst);">{{ present_count }} <span class="text-muted fs-6 fw-normal">/ {{ total_squad }}</span></h2>
+                    <span class="small fw-bold text-muted text-uppercase">Present Today</span>
+                </div>
+            </div>
+
+            <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <div class="icon-box" style="width: 55px; height: 55px; border-radius: 15px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0 fw-bold" style="color: #c2410c;">{{ total_tasks_pending }}</h2>
+                    <span class="small fw-bold text-muted text-uppercase">Pending Tasks</span>
+                </div>
+            </div>
+
+            <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <div class="icon-box" style="width: 55px; height: 55px; border-radius: 15px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0 fw-bold" style="color: #3730a3;">{{ current_month }}</h2>
+                    <span class="small fw-bold text-muted text-uppercase">Active Period</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5 g-4">
+            <div class="col-lg-8">
+                {% if role_perms.can_view_team %}
+                <div class="content-panel animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                    <div class="panel-header">
+                        <div class="panel-title">My Squad Performance</div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#broadcastTaskModal">
+                                <i class="fas fa-bullhorn me-1"></i> Assign Team Task
+                            </button>
+                            <span class="badge bg-light text-dark border rounded-pill px-3 d-flex align-items-center">{{ total_squad }} Members</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Operative</th>
+                                    <th>Status</th>
+                                    <th>Missions</th>
+                                    <th>Monthly Activity</th> 
+                                    {% if role_perms.can_view_reports %}<th>Report</th>{% endif %}
+                                    <th class="text-end">Operation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in squad %}
+                                <tr class="{% if item.pending_tasks == 0 and item.total_tasks_count > 0 %}bg-warning bg-opacity-10{% endif %}" 
+                                    style="border-left: 5px solid {% if item.pending_tasks == 0 %}#ffc107{% else %}transparent{% endif %};">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                                {{ item.user.username|slice:":1"|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ item.user.username|title }}</div>
+                                                <div class="small text-muted" style="font-size: 0.7rem;">{{ item.user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item.is_present %}
+                                            <span class="badge bg-success-subtle text-success rounded-pill px-3">Working</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3">Absent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn btn-sm btn-light border rounded-pill px-2 fw-bold text-primary" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#viewTasks{{ item.user.id }}">
+                                            <i class="fas fa-layer-group"></i> {{ item.total_tasks_count }} Tasks
+                                        </div>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <small class="fw-bold" style="color: var(--royal-purple);">{{ item.monthly_attendance }} Days</small>
+                                        </div>
+                                        <div class="progress-track">
+                                            <div class="progress-fill" style="width: {% widthratio item.monthly_attendance 26 100 %}%; background: var(--primary-gradient);"></div>
+                                        </div>
+                                    </td>
+                                    {% if role_perms.can_view_reports %}
+                                    <td class="text-end">
+                                        <a href="{% url 'monthly_attendance' %}?user={{ item.user.id }}" class="btn-action ms-auto" data-bs-toggle="tooltip" title="View Full Report">
+                                            <i class="fas fa-chart-pie"></i>
+                                        </a>
+                                    </td>
+                                    {% else %}
+                                    <td class="text-end">
+                                        <span class="text-muted small"><i class="fas fa-ban"></i></span>
+                                    </td>
+                                    {% endif %}
+                                    <td class="text-end">
+                                        <button class="btn-delegate btn-sm" data-bs-toggle="modal" data-bs-target="#taskModal{{ item.user.id }}">Assign Task</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                <h5 class="fw-bold text-muted mb-3 mt-5 animate__animated animate__fadeIn">
+                    <i class="fas fa-layer-group me-2 text-primary"></i>Team Task Tracker
+                </h5>
+                
+                <div class="row g-4 mb-3" id="missionContainer">
+                    {% for task in team_tasks %}
+                    <div class="col-md-6 mission-card animate__animated animate__zoomIn" {% if forloop.counter > 2 %} style="display: none !important;" {% endif %}>
+                        <div class="content-panel p-4 h-100 shadow-sm border-top border-4 border-primary">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-bold text-dark">{{ task.title }}</h6>
+                                <span class="badge bg-light text-primary border rounded-pill px-3 shadow-sm" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#memberListModal{{ forloop.counter }}">
+                                    <i class="fas fa-users me-1"></i> Team: {{ task.total_count }}
+                                </span>
+                            </div>
+                            
+                            <p class="small text-muted mt-2">{{ task.task_description|truncatechars:100 }}</p>
+                            
+                            <div class="mt-4">
+                                <div class="d-flex justify-content-between small mb-1 fw-bold">
+                                    <span class="text-muted">Task Progress</span>
+                                    <span class="text-success">{{ task.verified_count }}/{{ task.total_count }} Verified</span>
+                                </div>
+                                <div class="progress" style="height: 10px; border-radius: 10px; background: #f0f2f5;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated {% if task.verified_count == task.total_count %} bg-success {% else %} bg-primary {% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {% widthratio task.verified_count task.total_count 100 %}%"
+                                        aria-valuenow="{% widthratio task.verified_count task.total_count 100 %}" 
+                                        aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-2 border-top">
+                                <div class="small text-danger fw-bold">
+                                    <i class="far fa-clock me-1"></i>Due: {{ task.latest_due_date|date:"d M, h:i A" }}
+                                </div>
+                                <button class="btn btn-xs btn-outline-info rounded-pill px-3" onclick="cloneMission('{{ task.title|escapejs }}', '{{ task.task_description|escapejs }}')" data-bs-toggle="modal" data-bs-target="#broadcastTaskModal">
+                                    <i class="fas fa-copy me-1"></i> Clone
+                                </button>
+                                <form action="{% url 'delete_team_mission' %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure? This will delete this mission for the entire team!');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="mission_title" value="{{ task.title }}">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-3">
+                                        <i class="fas fa-trash-alt me-1"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal fade" id="memberListModal{{ forloop.counter }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-sm modal-dialog-centered">
+                            <div class="modal-content border-0 shadow-lg" style="border-radius: 25px;">
+                                <div class="modal-header border-0 pb-0">
+                                    <h6 class="modal-title fw-bold text-primary"><i class="fas fa-users-cog me-2"></i>Task Team</h6>
+                                    <button type="button" class="btn-close small" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body pt-3">
+                                    <div class="list-group list-group-flush">
+                                        {% for member in task.assigned_members %}
+                                        <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded-3 {% if member.is_verified %}bg-success-subtle{% else %}bg-light{% endif %}">
+                                            {% if member.is_verified %}
+                                                <i class="bi bi-patch-check-fill text-success"></i>
+                                            {% else %}
+                                                <div style="width: 10px; height: 10px; background: #ccc; border-radius: 50%;"></div>
+                                            {% endif %}
+                                            <span class="fw-bold small {% if member.is_verified %}text-success{% endif %}">
+                                                {{ member.name }}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5 bg-white rounded-4 shadow-sm border animate__animated animate__fadeIn">
+                        <i class="fas fa-tasks fa-3x text-muted opacity-25 mb-3"></i>
+                        <p class="text-muted fw-bold">No group Tasks deployed yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if team_tasks|length > 2 %}
+                <div class="text-center mt-4 mb-5" id="viewMoreWrapper">
+                    <button id="viewMoreBtn" class="btn btn-primary rounded-pill px-5 shadow-sm fw-bold" onclick="showAllMissions()">
+                        <i class="fas fa-chevron-down me-2"></i> View More Tasks ({{ team_tasks|length|add:"-2" }} hidden)
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4">
+                <div class="widget-card mb-4">
+                    <div class="mx-auto mb-3" style="width: 70px; height: 70px; background: var(--pale-blush); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--deep-amethyst); font-size: 1.8rem; font-weight: 800;">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+                    <h5 class="fw-bold mb-1">My Control Panel</h5>
+                    <p class="text-muted small mb-4">Manage your personal profile</p>
+                    <a href="{% url 'employee_dashboard' company.slug %}" class="btn w-100 py-3 rounded-4 fw-bold text-white shadow-sm" style="background: var(--accent-gradient);">
+                        <i class="fas fa-fingerprint me-2"></i> My Dashboard
+                    </a>
+                </div>
+
+                <div class="content-panel p-4" style="height: auto;">
+                    <h6 class="fw-bold text-muted text-uppercase mb-4 ps-2 border-start border-4 border-warning">Live Overview</h6>
+                    <div class="d-flex justify-content-between mb-3 p-3 rounded-3 bg-light">
+                        <span class="fw-bold text-dark">Present Today</span>
+                        <span class="fw-bold text-success">{{ present_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between p-3 rounded-3 bg-light">
+                        <span class="fw-bold text-dark">Active Tasks</span>
+                        <span class="fw-bold text-warning">{{ total_tasks_pending }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for item in squad %}
+    <div class="modal fade" id="viewTasks{{ item.user.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl"> 
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 40px; overflow: hidden; background: #fff;">
+                <div class="modal-header p-4 border-0 text-white" style="background: linear-gradient(135deg, #540863 0%, #92487A 100%);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-lg" style="width: 55px; height: 55px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-terminal fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-800 mb-0">Operative Task Log: {{ item.user.username|title }}</h5>
+                            <p class="small opacity-75 mb-0">Total Tasks: {{ item.all_tasks.count }}</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white shadow-none opacity-75" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-0" style="max-height: 600px; overflow-y: auto; background: #fdfbff;">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-white sticky-top shadow-sm">
+                                <tr class="text-muted small fw-800 uppercase">
+                                    <th class="ps-4 py-4">Task Details</th>
+                                    <th>Timeline</th>
+                                    <th>Submission Info</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Command Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in item.all_tasks %}
+                                <tr class="border-bottom">
+                                    <td class="ps-4 py-4">
+                                        <div class="fw-800 text-dark mb-1">{{ t.title }}</div>
+                                        <div class="small text-muted text-truncate" style="max-width: 250px;">{{ t.description }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-bold text-dark">{{ t.created_at|date:"d M" }}</div>
+                                        <div class="small text-danger fw-bold">Due: {{ t.due_date|date:"d M" }}</div>
+                                    </td>
+                                    <td>
+                                        {% if t.status != 'Pending' %}
+                                            <div class="small fw-bold text-success">
+                                                <i class="fas fa-check-circle me-1"></i>Sub: {{ t.submitted_at|date:"d M, h:i A" }}
+                                            </div>
+                                            <div class="mt-2 d-flex gap-1">
+                                                <button class="btn btn-xs btn-outline-primary rounded-pill px-2" style="font-size: 0.65rem;" onclick="toggleTLFiles('tl_files{{t.id}}')">
+                                                    <i class="fas fa-paperclip"></i> View Assets ({{ t.attachments.count }})
+                                                </button>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted small italic">Waiting for submission...</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if t.status == 'Verified' %}
+                                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-800" style="font-size: 0.65rem;">VERIFIED ✅</span>
+                                        {% elif t.status == 'Rejected' %}
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2 fw-800" style="font-size: 0.65rem;">REJECTED ❌</span>
+                                            <div class="x-small text-danger mt-1 italic" style="font-size: 0.6rem;">"{{ t.rejection_note|truncatechars:20 }}"</div>
+                                        {% elif t.status == 'Completed' %}
+                                            <span class="badge bg-warning-subtle text-warning rounded-pill px-3 py-2 fw-800" style="font-size: 0.65rem;">NEEDS REVIEW 🔔</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-muted rounded-pill px-3 py-2 fw-800" style="font-size: 0.65rem;">PENDING</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex gap-2 justify-content-end align-items-center">
+                                            {% if t.status == 'Completed' %}
+                                                <form action="{% url 'tl_task_action' t.id %}" method="POST" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="approve">
+                                                    <button type="submit" class="btn btn-sm btn-success rounded-circle" title="Verify & Approve"><i class="fas fa-check"></i></button>
+                                                </form>
+                                                
+                                                <button type="button" class="btn btn-sm btn-warning rounded-circle text-white" onclick="showTLReject('tl_reject{{t.id}}')" title="Reject Mission">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            {% endif %}
+
+                                            <form action="{% url 'delete_single_task' t.id %}" method="POST" class="d-inline" onsubmit="return confirm('Delete this task?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Delete Task">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr id="tl_files{{t.id}}" style="display:none; background: #f8fafc;">
+                                    <td colspan="5" class="p-4">
+                                        <div class="bg-white p-3 rounded-4 shadow-sm border">
+                                            <h6 class="fw-bold small text-muted uppercase mb-3"><i class="fas fa-file-invoice me-2"></i>Submission Evidence</h6>
+                                            <div class="row g-2 mb-3">
+                                                {% for attachment in t.attachments.all %}
+                                                <div class="col-md-3">
+                                                    <div class="p-2 border rounded-3 d-flex justify-content-between align-items-center bg-light">
+                                                        <span class="small text-truncate fw-bold">{{ attachment.file.name|cut:"task_submissions/" }}</span>
+                                                        <a href="{{ attachment.file.url }}" download class="text-primary"><i class="fas fa-download"></i></a>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
+                                                <small class="d-block text-muted fw-bold"> Note:</small>
+                                                <p class="mb-0 italic small">"{{ t.completion_note|default:'No briefing provided.' }}"</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr id="tl_reject{{t.id}}" style="display:none; background: #fff5f5;">
+                                    <td colspan="5" class="p-4">
+                                        <div class="bg-white p-4 rounded-4 shadow border border-danger">
+                                            <form action="{% url 'tl_task_action' t.id %}" method="POST">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="reject">
+                                                <label class="fw-bold text-danger mb-2">Identify Task Failures:</label>
+                                                <textarea name="rejection_note" class="form-control rounded-3 mb-3" rows="2" placeholder="Provide clear instructions on what to fix..." required></textarea>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Confirm Rejection</button>
+                                                    <button type="button" class="btn btn-light rounded-pill px-4" onclick="hideTLReject('tl_reject{{t.id}}')">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {% empty %}
+                                <tr><td colspan="5" class="text-center py-5">No tasks detected.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskModal{{ item.user.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 35px; overflow: hidden; background: #ffffff;">
+                <div class="modal-header p-4 border-0 text-white" style="background: var(--primary-gradient);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
+                            <i class="fas fa-paper-plane fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-800 mb-0">Assign Task</h5>
+                            <p class="small opacity-75 mb-0">Target: <b>{{ item.user.username|title }}</b></p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white shadow-none opacity-75" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{% url 'tl_assign_task' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body p-4">
+                        <input type="hidden" name="member_id" value="{{ item.user.id }}">
+                        <div class="mb-4">
+                            <label class="small fw-800 text-muted mb-2 uppercase">Task Objective</label>
+                            <input type="text" name="title" class="form-control px-4 py-3" style="border-radius: 15px;" required>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label class="small fw-800 text-muted mb-2 uppercase">Priority</label>
+                                <select name="priority" class="form-select py-3" style="border-radius: 15px;">
+                                    <option value="High">🔴 High</option>
+                                    <option value="Medium" selected>🟡 Medium</option>
+                                    <option value="Low">🔵 Low</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-800 text-muted mb-2 uppercase">Deadline</label>
+                                <input type="datetime-local" name="due_date" class="form-control py-3" style="border-radius: 15px;" required>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small fw-800 text-muted mb-2 uppercase">Detailed Briefing</label>
+                            <textarea name="description" class="form-control p-4" rows="4" style="border-radius: 20px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="submit" class="btn w-100 py-3 rounded-pill text-white fw-800" style="background: var(--primary-gradient);">DEPLOY TASK</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="modal fade" id="broadcastTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 35px; background: #ffffff;">
+            <div class="modal-header p-4 border-0 text-white" style="background: var(--primary-gradient);">
+                <h5 class="modal-title fw-800"><i class="fas fa-broadcast-tower me-2"></i> Assign Team Task</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form action="{% url 'tl_broadcast_task' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small fw-800 text-muted mb-2 uppercase">Task Objective</label>
+                        <input type="text" name="title" class="form-control border-0 shadow-sm px-4 py-3" style="border-radius: 15px; background: #f8fafc;" placeholder="Enter task title..." required>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="small fw-800 text-muted uppercase text-primary">Assign To:</label>
+                            <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none fw-bold" onclick="toggleAllSquad(this)">Select All</button>
+                        </div>
+                        <div class="p-3 border rounded-4 bg-light shadow-inner" style="max-height: 180px; overflow-y: auto;">
+                            {% for item in squad %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input squad-check" type="checkbox" name="member_ids" value="{{ item.user.id }}" id="bc_user{{ item.user.id }}">
+                                <label class="form-check-label fw-bold" for="bc_user{{ item.user.id }}">{{ item.user.username|title }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="small fw-800 text-muted uppercase">Priority</label>
+                            <select name="priority" class="form-select py-3" style="border-radius: 15px; background: #f8fafc;">
+                                <option value="High">🔴 High</option>
+                                <option value="Medium" selected>🟡 Medium</option>
+                                <option value="Low">🔵 Low</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-800 text-muted uppercase">Deadline</label>
+                            <input type="datetime-local" name="due_date" class="form-control py-3" style="border-radius: 15px; background: #f8fafc;" required>
+                        </div>
+                    </div>
+                    <div class="mb-4 mt-3">
+                        <label class="small fw-800 text-muted mb-2 uppercase">Detailed Briefing</label>
+                        <textarea name="description" class="form-control p-4" rows="4" style="border-radius: 20px; background: #f8fafc;" placeholder="Explain team task in brief..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="submit" class="btn w-100 py-3 rounded-pill text-white fw-800" style="background: var(--primary-gradient);">
+                        <i class="fas fa-rocket me-2"></i> DEPLOY TO TEAM
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('liveClock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function setGreeting() {
+        const hour = new Date().getHours();
+        const element = document.getElementById('greeting');
+        let text = (hour < 12) ? "Good Morning" : (hour < 18) ? "Good Afternoon" : "Good Evening";
+        element.textContent = `${text}, {{ request.user.first_name|default:request.user.username|title }}!`;
+    }
+    setGreeting();
+
+    function toggleAllSquad(btn) {
+        const checks = document.querySelectorAll('.squad-check');
+        const isAllChecked = Array.from(checks).every(c => c.checked);
+        checks.forEach(c => c.checked = !isAllChecked);
+        btn.textContent = !isAllChecked ? "Unselect All" : "Select All";
+    }
+
+    function cloneMission(title, desc) {
+        document.querySelectorAll('input[name="title"]').forEach(i => i.value = title);
+        document.querySelectorAll('textarea[name="description"]').forEach(t => t.value = desc);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAllMissions() {
+        const cards = document.querySelectorAll('.mission-card');
+        const wrapper = document.getElementById('viewMoreWrapper');
+
+        cards.forEach(card => {
+            card.style.setProperty('display', 'block', 'important');
+            card.classList.add('animate__fadeInUp');
+        });
+
+        if (wrapper) {
+            wrapper.style.display = 'none';
+        }
+    }
+    
+    // File / Rejection Toggles
+    function toggleTLFiles(id) {
+        let row = document.getElementById(id);
+        if(row) row.style.display = (row.style.display === "none") ? "table-row" : "none";
+    }
+    function showTLReject(id) {
+        let row = document.getElementById(id);
+        if(row) row.style.display = "table-row";
+    }
+    function hideTLReject(id) {
+        let row = document.getElementById(id);
+        if(row) row.style.display = "none";
+    }
+</script>
+
+{% endblock %}

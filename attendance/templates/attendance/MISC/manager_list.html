@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Directory | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 35px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .manager-count {
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* Identity UI */
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        .email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .approved { background: #e6fffa; color: #008080; }
+        .pending { background: #fff1f2; color: #e11d48; }
+
+        /* Action Link */
+        .view-link {
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .view-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(3px);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-container {
+            margin-top: 35px;
+            text-align: center;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .card { padding: 20px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* મોબાઈલમાં ઈમેલ છુપાવો */
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <header>
+            <h2><i class="fas fa-user-tie"></i> Manager Directory</h2>
+            <div class="manager-count">
+                Total Managers: {{ users|length }}
+            </div>
+        </header>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Manager Profile</th>
+                        <th>Email Address</th>
+                        <th>Current Role</th>
+                        <th>Status</th>
+                        <th>Monitoring</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="avatar">{{ u.user.username|first|upper }}</div>
+                                <span class="username">@{{ u.user.username }}</span>
+                            </div>
+                        </td>
+                        <td class="email">{{ u.user.email }}</td>
+                        <td>
+                            <span style="font-weight: 700; color: var(--royal-purple); font-size: 0.85rem;">{{ u.role }}</span>
+                        </td>
+                        <td>
+                            {% if u.is_approved %}
+                                <span class="badge approved">
+                                    <i class="fas fa-check-circle"></i> Approved
+                                </span>
+                            {% else %}
+                                <span class="badge pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_view_attendance' u.user.id %}" class="view-link">
+                                <i class="fas fa-calendar-alt"></i> View Attendance
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 50px; color: #94a3b8;">
+                            <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                            No managers found in the directory.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="back-container">
+            <a href="/attendance/dashboard/admin/" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

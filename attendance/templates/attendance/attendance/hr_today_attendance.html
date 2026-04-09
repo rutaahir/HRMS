@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Attendance Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* Theme Background */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER AREA ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header-info h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .date-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 30px;
+            box-shadow: 0 20px 45px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px 16px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.05);
+        }
+
+        /* Status Badges */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .present { background: #e6fffa; color: #008080; }
+        .absent { background: #fff1f2; color: #e11d48; }
+
+        /* Time Style */
+        .time-box {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        /* ===== FOOTER BACK LINK ===== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 850px) {
+            .page-header { flex-direction: column; text-align: center; gap: 15px; }
+            th:nth-child(2), th:nth-child(3), td:nth-child(2), td:nth-child(3) { display: none; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <div class="header-info">
+            <h2>Today's Attendance Monitor</h2>
+        </div>
+        <div class="date-badge">
+            <i class="far fa-calendar-check"></i>
+            {{ today }}
+        </div>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee Identity</th>
+                    <th><i class="far fa-clock me-1"></i> Check-In</th>
+                    <th><i class="far fa-clock me-1"></i> Check-Out</th>
+                    <th>Duty Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ row.employee.username|first|upper }}</div>
+                            <span style="font-weight: 700; color: var(--deep-amethyst);">{{ row.employee }}</span>
+                        </div>
+                    </td>
+
+                    <td class="time-box">
+                        {% if row.attendance %}
+                            {{ row.attendance.check_in|time:"h:i A" }}
+                        {% else %}
+                            <span style="opacity: 0.3">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="time-box">
+                        {% if row.attendance and row.attendance.check_out %}
+                            {{ row.attendance.check_out|time:"h:i A" }}
+                        {% else %}
+                            <span style="opacity: 0.3">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.attendance %}
+                            <span class="status-pill present">
+                                <i class="fas fa-check-circle"></i> Present
+                            </span>
+                        {% else %}
+                            <span class="status-pill absent">
+                                <i class="fas fa-times-circle"></i> Absent
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 50px; color: #94a3b8;">
+                        <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
+                        No employees found for today's record.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="back-link" href="/attendance/dashboard/hr/">
+            <i class="fas fa-long-arrow-alt-left"></i> Back to HR Dashboard
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

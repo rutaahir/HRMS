@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create Company Role</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background: #FFD3D5; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 20px; max-width: 600px; margin: auto; }
+        .perm-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #eee; }
+        .btn { background: #540863; color: white; padding: 12px 25px; border-radius: 10px; border: none; cursor: pointer; width: 100%; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2><i class="fas fa-user-tag"></i> Create Role for {{ company.name }}</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <label>Role Name (e.g. Employee, Manager)</label>
+            <input type="text" name="role_name" placeholder="Enter Role Name" required>
+
+            <h3>Select Permissions:</h3>
+            <div class="perm-list">
+                <div class="perm-item">
+                    <input type="checkbox" name="permissions" value="can_self_access" id="p1">
+                    <label for="p1"><strong>can_self_access</strong> (Dashboard જોવાની સત્તા)</label>
+                </div>
+                <div class="perm-item">
+                    <input type="checkbox" name="permissions" value="can_view_team" id="p2">
+                    <label for="p2"><strong>can_view_team</strong> (ટીમ જોવાની સત્તા - Manager માટે)</label>
+                </div>
+                <div class="perm-item">
+                    <input type="checkbox" name="permissions" value="can_manage_users" id="p3">
+                    <label for="p3"><strong>can_manage_users</strong> (યુઝર મેનેજ કરવાની સત્તા - HR માટે)</label>
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn">Create & Assign Permissions</button>
+        </form>
+    </div>
+</body>
+</html>

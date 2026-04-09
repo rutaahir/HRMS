@@ -1,0 +1,229 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 Page Wrapper for centering and mobile spacing */
+    .correction-page-wrapper {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: calc(100vh - 70px); /* Adjusts for potential navbar height */
+        padding: 40px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .wrapper {
+        max-width: 650px;
+        width: 100%;
+        background: var(--white);
+        padding: 45px;
+        border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-sizing: border-box;
+    }
+
+    /* ===== HEADER ===== */
+    h2 {
+        color: var(--deep-amethyst);
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* ===== INFO BOX ===== */
+    .info-box {
+        background: #fdfaff;
+        border-left: 5px solid var(--royal-purple);
+        padding: 20px;
+        border-radius: 18px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(84, 8, 99, 0.03);
+    }
+
+    .info-box p {
+        margin: 8px 0;
+        color: var(--royal-purple);
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .info-box b {
+        color: var(--deep-amethyst);
+    }
+
+    /* ===== FORM GROUPS ===== */
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--deep-amethyst);
+        margin-bottom: 8px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 14px 18px;
+        border-radius: 14px;
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #334155;
+        outline: none;
+        transition: var(--transition);
+        box-sizing: border-box;
+    }
+
+    input:focus, textarea:focus {
+        border-color: var(--blush-pink);
+        background-color: var(--white);
+        box-shadow: 0 0 0 5px rgba(228, 155, 166, 0.1);
+    }
+
+    textarea {
+        height: 110px;
+        resize: none;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-submit {
+        width: 100%;
+        margin-top: 10px;
+        padding: 16px;
+        border: none;
+        border-radius: 15px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(84, 8, 99, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(84, 8, 99, 0.3);
+    }
+
+    /* ===== BACK LINK ===== */
+    .back-container {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+    .back {
+        color: var(--royal-purple);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+    }
+
+    .back:hover {
+        color: var(--deep-amethyst);
+        transform: translateX(-5px);
+    }
+
+    /* 🔥 ULTRA RESPONSIVE MOBILE TWEAKS 🔥 */
+    @media (max-width: 600px) {
+        .correction-page-wrapper { padding: 20px 10px; }
+        .wrapper { padding: 30px 20px; border-radius: 25px; }
+        h2 { font-size: 1.4rem; justify-content: center; }
+        .info-box { padding: 15px; }
+        .info-box p { font-size: 0.85rem; }
+        input, textarea { padding: 12px 15px; font-size: 0.9rem; }
+        .btn-submit { padding: 14px; font-size: 0.95rem; }
+    }
+</style>
+
+<div class="correction-page-wrapper">
+    <div class="wrapper">
+
+        <h2><i class="fas fa-user-edit"></i> Correction Request</h2>
+
+        <div class="info-box">
+            <p><span><i class="far fa-calendar-alt me-2"></i> Today's Date:</span> <b>{{ today|date:"d M, Y" }}</b></p>
+
+            {% if attendance %}
+                <p><span><i class="fas fa-sign-in-alt me-2 text-success"></i> Recorded In:</span> <b>{{ attendance.check_in|time:"H:i" }}</b></p>
+                <p><span><i class="fas fa-sign-out-alt me-2 text-danger"></i> Recorded Out:</span> <b>{{ attendance.check_out|default:"—" }}</b></p>
+            {% else %}
+                <p style="justify-content: center; opacity: 0.7;"><i class="fas fa-info-circle me-2"></i> No attendance found for today</p>
+            {% endif %}
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><i class="fas fa-calendar-day me-1"></i> Select Date to Correct</label>
+                <input type="date" name="selected_date" max="{% now 'Y-m-d' %}" required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="far fa-clock me-1"></i> New Check-In Time</label>
+                <input type="time" name="new_check_in">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-history me-1"></i> New Check-Out Time</label>
+                <input type="time" name="new_check_out">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-comment-dots me-1"></i> Reason for Correction</label>
+                <textarea name="reason" placeholder="Explain why the correction is needed (e.g., Forgot to check-in, System issue...)" required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Submit Request
+            </button>
+        </form>
+
+        <div class="back-container">
+            <a class="back" href="{% url 'dashboard' %}">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

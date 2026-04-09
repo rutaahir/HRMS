@@ -1,0 +1,387 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* ===== AMETHYST THEME ===== */
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 CRITICAL MOBILE LOCKS 🔥 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    html, body {
+        max-width: 100vw !important;
+        overflow-x: hidden !important; /* Prevents screen from shifting left/right */
+    }
+
+    body {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: 100vh;
+        padding: 40px 20px;
+    }
+
+    .directory-container {
+        max-width: 1300px;
+        width: 100%;
+        margin: 0 auto;
+        background: var(--white);
+        padding: 40px;
+        border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-sizing: border-box;
+    }
+
+    /* ===== HEADER AREA ===== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+        flex-wrap: wrap; /* Allows wrapping on smaller screens */
+        gap: 15px;
+    }
+
+    h2 {
+        color: var(--deep-amethyst);
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 0;
+    }
+
+    .count-badge {
+        background: var(--pale-blush);
+        color: var(--deep-amethyst);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    /* ===== MODERN TABLE STYLING ===== */
+    /* Forces the table to swipe instead of breaking the page */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth swipe on iOS */
+        border-radius: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px; /* Forces wide table so layout doesn't squish */
+        white-space: nowrap;
+    }
+
+    th {
+        text-align: left;
+        padding: 18px;
+        background-color: #f8fafc;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    td {
+        padding: 20px 18px;
+        font-size: 0.95rem;
+        color: #334155;
+        border-bottom: 1px solid #f8fafc;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background-color: #fdfaff;
+    }
+
+    /* User Identity UI */
+    .user-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-box {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1rem;
+        box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+        flex-shrink: 0;
+    }
+
+    .username { font-weight: 800; color: var(--deep-amethyst); display: block; }
+    .email { font-size: 0.8rem; color: #64748b; }
+
+    /* Highlight text styles */
+    .manager-text { font-weight: 600; color: var(--royal-purple); }
+    .shift-badge {
+        background: #f0f7ff;
+        color: #0369a1;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+    .not-assigned { color: #e11d48; font-weight: 700; font-size: 0.85rem; }
+
+    /* Action Buttons */
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 700;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-purple { background: var(--deep-amethyst); color: white; }
+    .btn-pink { background: var(--blush-pink); color: white; }
+    .btn-outline { background: var(--white); color: var(--deep-amethyst); border: 2px solid var(--deep-amethyst); }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(84, 8, 99, 0.15);
+        filter: brightness(1.05);
+        color: white;
+    }
+
+    .footer-nav { margin-top: 30px; }
+    .back-link { text-decoration: none; color: var(--royal-purple); font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition);}
+    .back-link:hover { color: var(--deep-amethyst); transform: translateX(-5px); }
+
+    /* 🔥 ULTRA RESPONSIVE MOBILE TWEAKS 🔥 */
+    @media (max-width: 768px) {
+        body { padding: 15px 10px; }
+        
+        .directory-container { 
+            padding: 25px 15px; 
+            border-radius: 25px; 
+        }
+        
+        .page-header { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            text-align: left;
+        }
+        
+        h2 { font-size: 1.6rem; }
+        
+        /* Removes negative spacing if container shrinks too small */
+        .table-responsive { margin: 0; border: 1px solid #f1f5f9; }
+    }
+</style>
+
+<div class="directory-container">
+    <header class="page-header">
+        <h2><i class="fas fa-users-cog"></i> Employee Directory</h2>
+        <div class="count-badge">Total Staff: {{ employees|length }}</div>
+    </header>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Staff Member</th>
+                    <th>Reporting Manager</th>
+                    <th>Work Shift</th>
+                    <th>Management Actions</th>
+                    <th style="text-align: right;">Performance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in employees %}
+                <tr>
+                    <td>
+                        <div class="user-meta">
+                            <div class="avatar-box">{{ e.user.username|first|upper }}</div>
+                            <div>
+                                <span class="username">@{{ e.user.username }}</span>
+                                <span class="email">{{ e.user.email }}</span>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        {% if e.manager %}
+                            <span class="manager-text"><i class="fas fa-user-tie me-1"></i> {{ e.manager.username }}</span>
+                        {% else %}
+                            <span class="not-assigned"><i class="fas fa-exclamation-triangle me-1"></i> Unassigned</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if e.shift %}
+                            <span class="shift-badge">{{ e.shift.name }}</span>
+                            <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">
+                                <i class="far fa-clock me-1"></i> {{ e.shift.start_time }} – {{ e.shift.end_time }}
+                            </div>
+                        {% else %}
+                            <span class="not-assigned">No Shift Info</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn-action btn-purple" href="/attendance/hr/assign-manager/{{ e.user.id }}/">
+                                <i class="fas fa-user-plus"></i> Manager
+                            </a>
+                            
+                            {% with request.user.groups.first.role_permissions as role_perms %}
+                                {% if role_perms.can_manage_shifts %}
+                                <a href="{% url 'hr_assign_shift' user_id=e.user.id %}" class="btn-action btn-outline">            
+                                    <i class="fas fa-clock"></i> Manage Shift
+                                </a>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </td>
+                    
+                    <td style="text-align: right;">
+                        {% with request.user.groups.first.role_permissions as role_perms %}
+                            {% if role_perms.can_view_reports %}
+                                <a href="/attendance/monthly/?user={{ e.user.id }}" class="btn-action btn-purple">
+                                    <i class="fas fa-file-alt"></i> View Report
+                                </a>
+                            {% endif %}  
+                        {% endwith %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                        No employees found in the database.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-nav">
+        <a href="/attendance/dashboard/hr/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+<style>
+    /* Пૉપઅપને એકદમ રાઉન્ડ અને પ્રોફેશનલ બનાવવા માટે */
+    .pill-toast {
+        border-radius: 50px !important;
+        padding: 5px 15px !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        margin-top: 20px !important;
+    }
+
+    .swal2-title {
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        margin: 10px 0 !important;
+    }
+
+    .swal2-timer-progress-bar {
+        background: rgba(0, 0, 0, 0.1) !important;
+        height: 3px !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ૧. Modern Pill-Style Configuration
+        const AppToast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            width: '320px',
+            customClass: { popup: 'pill-toast' },
+            showClass: { popup: 'animate__animated animate__slideInDown' },
+            hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // ૨. Logic with Dynamic Colors & Icons
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    AppToast.fire({
+                        icon: 'success',
+                        title: '{{ message }}',
+                        background: '#f0fff4', 
+                        color: '#22543d',
+                        iconColor: '#38a169',
+                    });
+                {% elif message.tags == 'error' or 'removed' in message|lower or 'deleted' in message|lower %}
+                    AppToast.fire({
+                        icon: 'error',
+                        title: '{{ message }}',
+                        background: '#fff5f5', 
+                        color: '#c53030',
+                        iconColor: '#f56565',
+                    });
+                {% else %}
+                    AppToast.fire({
+                        icon: 'info',
+                        title: '{{ message }}',
+                        background: '#ffffff',
+                        color: '#540863',
+                        iconColor: '#92487A',
+                    });
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    });
+</script>
+
+{% endblock %}

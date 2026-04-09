@@ -1,0 +1,471 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --success: #27ae60;
+        --danger: #e74c3c;
+        --glass: rgba(255, 255, 255, 0.9);
+    }
+
+    body {
+        background-color: #f8f1f6; /* Soft purple-white bg */
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* 🏺 Main Container Slim */
+    .dashboard-container {
+        max-width: 1300px;
+        margin: 30px auto;
+        padding: 0 15px;
+    }
+
+    .glass-card {
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(146, 72, 122, 0.1);
+        box-shadow: 0 10px 30px rgba(84, 8, 99, 0.05);
+        padding: 25px;
+    }
+
+    /* 🔝 Header Section */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .title-area h2 {
+        color: var(--deep-amethyst);
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    /* 🔥 Ultra-Slim, Responsive Filter Bar 🔥 */
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    }
+
+    .search-input-group {
+        position: relative;
+        flex: 0 1 320px; /* Decreased width: Max 320px on desktop */
+        min-width: 200px;
+    }
+
+    .search-input-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--royal-purple);
+        opacity: 0.6;
+    }
+
+    .search-input-group input {
+        width: 100%;
+        padding: 10px 15px 10px 42px;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        background: #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .search-input-group input:focus {
+        border-color: var(--royal-purple);
+        box-shadow: 0 4px 15px rgba(146, 72, 122, 0.1);
+    }
+
+    .status-select {
+        flex: 0 1 180px; /* Decreased width: Max 180px on desktop */
+        padding: 10px 15px;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        background: #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--deep-amethyst);
+        outline: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .status-select:focus {
+        border-color: var(--royal-purple);
+    }
+
+    .reset-btn {
+        color: var(--danger);
+        font-size: 1.1rem;
+        margin-left: 5px;
+        transition: transform 0.2s;
+    }
+    .reset-btn:hover {
+        transform: scale(1.15);
+    }
+
+    .results-badge {
+        margin-left: auto;
+        font-size: 0.75rem;
+        font-weight: 800;
+        background: var(--pale-blush);
+        padding: 6px 14px;
+        border-radius: 20px;
+        color: var(--deep-amethyst);
+        white-space: nowrap;
+    }
+
+    /* 📊 Clean Table */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+    .custom-table th {
+        background: transparent;
+        color: var(--royal-purple);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        padding: 10px 15px;
+        letter-spacing: 1px;
+    }
+
+    .custom-table tr td {
+        background: white;
+        padding: 15px;
+        font-size: 0.9rem;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .custom-table tr td:first-child { border-left: 1px solid #f1f5f9; border-radius: 12px 0 0 12px; }
+    .custom-table tr td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 12px 12px 0; }
+
+    .staff-name { font-weight: 700; color: var(--deep-amethyst); }
+    
+    /* 🕒 Comparison Boxes */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .old-val { color: #94a3b8; font-size: 0.75rem; text-decoration: line-through; }
+    .new-val { color: var(--success); font-weight: 700; font-size: 0.85rem; }
+
+    /* 🏷️ Badges */
+    .badge-status {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 800;
+    }
+    .pending { background: #fff8e1; color: #b45309; }
+    .approved { background: #e6fffa; color: #008080; }
+    .rejected { background: #fff1f2; color: #e11d48; }
+
+    .action-circle {
+        width: 32px; height: 32px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: white; text-decoration: none; transition: 0.3s;
+    }
+    .action-circle:hover {
+        transform: scale(1.1);
+        filter: brightness(1.1);
+    }
+
+    /* 📄 Premium Pagination */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 25px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 20px;
+    }
+
+    .pagination-info {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .custom-pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .custom-pagination li a, .custom-pagination li span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        height: 38px;
+        padding: 0 10px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+        color: #334155;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .custom-pagination li a:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+    }
+
+    .custom-pagination li span.active {
+        background: linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple));
+        color: white;
+        box-shadow: 0 8px 15px rgba(84, 8, 99, 0.25);
+    }
+
+    .custom-pagination li span.disabled {
+        color: #cbd5e1;
+        cursor: not-allowed;
+        background: #f8fafc;
+        box-shadow: none;
+    }
+
+    /* 📱 ULTRA RESPONSIVE MOBILE STYLES */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch; /* Forces elements to full width on mobile */
+            gap: 10px;
+        }
+
+        .search-input-group, .status-select {
+            flex: 1 1 100%;
+            max-width: 100%;
+        }
+
+        .results-badge {
+            margin-left: 0;
+            text-align: center;
+            align-self: center;
+        }
+
+        .pagination-wrapper {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="glass-card">
+        <div class="page-header">
+            <div class="title-area">
+                <h2><i class="fas fa-calendar-check me-2"></i>Correction Approvals</h2>
+                {% if current_branch %}
+                <span style="font-size: 0.8rem; color: var(--royal-purple); font-weight: 600;">
+                    <i class="fas fa-map-marker-alt"></i> {{ current_branch.name }}
+                </span>
+                {% endif %}
+            </div>
+            <a href="{% if role == 'ADMIN' %}/attendance/dashboard/admin/{% else %}/attendance/dashboard/hr/{% endif %}" 
+               style="text-decoration: none; color: var(--royal-purple); font-weight: 700; font-size: 0.85rem;">
+                <i class="fas fa-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+
+        <form method="GET" class="filter-bar" id="filterForm">
+            <div class="search-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" id="searchInput" value="{{ request.GET.search|default:'' }}" placeholder="Search employee name...">
+            </div>
+            
+            <select name="status" id="statusSelect" class="status-select">
+                <option value="">Status: All</option>
+                <option value="PENDING" {% if request.GET.status == 'PENDING' %}selected{% endif %}>🕒 Pending</option>
+                <option value="APPROVED" {% if request.GET.status == 'APPROVED' %}selected{% endif %}>✅ Approved</option>
+                <option value="REJECTED" {% if request.GET.status == 'REJECTED' %}selected{% endif %}>❌ Rejected</option>
+            </select>
+            
+            {% if request.GET.search or request.GET.status %}
+                <a href="?" class="reset-btn" title="Clear Filters"><i class="fas fa-undo"></i></a>
+            {% endif %}
+
+            {% if total_requests %}
+                <div class="results-badge">
+                    {{ total_requests }} results
+                </div>
+            {% endif %}
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Identity</th>
+                        <th>Date</th>
+                        <th>Check-In (Old/New)</th>
+                        <th>Check-Out (Old/New)</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in corrections %}
+                    <tr class="correction-row">
+                        <td>
+                            <div class="staff-name searchable-name">@{{ r.user.username }}</div>
+                            <div style="font-size: 0.7rem; color: #64748b;">{{ r.user.profile.role }}</div>
+                        </td>
+                        <td style="font-weight: 600;">{{ r.date }}</td>
+                        
+                        <td>
+                            <div class="old-val">{{ r.old_attendance.check_in|time:"H:i"|default:"—" }}</div>
+                            <div class="new-val">{{ r.requested_check_in|time:"H:i"|default:r.new_check_in|time:"H:i"|default:"—" }}</div>
+                        </td>
+
+                        <td>
+                            <div class="old-val">{{ r.old_attendance.check_out|time:"H:i"|default:"—" }}</div>
+                            <div class="new-val">{{ r.requested_check_out|time:"H:i"|default:r.new_check_out|time:"H:i"|default:"—" }}</div>
+                        </td>
+
+                        <td>
+                            <span class="badge-status {% if r.status == 'PENDING' %}pending{% elif r.status == 'APPROVED' %}approved{% else %}rejected{% endif %}">
+                                {{ r.status }}
+                            </span>
+                        </td>
+
+                        <td style="text-align: right;">
+                            {% if r.status == "PENDING" %}
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <a href="/attendance/hr/correction/approve/{{ r.id }}/" class="action-circle" style="background: var(--success);" title="Approve">
+                                    <i class="fas fa-check" style="font-size: 0.8rem;"></i>
+                                </a>
+                                <a href="/attendance/hr/correction/reject/{{ r.id }}/" class="action-circle" style="background: var(--danger);" title="Reject">
+                                    <i class="fas fa-times" style="font-size: 0.8rem;"></i>
+                                </a>
+                            </div>
+                            {% else %}
+                            <span style="font-size: 10px; font-weight: 800; color: #cbd5e1;">DONE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 50px; color: #94a3b8;">
+                            <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.2;"></i>
+                            <p>No correction requests found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if corrections.has_other_pages %}
+        <div class="pagination-wrapper">
+            <div class="pagination-info">
+                Showing page {{ corrections.number }} of {{ corrections.paginator.num_pages }}
+            </div>
+            
+            <ul class="custom-pagination">
+                {% if corrections.has_previous %}
+                    <li>
+                        <a href="?page={{ corrections.previous_page_number }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}">
+                            <i class="fas fa-chevron-left" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <span class="disabled"><i class="fas fa-chevron-left" style="font-size: 0.8rem;"></i></span>
+                    </li>
+                {% endif %}
+
+                {% for i in corrections.paginator.page_range %}
+                    {% if corrections.number == i %}
+                        <li><span class="active">{{ i }}</span></li>
+                    {% else %}
+                        <li>
+                            <a href="?page={{ i }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}">
+                                {{ i }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if corrections.has_next %}
+                    <li>
+                        <a href="?page={{ corrections.next_page_number }}&search={{ request.GET.search|default:'' }}&status={{ request.GET.status|default:'' }}">
+                            <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <span class="disabled"><i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i></span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterForm = document.getElementById("filterForm");
+        const searchInput = document.getElementById("searchInput");
+        const statusSelect = document.getElementById("statusSelect");
+
+        statusSelect.addEventListener("change", function() {
+            filterForm.submit();
+        });
+
+        searchInput.addEventListener("input", function() {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll(".correction-row");
+            
+            rows.forEach(row => {
+                const nameElement = row.querySelector(".searchable-name");
+                if (nameElement) {
+                    const nameText = nameElement.textContent.toLowerCase();
+                    if (nameText.includes(query)) {
+                        row.style.display = ""; 
+                    } else {
+                        row.style.display = "none"; 
+                    }
+                }
+            });
+        });
+
+        searchInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

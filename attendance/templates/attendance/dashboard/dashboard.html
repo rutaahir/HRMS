@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance History | Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --bg-light: #fdfaff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* મુખ્ય બેકગ્રાઉન્ડ */
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header-info h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .header-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .user-tag {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== ACTION AREA ===== */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-monthly { background: var(--white); color: var(--deep-amethyst); }
+        .btn-in { background: #2ecc71; color: white; }
+        .btn-out { background: #e74c3c; color: white; }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            filter: brightness(1.05);
+        }
+
+        /* ===== TABLE CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* ===== DYNAMIC STATUS PILLS ===== */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .present { background: #e6fffa; color: #008080; } /* Teal */
+        .absent { background: #fff0f0; color: #cc0000; }  /* Red */
+        .orange { background: #fffaf0; color: #d97706; }  /* Orange/Amber */
+        .blue { background: #f0f7ff; color: #0066cc; }    /* Blue/Working */
+        .purple { background: #f5f3ff; color: #7c3aed; }  /* Purple/Partial */
+
+        @media (max-width: 850px) {
+            .header { flex-direction: column; text-align: center; gap: 20px; }
+            .action-bar { justify-content: center; }
+            th, td { padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <header class="header">
+        <div class="header-info">
+            <h1>Attendance History</h1>
+            <p>Track your daily logs and performance metrics</p>
+        </div>
+
+        <div class="user-tag">
+            <i class="fas fa-user-circle"></i>
+            {% if request.user.first_name %}
+                                {{ request.user.first_name|title }} {{ request.user.last_name|title }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+        </div>
+
+        <div class="action-bar">
+            <a href="/attendance/monthly/" class="btn btn-monthly">
+                <i class="fas fa-calendar-check"></i> Monthly Report
+            </a>
+
+            <a href="/attendance/check-in/" class="btn btn-in">
+                <i class="fas fa-sign-in-alt"></i> Check In
+            </a>
+
+            <a href="/attendance/check-out/" class="btn btn-out">
+                <i class="fas fa-sign-out-alt"></i> Check Out
+            </a>
+        </div>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th><i class="far fa-clock me-1"></i> Entry Time</th>
+                    <th><i class="far fa-clock me-1"></i> Exit Time</th>
+                    <th>Performance Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td style="font-weight: 600;">{{ r.date }}</td>
+                    <td>{{ r.check_in|default:"—" }}</td>
+                    <td>{{ r.check_out|default:"—" }}</td>
+
+                    <td>
+                        <span class="status-pill 
+                            {% if r.status == 'Present' %}
+                                present
+                            {% elif r.status == 'Late' or r.status == 'Half Day' %}
+                                orange
+                            {% elif r.status == 'Working' %}
+                                blue
+                            {% elif r.status == 'Partial' %}
+                                purple
+                            {% else %}
+                                absent
+                            {% endif %}
+                        ">
+                            {{ r.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <i class="fas fa-folder-open fa-2x mb-3 d-block"></i>
+                        No attendance records found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

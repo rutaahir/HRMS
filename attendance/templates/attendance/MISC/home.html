@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Portal | Mark Your Daily Presence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== ATTENDANCE CARD ===== */
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--white);
+            padding: 50px 40px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 30px 70px rgba(84, 8, 99, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative background element */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: var(--pale-blush);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 30px;
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.2);
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+        }
+
+        .note {
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 18px 30px;
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-in {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            box-shadow: 0 10px 25px rgba(0, 176, 155, 0.2);
+        }
+
+        .btn-out {
+            background: linear-gradient(135deg, #ff5f6d 0%, #ffc371 100%);
+            box-shadow: 0 10px 25px rgba(255, 95, 109, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            filter: brightness(1.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Footer Info */
+        .status-info {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-item i {
+            color: var(--royal-purple);
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 40px 25px; }
+            h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="content-wrapper">
+        <div class="icon-circle">
+            <i class="fas fa-fingerprint"></i>
+        </div>
+
+        <h2>Attendance Portal</h2>
+        <p class="note">Please record your presence for today.<br>Consistency leads to professional growth! ✨</p>
+
+        <div class="btn-wrapper">
+            <a href="/attendance/check-in/" class="btn btn-in">
+                <i class="fas fa-sign-in-alt"></i> Mark Check-In
+            </a>
+
+            <a href="/attendance/check-out/" class="btn btn-out">
+                <i class="fas fa-sign-out-alt"></i> Mark Check-Out
+            </a>
+        </div>
+
+        <div class="status-info">
+            <div class="status-item">
+                <i class="far fa-clock"></i> Live Tracking
+            </div>
+            <div class="status-item">
+                <i class="fas fa-shield-alt"></i> Secure Log
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

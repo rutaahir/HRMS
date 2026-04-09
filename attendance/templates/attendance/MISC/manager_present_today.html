@@ -1,0 +1,182 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* PAGE THEME */
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --bg-body: #f8faff;
+        --present-green: #16a34a;
+        --present-bg: #dcfce7;
+        --late-orange: #ea580c;
+        --late-bg: #ffedd5;
+    }
+
+    body { background-color: var(--bg-body); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+    /* HEADER */
+    .page-header {
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        padding: 2.5rem 2rem 4rem;
+        border-radius: 0 0 40px 40px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(84, 8, 99, 0.15);
+        margin-bottom: -3rem;
+    }
+
+    /* CARD STYLE */
+    .content-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(84, 8, 99, 0.05);
+        margin: 0 auto 3rem;
+        max-width: 1100px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    /* 🔥 TABLE RESPONSIVE FIX 🔥 */
+    .table-responsive { 
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+    }
+
+    .custom-table { width: 100%; border-collapse: collapse; min-width: 650px; } /* Ensures it stays a table on mobile */
+    
+    .custom-table th {
+        background: #f8fafc;
+        color: var(--royal-purple);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+    }
+    .custom-table td {
+        padding: 1.2rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        white-space: nowrap;
+    }
+    .custom-table tr:hover td { background-color: #fdfaff; }
+
+    /* AVATAR */
+    .avatar-circle {
+        width: 45px; height: 45px; border-radius: 50%;
+        background: #f1f5f9; color: var(--deep-amethyst);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 1.1rem;
+        border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        flex-shrink: 0;
+    }
+
+    /* STATUS BADGES */
+    .badge-present { background: var(--present-bg); color: var(--present-green); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; }
+    .badge-late { background: var(--late-bg); color: var(--late-orange); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; }
+    
+    .time-text { font-family: 'Courier New', monospace; font-weight: 700; color: #334155; }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVE TWEAKS 
+       ========================================= */
+    @media (max-width: 768px) {
+        .page-header { padding: 2rem 1rem 4rem; text-align: center; }
+        .page-header .container { flex-direction: column; gap: 1rem; }
+        
+        .content-card { margin: 0 15px 3rem; border-radius: 20px; }
+        
+        .custom-table th, .custom-table td {
+            padding: 1rem 0.8rem; /* Tighten cells for mobile */
+        }
+
+        .page-header h2 { font-size: 1.6rem; }
+        .page-header p { font-size: 0.85rem; }
+    }
+</style>
+
+<div class="page-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fas fa-calendar-check me-2"></i> Present Today</h2>
+            <p class="mb-0 opacity-75">Date: {{ today|date:"d M Y" }} | Manager: {{ request.user.username }}</p>
+        </div>
+        <a href="{% url 'manager_dashboard' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Employee</th>
+                        <th>Designation</th>
+                        <th>Check-In Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-circle">
+                                    {{ staff.user.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        {% if staff.user.first_name %}
+                                            {{ staff.user.first_name }} {{ staff.user.last_name }}
+                                        {% else %}
+                                            {{ staff.user.username }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="small text-muted" style="font-size: 0.75rem;">{{ staff.email|truncatechars:25 }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td>
+                            <span class="text-muted fw-bold small">{{ staff.role|default:"Employee" }}</span>
+                        </td>
+
+                        <td>
+                            <i class="far fa-clock me-1 text-muted"></i> 
+                            <span class="time-text">{{ staff.check_in_time }}</span>
+                        </td>
+
+                        <td>
+                            {% if staff.status == 'Late' %}
+                                <span class="badge-late"><i class="fas fa-exclamation-circle me-1"></i> Late</span>
+                            {% else %}
+                                <span class="badge-present"><i class="fas fa-check-circle me-1"></i> Present</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="fas fa-user-clock fa-3x mb-3 opacity-25" style="color: var(--deep-amethyst);"></i>
+                            <p class="text-muted fw-bold">No one has checked in yet today.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

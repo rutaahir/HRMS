@@ -1,0 +1,306 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 CRITICAL MOBILE LOCKS 🔥 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    html, body {
+        max-width: 100vw !important;
+        overflow-x: hidden !important; /* Prevents screen from shifting left/right */
+    }
+
+    /* Use a wrapper instead of styling the body directly */
+    .report-wrapper {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .report-container {
+        width: 100%;
+        max-width: 1300px;
+        background: var(--white);
+        padding: 40px;
+        border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-sizing: border-box;
+        overflow: hidden; /* Prevents internal elements from breaking out */
+    }
+
+    /* ===== HEADER AREA ===== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    h2 {
+        color: var(--deep-amethyst);
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 0;
+    }
+
+    .count-badge {
+        background: var(--pale-blush);
+        color: var(--deep-amethyst);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    /* ===== MODERN TABLE STYLING ===== */
+    .table-responsive {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch; /* Smooth swipe on iOS */
+        display: block !important; /* CRITICAL for mobile table scrolling */
+        border-radius: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px; /* Forces wide table so layout doesn't squish */
+        white-space: nowrap;
+    }
+
+    th {
+        text-align: left;
+        padding: 18px;
+        background-color: #f8fafc;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    td {
+        padding: 20px 18px;
+        font-size: 0.95rem;
+        color: #334155;
+        border-bottom: 1px solid #f8fafc;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background-color: #fdfaff;
+    }
+
+    /* User Identity UI */
+    .user-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-box {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1rem;
+        box-shadow: 0 4px 10px rgba(84, 8, 99, 0.2);
+        flex-shrink: 0;
+    }
+
+    .username { font-weight: 800; color: var(--deep-amethyst); display: block; }
+    .email { font-size: 0.8rem; color: #64748b; }
+
+    /* Highlight text styles */
+    .manager-text { font-weight: 600; color: var(--royal-purple); }
+    .shift-badge {
+        background: #f0f7ff;
+        color: #0369a1;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+    .not-assigned { color: #e11d48; font-weight: 700; font-size: 0.85rem; }
+
+    /* Action Buttons */
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 700;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-purple { background: var(--deep-amethyst); color: white; }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(84, 8, 99, 0.15);
+        filter: brightness(1.05);
+        color: white;
+    }
+
+    .footer-nav { margin-top: 30px; }
+    .back-link { text-decoration: none; color: var(--royal-purple); font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition); }
+    .back-link:hover { color: var(--deep-amethyst); transform: translateX(-5px); }
+
+    /* =========================================
+       📱 ULTRA RESPONSIVE MOBILE TWEAKS
+       ========================================= */
+    @media (max-width: 768px) {
+        .report-wrapper {
+            padding: 15px 10px;
+        }
+        
+        .report-container { 
+            padding: 25px 15px; 
+            border-radius: 25px; 
+        }
+        
+        .page-header { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            text-align: left;
+        }
+        
+        h2 { font-size: 1.6rem; }
+
+        .table-responsive { 
+            margin: 0; 
+            border: 1px solid #f1f5f9; 
+        }
+    }
+</style>
+
+<div class="report-wrapper">
+    <div class="report-container">
+        
+        <header class="page-header">
+            <h2><i class="fas fa-users-cog"></i> Employee Report</h2>
+            <div class="count-badge">Total Staff: {{ employees|length }}</div>
+        </header>
+    
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Staff Member</th>
+                        <th>Reporting Manager</th>
+                        <th>Work Shift</th>
+                        <th style="text-align: right;">Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% with request.user.groups.first.role_permissions as role_perms %}
+                    
+                    {% for e in employees %}
+                    <tr>
+                        <td>
+                            <div class="user-meta">
+                                <div class="avatar-box">{{ e.user.username|first|upper }}</div>
+                                <div>
+                                    <span class="username">@{{ e.user.username }}</span>
+                                    <span class="email">{{ e.user.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+    
+                        <td>
+                            {% if e.manager %}
+                                <span class="manager-text"><i class="fas fa-user-tie me-1"></i> {{ e.manager.username }}</span>
+                            {% else %}
+                                <span class="not-assigned"><i class="fas fa-exclamation-triangle me-1"></i> Unassigned</span>
+                            {% endif %}
+                        </td>
+    
+                        <td>
+                            {% if e.shift %}
+                                <span class="shift-badge">{{ e.shift.name }}</span>
+                                <div style="font-size: 0.75rem; color: #64748b; font-weight: 600;">
+                                    <i class="far fa-clock me-1"></i> {{ e.shift.start_time }} – {{ e.shift.end_time }}
+                                </div>
+                            {% else %}
+                                <span class="not-assigned">No Shift Info</span>
+                            {% endif %}
+                        </td>
+    
+                        <td style="text-align: right;">
+                            {% if role_perms.can_view_reports or request.user.is_superuser %}
+                                <a href="/attendance/monthly/?user={{ e.user.id }}" class="btn-action btn-purple">
+                                    <i class="fas fa-file-alt"></i> View Report
+                                </a>
+                            {% endif %}  
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 60px; color: #94a3b8;">
+                            <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                            No employees found in the database.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    {% endwith %}
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="footer-nav">
+            <a href="javascript:history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    
+    </div>
+</div>
+{% endblock %}

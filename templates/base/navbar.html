@@ -1,0 +1,294 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top" style="border-bottom: 3px solid #540863;">
+    <div class="container-fluid px-4">
+        
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+            <div class="brand-logo me-3">
+                <div class="logo-main">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="logo-pulse"></div>
+            </div>
+            <div>
+                <div class="brand-name">Attendance<span class="brand-highlight">Pro</span></div>
+                <div class="brand-tagline">Smart Workforce Management</div>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item mx-1">
+                    <a class="nav-link nav-item-main {% if '/dashboard/' in request.path %}active{% endif %}" href="{% url 'dashboard' %}">
+                        <span class="nav-icon"><i class="fas fa-tachometer-alt"></i></span>
+                        <span class="nav-text">Dashboard</span>
+                        <span class="nav-underline"></span>
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown mx-1">
+                    <a class="nav-link nav-item-main dropdown-toggle" href="#" id="attendanceDropdown" role="button" data-bs-toggle="dropdown">
+                        <span class="nav-icon"><i class="fas fa-calendar-check"></i></span>
+                        <span class="nav-text">Attendance</span>
+                        <span class="nav-underline"></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg p-3" aria-labelledby="attendanceDropdown">
+                        <div class="row g-2">
+                            <div class="col-md-12">
+                                <h6 class="dropdown-header text-muted mb-2 small fw-bold">ACTIONS</h6>
+                                <a class="dropdown-item d-flex align-items-center py-2 rounded-3" href="{% url 'request_correction' %}">
+                                    <div class="icon-circle bg-warning-light me-3"><i class="fas fa-edit text-warning"></i></div>
+                                    <div>
+                                        <div class="fw-bold small">Request Correction</div>
+                                        <small class="text-muted" style="font-size: 0.7rem;">Fix attendance records</small>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center py-2 rounded-3" href="{% url 'my_correction_requests' %}">
+                                    <div class="icon-circle bg-info-light me-3"><i class="fas fa-history text-info"></i></div>
+                                    <div>
+                                        <div class="fw-bold small">History</div>
+                                        <small class="text-muted" style="font-size: 0.7rem;">View past requests</small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown mx-1">
+                    <a class="nav-link nav-item-main dropdown-toggle" href="#" id="leaveDropdown" role="button" data-bs-toggle="dropdown">
+                        <span class="nav-icon"><i class="fas fa-umbrella-beach"></i></span>
+                        <span class="nav-text">Leave</span>
+                        <span class="nav-underline"></span>
+                    </a>
+                    <ul class="dropdown-menu border-0 shadow-lg p-2" aria-labelledby="leaveDropdown">
+                        <li><a class="dropdown-item rounded-3 py-2" href="{% url 'apply_leave' %}"><i class="fas fa-plus-circle me-2 text-primary"></i> Apply Leave</a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="{% url 'my_leave_requests' %}"><i class="fas fa-list-ul me-2 text-success"></i> My Status</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="navbar-right d-flex align-items-center">
+                
+                <!-- Notifications Bell - Now triggers modal instead of dropdown -->
+                <div class="nav-item me-2">
+                    <a class="nav-link notification-wrapper" href="#" role="button" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                            {% if unread_count > 0 %}
+                            <span class="notification-badge" id="notif-count">{{ unread_count }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a class="nav-link user-profile d-flex align-items-center p-1 rounded-pill hover-bg" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="user-avatar">
+                            <div class="avatar-main">
+                                {% if request.user.first_name %}
+                                    {{ request.user.first_name|first|upper }}
+                                {% else %}
+                                    {{ request.user.username|first|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="avatar-status bg-success"></div>
+                        </div>
+                        <div class="user-info ms-2 d-none d-lg-block">
+                            <div class="user-name fw-bold small">
+                                {% if request.user.first_name %}
+                                    {{ request.user.first_name|title }} {{ request.user.last_name|title }}
+                                {% else %}
+                                    @{{ request.user.username }}
+                                {% endif %}
+                            </div>
+                            <div class="user-role text-muted" style="font-size: 0.65rem;">{{ user.profile.role|default:"User" }}</div>
+                        </div>
+                        <i class="fas fa-chevron-down ms-2 small text-muted"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end p-2 shadow-lg border-0" style="min-width: 220px; border-radius: 15px;">
+                        <a href="{% url 'profile' %}" class="dropdown-item rounded-3 py-2"><i class="fas fa-user-circle me-2 text-primary"></i> My Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger d-flex align-items-center gap-2 py-2" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt opacity-75"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div style="height: 80px;"></div>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header text-white" style="background: var(--primary-gradient);">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-bell me-2"></i>Notifications
+                    {% if unread_count > 0 %}
+                    <span class="badge bg-danger ms-2">{{ unread_count }} unread</span>
+                    {% endif %}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light p-0">
+                <div class="list-group list-group-flush">
+                    {% if my_alerts %}
+                        {% for n in my_alerts %}
+                            <div class="list-group-item p-3 border-bottom {% if not n.is_read %}bg-light-blue{% endif %}">
+                                <div class="d-flex w-100 justify-content-between mb-1">
+                                    <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">
+                                        {% if not n.is_read %}
+                                        <span class="badge bg-danger rounded-circle p-1 me-2"></span>
+                                        {% endif %}
+                                        Notification
+                                    </h6>
+                                    <small class="text-muted">{{ n.created_at|date:"M d, H:i" }}</small>
+                                </div>
+                                <p class="mb-1 small text-secondary">{{ n.message }}</p>
+                                <div class="text-end">
+                                    <small class="text-primary fw-bold" style="font-size: 0.75rem;">
+                                        {{ n.created_at|timesince }} ago
+                                        {% if not n.is_read %}<span class="badge bg-warning text-dark ms-2">NEW</span>{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-double fa-3x text-secondary mb-3 opacity-50"></i>
+                            <p class="text-muted">No notifications yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-0">
+                <button type="button" class="btn btn-light w-100 text-muted fw-bold" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --deep-amethyst: #540863;
+    --royal-purple: #92487A;
+    --primary-gradient: linear-gradient(135deg, #540863, #92487A);
+}
+
+/* Navbar Enhancements */
+.navbar { min-height: 80px; transition: all 0.3s ease; border-bottom: 2px solid #f1f5f9; }
+
+/* Logo */
+.logo-main {
+    width: 42px; height: 42px; background: var(--primary-gradient);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(84, 8, 99, 0.2);
+    position: relative; z-index: 2;
+}
+.logo-pulse {
+    position: absolute; width: 50px; height: 50px;
+    background: rgba(84, 8, 99, 0.1); border-radius: 15px;
+    top: -4px; left: -4px; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 0.3; } 100% { transform: scale(1); opacity: 0.8; } }
+
+.brand-name { font-size: 1.4rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
+.brand-highlight { color: var(--deep-amethyst); }
+.brand-tagline { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+
+/* Navigation */
+.nav-item-main {
+    padding: 0.7rem 1.2rem !important; border-radius: 12px;
+    position: relative; transition: 0.3s; font-weight: 600; color: #475569;
+}
+.nav-item-main:hover { background: #fdfaff; color: var(--deep-amethyst) !important; }
+.nav-item-main.active { color: var(--deep-amethyst) !important; background: rgba(84, 8, 99, 0.05); }
+.nav-icon { margin-right: 8px; color: var(--royal-purple); }
+
+/* Dropdowns */
+.dropdown-menu { border: none; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); margin-top: 15px; overflow: hidden; }
+.dropdown-item { transition: 0.2s; color: #334155; font-weight: 500; }
+.dropdown-item:hover { background: #f8fafc; color: var(--deep-amethyst); padding-left: 1.5rem; }
+.icon-circle { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.bg-warning-light { background: #fffbeb; }
+.bg-info-light { background: #ecfeff; }
+
+/* Notifications */
+.notification-icon {
+    width: 40px; height: 40px; background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: #475569; position: relative; transition: 0.3s; cursor: pointer;
+}
+.notification-icon:hover { background: var(--primary-gradient); color: white; border-color: transparent; }
+.notification-badge {
+    position: absolute; top: -5px; right: -5px;
+    background: #ef4444; color: white; font-size: 0.65rem;
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid white; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* User Profile */
+.user-profile:hover { background: #f8fafc; }
+.avatar-main {
+    width: 40px; height: 40px; background: var(--primary-gradient);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 1rem;
+}
+
+/* Modal Styles */
+.modal-content { border-radius: 16px; overflow: hidden; }
+.bg-light-blue { background-color: #f0f9ff; }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var notifModal = document.getElementById('notificationModal');
+        var badge = document.getElementById('notif-count');
+        var badgeInside = document.querySelector('.modal-title .badge');
+        var listContainer = document.querySelector('#notificationModal .list-group');
+    
+        // ✅ Safe CSRF Token Method
+        var csrfToken = "{{ csrf_token }}";
+    
+        if (notifModal) {
+            // 1. Jyare Modal Khule
+            notifModal.addEventListener('show.bs.modal', function () {
+                
+                // UI Update: Badge Gayab
+                if(badge) badge.style.display = 'none';
+                if(badgeInside) badgeInside.style.display = 'none';
+    
+                // Server Call (Database Update)
+                fetch("{% url 'mark_notifications_read' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json"
+                    }
+                })
+                .then(response => {
+                    if(response.ok) console.log("✅ Notifications marked as read.");
+                })
+                .catch(err => console.error("❌ Error:", err));
+            });
+    
+            // 2. Jyare Modal Bandh Thay (List Clear Karo)
+            notifModal.addEventListener('hidden.bs.modal', function () {
+                if(listContainer) {
+                    listContainer.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-double fa-3x text-secondary mb-3 opacity-50"></i>
+                            <p class="text-muted">No new notifications.</p>
+                        </div>`;
+                }
+            });
+        }
+    });
+    </script>

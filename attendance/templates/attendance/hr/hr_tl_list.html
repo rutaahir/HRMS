@@ -1,0 +1,301 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+    /* ===== THEME STYLES ===== */
+    :root {
+        --primary: #540863;
+        --secondary: #92487A;
+        --accent: #E49BA6;
+        --bg-color: #FFD3D5;
+        --surface: #ffffff;
+        --border: #e2e8f0;
+        --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+
+    body { background-color: var(--bg-color); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+    /* HEADER */
+    .dashboard-header {
+        background: var(--gradient); padding: 3rem 0 5rem;
+        color: white; border-radius: 0 0 40px 40px; margin-bottom: -4rem;
+        box-shadow: 0 15px 35px rgba(84, 8, 99, 0.2);
+    }
+
+    .main-container { max-width: 1200px; margin: 0 auto 3rem; padding: 0 1rem; }
+
+    .content-card {
+        background: var(--surface); border-radius: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.5); padding: 15px;
+    }
+
+    /* TABLE (Desktop) */
+    .table-responsive { width: 100%; border-radius: 15px; }
+    .pro-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .pro-table thead th {
+        background: #f8fafc; color: var(--secondary); font-weight: 700;
+        text-transform: uppercase; font-size: 0.75rem; padding: 1.25rem;
+        border-bottom: 2px solid var(--border);
+    }
+    .pro-table td { padding: 1.25rem; vertical-align: middle; border-bottom: 1px solid var(--border); }
+
+    /* BUTTONS */
+    .btn-manage {
+        background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;
+        padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.85rem;
+        cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-manage:hover { background: #0369a1; color: white; transform: translateY(-2px); }
+
+    .btn-view-report {
+        background: #f8fafc; color: var(--secondary); font-weight: 700; padding: 8px 16px;
+        border-radius: 12px; border: 1px solid #e2e8f0; text-decoration: none;
+    }
+
+    /* MODAL STYLES */
+    .modal-header-pro { background: var(--gradient); color: white; padding: 1.2rem 1.5rem; border:none; }
+    
+    .squad-management-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+        height: 500px;
+    }
+    
+    .squad-col { padding: 1.5rem; overflow-y: auto; }
+    .squad-col-left { border-right: 1px solid var(--border); background: #fdfaff; }
+    .squad-col-right { background: #fff; }
+
+    .col-title {
+        font-weight: 800; color: var(--primary); text-transform: uppercase;
+        font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 1rem;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .user-card-sm {
+        background: white; border: 1px solid var(--border);
+        padding: 10px; border-radius: 12px; margin-bottom: 10px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .btn-add {
+        width: 32px; height: 32px; border-radius: 8px; border: none;
+        background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-remove {
+        width: 32px; height: 32px; border-radius: 8px; border: 1px solid #fecaca;
+        background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+    }
+
+    .manager-badge {
+        background: #fdf2f8; color: #c2410c; border: 1px solid #ffedd5;
+        padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700;
+    }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVE TWEAKS
+       ========================================= */
+    @media (max-width: 768px) {
+        .dashboard-header { padding: 2rem 1rem 4rem; text-align: center; }
+        .dashboard-header .d-flex { flex-direction: column; gap: 15px; }
+        
+        /* Hide Desktop Table Headers */
+        .pro-table thead { display: none; }
+        .pro-table, .pro-table tbody, .pro-table tr, .pro-table td { display: block; width: 100%; }
+
+        .pro-table tr {
+            background: #fff; border-radius: 20px; margin-bottom: 15px;
+            padding: 15px; border: 1px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+
+        .pro-table td {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px dashed #eee; text-align: right;
+        }
+        .pro-table td:last-child { border-bottom: none; }
+
+        /* Inject labels for mobile card view */
+        .pro-table td::before {
+            content: attr(data-label); font-weight: 800; color: var(--secondary);
+            font-size: 0.7rem; text-transform: uppercase; text-align: left;
+        }
+
+        /* MODAL FIX: Stack Squad Columns */
+        .squad-management-grid {
+            grid-template-columns: 1fr;
+            height: auto;
+            max-height: 80vh;
+        }
+        .squad-col { height: 300px; padding: 1rem; }
+        .squad-col-left { border-right: none; border-bottom: 2px solid var(--border); }
+        
+        .modal-dialog { margin: 10px; }
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="container main-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="animate__animated animate__fadeInLeft">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-crown fa-2x"></i>
+                    <div class="text-start">
+                        <h2 class="mb-0 fw-bold text-white">Team Leaders</h2>
+                        <p class="mb-0 opacity-75 small">Manage Squad Assignments</p>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'hr_dashboard_view' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm btn-sm">
+                <i class="fas fa-arrow-left me-2"></i> <span class="d-none d-sm-inline">Dashboard</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="main-container animate__animated animate__fadeInUp">
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="pro-table">
+                <thead>
+                    <tr>
+                        <th>Team Leader</th>
+                        <th>Reporting Manager</th>
+                        <th>Squad Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tl in team_leaders %}
+                    <tr>
+                        <td data-label="Team Leader">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white" 
+                                     style="width:40px; height:40px; background:linear-gradient(135deg, #6366f1, #a855f7); font-size: 0.9rem; flex-shrink: 0;">
+                                    {{ tl.user.username|slice:":1"|upper }}
+                                </div>
+                                <div class="text-start">
+                                    <div class="fw-bold text-dark small">
+                                        {% if tl.user.first_name %}{{ tl.user.first_name }} {{ tl.user.last_name }}{% else %}{{ tl.user.username }}{% endif %}
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.65rem;">{{ tl.user.email|truncatechars:20 }}</small>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td data-label="Manager">
+                            {% if tl.manager %}
+                                <span class="manager-badge">
+                                    <i class="fas fa-user-tie me-1"></i> {{ tl.manager.username }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">No Manager</span>
+                            {% endif %}
+                        </td>
+
+                        <td data-label="Squad">
+                            <button type="button" class="btn-manage" data-bs-toggle="modal" data-bs-target="#manageSquadModal-{{ tl.user.id }}">
+                                <i class="fas fa-users-cog"></i> <span>{{ tl.squad_count }} Members</span>
+                            </button>
+                        </td>
+
+                        <td data-label="Report" class="text-end">
+                            <a href="/attendance/monthly/?user={{ tl.user.id }}" class="btn-view-report">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">No Team Leaders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for tl in team_leaders %}
+<div class="modal fade" id="manageSquadModal-{{ tl.user.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+            
+            <div class="modal-header-pro d-flex justify-content-between align-items-center">
+                <div class="text-start">
+                    <h5 class="modal-title fw-bold mb-0">Manage Squad</h5>
+                    <small class="opacity-75">Leader: @{{ tl.user.username }}</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <div class="squad-management-grid">
+                    
+                    <div class="squad-col squad-col-left">
+                        <div class="col-title">
+                            <span><i class="fas fa-user-plus me-2"></i> Available</span>
+                            <span class="badge bg-secondary rounded-pill">{{ tl.available_staff|length }}</span>
+                        </div>
+
+                        {% for emp in tl.available_staff %}
+                        <div class="user-card-sm">
+                            <div class="text-start">
+                                <div class="fw-bold text-dark small">{% if emp.user.first_name %}{{ emp.user.first_name }}{% else %}{{ emp.user.username }}{% endif %}</div>
+                                <div class="text-muted" style="font-size: 0.6rem;">{{ emp.user.email|truncatechars:20 }}</div>
+                            </div>
+                            <form action="{% url 'hr_assign_member' %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="tl_id" value="{{ tl.user.id }}">
+                                <input type="hidden" name="member_id" value="{{ emp.user.id }}">
+                                <button type="submit" class="btn-add"><i class="fas fa-plus"></i></button>
+                            </form>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted small">No available staff.</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="squad-col squad-col-right">
+                        <div class="col-title">
+                            <span><i class="fas fa-users me-2"></i> Current Squad</span>
+                            <span class="badge bg-primary rounded-pill">{{ tl.squad_count }}</span>
+                        </div>
+
+                        {% for member in tl.squad_list %}
+                        <div class="user-card-sm" style="border-left: 3px solid var(--primary);">
+                            <div class="text-start">
+                                <div class="fw-bold text-dark small">@{{ member.user.username }}</div>
+                                <div class="text-success" style="font-size: 0.6rem;"><i class="fas fa-check-circle me-1"></i> Assigned</div>
+                            </div>
+                            <form action="{% url 'hr_remove_member' %}" method="POST" class="m-0" onsubmit="return confirm('Remove member?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="member_id" value="{{ member.user.id }}">
+                                <button type="submit" class="btn-remove"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted small">Squad is empty.</div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="modal-footer bg-light border-0 p-2 justify-content-center">
+                <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Changes save instantly.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

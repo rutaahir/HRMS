@@ -1,0 +1,906 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+{% with role_perms=request.user.groups.first.role_permissions %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    /* ===== NEW THEME: CLEAN CORPORATE ===== */
+    :root {
+        --primary: #540863;       /* Deep Amethyst */
+        --secondary: #92487A;     /* Royal Purple */
+        --accent: #E49BA6;        /* Blush Pink */
+        --light-accent: #FFD3D5;  /* Pale Blush */
+        --bg-color: #F8F9FC;
+        --card-bg: #FFFFFF;
+        --text-dark: #1E293B;
+        --text-grey: #64748B;
+    }
+
+    /* 🔥 Global Screen Lock for Mobile */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    body {
+        background-color: #f3afb9;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-dark);
+        overflow-x: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* ૧. નેવબારને સંપૂર્ણ હટાવો */
+    nav, .navbar, header { 
+        display: none !important; 
+    }
+
+    /* ૪. base.html માં રહેલા મેઈન કન્ટેનરની ટોપ સ્પેસ કાઢો */
+    main, .main-content, .dashboard-wrapper, .container {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* --- HERO HEADER --- */
+    .hero-section {
+        margin-top: 0 !important; 
+        position: relative !important;
+        top: -90px !important; 
+        padding-top: 3rem !important; 
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 3rem 2rem 5rem 2rem;
+        border-radius: 0 0 40px 40px;
+        color: white;
+        margin-bottom: 0 !important;
+        box-shadow: 0 10px 30px rgba(84, 8, 99, 0.15);
+    }
+
+    .hero-btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: white; padding: 10px 20px; border-radius: 12px;
+        font-weight: 600; transition: 0.3s; backdrop-filter: blur(5px);
+        display: flex; justify-content: center; align-items: center;
+    }
+    .hero-btn:hover { background: white; color: var(--primary); transform: translateY(-2px); }
+
+    /* આખા નીચેના ભાગને એકસાથે ઉપર ખેંચવા માટે */
+    .content-up-wrapper {
+        transform: translateY(-120px) !important;
+        margin-bottom: -120px !important;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* --- STATS STRIP --- */
+    .stats-strip {
+        margin-top: 0 !important;
+        transform: none !important;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 999 !important;
+    }
+    .stat-box {
+        background: white; padding: 1.5rem; border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;
+        transition: transform 0.3s; border: 1px solid rgba(0,0,0,0.02);
+        height: 100%;
+    }
+    .stat-box:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+    .stat-icon {
+        width: 55px; height: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; background: var(--light-accent); color: var(--primary); flex-shrink: 0;
+    }
+
+    /* --- TABS --- */
+    .modern-tabs {
+        border: none; margin-top: 2rem; justify-content: center; gap: 10px;
+    }
+    .modern-tabs .nav-link {
+        border: none; background: white; color: var(--text-grey); font-weight: 600;
+        padding: 12px 30px; border-radius: 30px; transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .modern-tabs .nav-link.active {
+        background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+    }
+
+    /* --- BRANCH CARD --- */
+    .branch-card {
+        background: white; border-radius: 24px; padding: 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+        transition: 0.3s; height: 100%; overflow: hidden;
+        display: flex; flex-direction: column;
+    }
+    .branch-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--light-accent); }
+    
+    .branch-header {
+        background: linear-gradient(to right, #f8f9fa, #ffffff);
+        padding: 1.5rem; border-bottom: 1px solid #f1f5f9;
+        display: flex; justify-content: space-between; align-items: start;
+    }
+    .branch-body { padding: 1.5rem; flex-grow: 1; }
+    
+    .branch-footer {
+        padding: 1rem 1.5rem; background: #fafafa; border-top: 1px solid #f1f5f9;
+        display: flex; gap: 10px; justify-content: space-between;
+    }
+
+    /* Action Buttons */
+    .btn-icon-soft {
+        width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        border: 1px solid #e2e8f0; color: var(--text-grey); background: white; transition: 0.2s; cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-icon-soft:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .btn-icon-soft.delete:hover { background: #ef4444; color: white; border-color: #ef4444; }
+    
+    /* Modals */
+    .modal-content-custom, .modal-content-premium {
+        background: #ffffff;
+        border-radius: 28px !important;
+        border: none !important;
+        box-shadow: 0 25px 50px -12px rgba(84, 8, 99, 0.2) !important;
+        overflow: hidden;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header-custom, .modal-header-premium {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white; padding: 1.5rem 2rem; border: none;
+    }
+
+    .modal-title-custom, .modal-title-premium {
+        font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px;
+    }
+
+    .form-group-custom { margin-bottom: 1.5rem; }
+
+    .form-label-custom, .form-label-premium {
+        font-weight: 700; color: var(--text-dark); font-size: 0.8rem; text-transform: uppercase;
+        letter-spacing: 1px; margin-bottom: 8px; display: block;
+    }
+
+    .input-wrapper, .select-wrapper { position: relative; margin-bottom: 0.3rem;}
+
+    .input-wrapper i, .select-wrapper i {
+        position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+        color: var(--secondary); opacity: 0.8; transition: 0.3s; z-index: 10; pointer-events: none;
+    }
+
+    .form-control-custom, .form-select-premium {
+        padding: 14px 15px 14px 45px !important; border-radius: 14px !important; border: 2px solid #FFD3D5 !important;
+        background-color: #fdfaff !important; font-weight: 600; transition: all 0.3s ease; color: #1e293b;
+    }
+
+    .form-control-custom:focus, .form-select-premium:focus {
+        border-color: var(--primary) !important; background-color: white !important;
+        box-shadow: 0 0 0 4px rgba(228, 155, 166, 0.15) !important; outline: none;
+    }
+
+    .admin-select-box { background: #fdfaff; border: 2px dashed rgba(84, 8, 99, 0.1); padding: 1.2rem; border-radius: 20px; }
+
+    .btn-submit-custom, .btn-update-premium, .btn-submit {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white; width: 100%; padding: 16px; border-radius: 18px; font-weight: 800;
+        border: none; box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2); transition: 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; margin-top: 10px;
+    }
+
+    .btn-submit-custom:hover, .btn-update-premium:hover, .btn-submit:hover {
+        transform: translateY(-2px); box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3); filter: brightness(1.1); color: white;
+    }
+
+    /* --- TABLE & SEARCH STYLES --- */
+    .table-container { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+    
+    .controls-container { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .search-wrapper { position: relative; flex-grow: 1; min-width: 240px; }
+    .search-input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; transition: all 0.3s ease; font-size: 0.9rem; background: #ffffff; }
+    .search-input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(146, 72, 122, 0.1); }
+    .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-grey); }
+
+    .clean-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 600px;}
+    .clean-table th { text-transform: uppercase; font-size: 0.75rem; color: var(--text-grey); font-weight: 700; padding: 1rem; border-bottom: 2px solid #f1f5f9; letter-spacing: 0.5px; }
+    .clean-table td { padding: 1rem; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+    .clean-table tr:last-child td { border-bottom: none; }
+    
+    .role-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; background: var(--light-accent); color: var(--primary); }
+    .week-off-badge { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; background: var(--light-accent); color: var(--primary); border: 1px solid rgba(84, 8, 99, 0.1); margin-right: 4px; }
+
+
+    /* ======================================================== */
+    /* 🔥 MOBILE CSS: THE ULTIMATE RESPONSIVE APP-LIKE FIX 🔥 */
+    /* ======================================================== */
+
+    @media (max-width: 768px) {
+        html, body { max-width: 100vw; overflow-x: hidden; }
+        
+        .container { padding-left: 15px !important; padding-right: 15px !important; width: 100% !important; box-sizing: border-box !important;}
+
+        /* Hero Section Fix */
+        .hero-section {
+            top: -40px !important; 
+            padding: 4rem 1rem 5rem 1rem !important; 
+            border-radius: 0 0 25px 25px !important;
+            text-align: center;
+        }
+        .hero-section > .container {
+            flex-direction: column;
+            justify-content: center !important;
+            gap: 15px;
+        }
+        .hero-section .badge { margin: 0 auto; }
+        .hero-section h1 { font-size: 2rem !important; }
+        
+        /* 🔥 HERO BUTTONS: 2 PER ROW 🔥 */
+        .hero-section .d-flex.gap-2 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr; /* Forces 2 columns */
+            width: 100%;
+            gap: 10px !important;
+        }
+        .hero-btn { width: 100%; padding: 12px 5px; font-size: 0.85rem; }
+
+        /* Content Wrapper Fix */
+        .content-up-wrapper {
+            transform: translateY(-60px) !important;
+            margin-bottom: -40px !important;
+        }
+
+        /* 🔥 TOP STATS: STRICT 2x2 GRID 🔥 */
+        .stats-strip { padding: 0 10px !important; }
+        .stats-strip .row {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important; /* 2 cards per row */
+            gap: 12px !important;
+            margin: 0 !important;
+        }
+        .stats-strip .row > div { width: 100% !important; padding: 0 !important; }
+        
+        /* Makes the 3rd stat (Clock) span full width beautifully */
+        .stats-strip .row > div:last-child {
+            grid-column: span 2;
+        }
+        
+        .stat-box { padding: 1rem; flex-direction: column; text-align: center; gap: 10px; border-radius: 16px; }
+        .stat-icon { width: 45px; height: 45px; font-size: 1.2rem; margin: 0 auto; }
+        .stat-box h2 { font-size: 1.6rem !important; }
+        .stat-box span { font-size: 0.75rem !important; letter-spacing: 0; }
+
+        /* 🔥 SWIPEABLE TABS (Look like native mobile app) */
+        .modern-tabs {
+            flex-wrap: nowrap !important; overflow-x: auto; justify-content: flex-start;
+            padding-bottom: 10px; margin-top: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .modern-tabs::-webkit-scrollbar { display: none; }
+        .modern-tabs .nav-link { padding: 10px 20px; font-size: 0.85rem; white-space: nowrap; }
+
+        /* Panels & Tables */
+        .table-container { padding: 1.2rem; border-radius: 20px; margin-top: 1rem !important; width: 100%; box-sizing: border-box; }
+        .table-responsive { margin: 0 -1.2rem; padding: 0 1.2rem; overflow-x: auto; width: calc(100% + 2.4rem); }
+        .clean-table th, .clean-table td { padding: 0.8rem 0.5rem; white-space: nowrap; font-size: 0.85rem; }
+
+        .controls-container { flex-direction: column; align-items: stretch; width: 100%; }
+        .search-wrapper { width: 100%; min-width: unset; }
+
+        /* 🔥 BRANCH CARDS FIX 🔥 */
+        .branch-card { border-radius: 20px; }
+        .branch-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 1.2rem; }
+        
+        /* Action buttons in branch card - 2 per row */
+        .branch-body { 
+            display: grid !important; 
+            grid-template-columns: 1fr 1fr !important; 
+            gap: 10px !important; 
+            padding: 1.2rem !important; 
+        }
+        .branch-body button, .branch-body a { 
+            width: 100% !important; 
+            margin: 0 !important; 
+            font-size: 0.85rem;
+            padding: 10px 5px !important;
+            display: flex; align-items: center; justify-content: center;
+        }
+        /* Delete button spans full width at the bottom of the card */
+        .branch-body a.text-danger { grid-column: span 2; }
+        
+        .branch-footer { padding: 1rem; }
+        
+        /* Modals Padding */
+        .modal-body { padding: 1.2rem !important; }
+        .modal-header-custom { padding: 1.2rem !important; }
+    }
+</style>
+
+<div class="hero-section">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <span class="badge bg-white bg-opacity-25 border border-white border-opacity-25 rounded-pill px-3">Owner Dashboard</span>
+            </div>
+            <h1 class="display-5 fw-bold m-0">{{ company.name }}</h1>
+            <p class="opacity-75 mb-0 fs-5">{{ company.slug }}</p>
+        </div>
+        <div class="d-flex gap-2 w-100 w-md-auto">
+            {% if role_perms.can_manage_users%}
+            <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#addBranchModal">
+                <i class="fas fa-plus me-2"></i> Launch Branch
+            </button>
+            <button class="hero-btn" data-bs-toggle="modal" data-bs-target="#assignStaffModal">
+                <i class="fas fa-users-cog me-2"></i> Manage Roles
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="content-up-wrapper">
+    <div class="container stats-strip">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <div class="stat-icon"><i class="fas fa-network-wired"></i></div>
+                    <div>
+                        <h2 class="m-0 fw-bold">{{ branches.count }}</h2>
+                        <span class="text-muted small fw-bold text-uppercase">Branches</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <div class="stat-icon" style="background: #dcfce7; color: #166534;"><i class="fas fa-users"></i></div>
+                    <div>
+                        <h2 class="m-0 fw-bold">{{ employees.count }}</h2>
+                        <span class="text-muted small fw-bold text-uppercase">Total Staff</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <div class="stat-icon" style="background: #e0f2fe; color: #075985;"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <h2 class="m-0 fw-bold" id="liveClock">--:--</h2>
+                        <span class="text-muted small fw-bold text-uppercase">{% now "l, F j" %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <ul class="nav nav-tabs modern-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#staff-tab">
+                    <i class="fas fa-building me-2"></i> Branches & Staff
+                </button>
+            </li>
+            {% if role_perms.can_view_reports %}
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#policy-tab">
+                    <i class="fas fa-file-contract me-2"></i> Policies
+                </button>
+            </li>
+            {% endif %}
+            {% if role_perms.can_manage_shifts%}
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ops-tab">
+                    <i class="fas fa-sliders-h me-2"></i> Operations
+                </button>
+            </li>
+            {% endif %}
+        </ul>
+
+        <div class="tab-content mt-4">
+            <div class="tab-pane fade show active" id="staff-tab">
+                <div class="row g-4 mb-5">
+                    {% if role_perms.can_view_team%}
+                    {% for branch in branches %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="branch-card">
+                            <div class="branch-header">
+                                <div>
+                                    <h5 class="fw-bold m-0 text-dark">{{ branch.name }}</h5>
+                                    <span class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i> {{ branch.location }}</span>
+                                </div>
+                                <div class="badge bg-light text-dark border">{{ branch.branch_staff.count }} Staff</div>
+                            </div>
+                            <div class="branch-body d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                                <button class="btn btn-sm btn-light border px-3 flex-fill" onclick="openEditBranchModal('{{ branch.id }}', '{{ branch.name|escapejs }}', '{{ branch.location|escapejs }}', '{{ branch.latitude|default:"" }}', '{{ branch.longitude|default:"" }}', '{{ branch.radius|default:50 }}')">
+                                    <i class="fas fa-pen text-primary me-1"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-light border px-3 flex-fill" 
+                                    onclick="openCurrentAdminModal('{{ branch.id }}', '{% for emp in branch.branch_staff.all %}{% if "admin" in emp.user.groups.all|join:","|lower %}{{ emp.user.id }}{% endif %}{% endfor %}')">
+                                    <i class="fas fa-user-shield text-warning"></i> Admin
+                                </button>
+                                <a href="{% url 'delete_branch' branch.id %}" class="btn btn-sm btn-light border px-3 text-danger flex-fill" onclick="return confirm('⚠️ Are you sure?')">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </a>
+                            </div>
+                            <div class="branch-footer">
+                                <a href="{% url 'branch_detail' branch.id %}" class="btn w-100 fw-bold text-white" style="background: var(--primary);">
+                                    View Dashboard <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <h5 class="text-muted">No branches found.</h5>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-warning border-0 rounded-4">
+                            <i class="fas fa-lock me-2"></i> You do not have permission to view branch details.
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if role_perms.can_manage_users %}
+                <div class="table-container mt-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <h5 class="fw-bold m-0" style="color: var(--primary);">Global Staff Directory</h5>
+                        
+                        <div class="controls-container">
+                            <div class="search-wrapper shadow-sm">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="globalStaffSearch" class="search-input" placeholder="Search by name...">
+                            </div>
+
+                            <div class="filter-pill shadow-sm" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; display: flex; align-items: center; padding: 4px 14px; gap: 12px;">
+                                <div class="filter-icon" style="width: 32px; height: 32px; background: var(--light-accent); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+                                    <i class="fas fa-filter"></i>
+                                </div>
+                                <div class="d-flex flex-column w-100">
+                                    <label style="font-size: 0.6rem; font-weight: 800; color: var(--text-grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: -2px;">Role Filter</label>
+                                    <select class="premium-select" onchange="location = this.value;" style="border: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: var(--text-dark); outline: none; cursor: pointer; min-width: 130px; padding:0;">
+                                        <option value="?role=all" {% if not request.GET.role or request.GET.role == 'all' %}selected{% endif %}>All</option>
+                                        <option value="?role=admin" {% if request.GET.role == 'admin' %}selected{% endif %}>Admins</option>
+                                        <option value="?role=manager" {% if request.GET.role == 'manager' %}selected{% endif %}>Managers</option>
+                                        <option value="?role=hr" {% if request.GET.role == 'hr' %}selected{% endif %}>HR</option>
+                                        <option value="?role=team leader" {% if request.GET.role == 'team leader' %}selected{% endif %}>Team Leaders</option>
+                                        <option value="?role=employee" {% if request.GET.role == 'employee' %}selected{% endif %}>Employees</option>
+                                    </select>
+                                </div>
+                                {% if request.GET.role and request.GET.role != 'all' %}
+                                    <a href="?" class="text-danger ms-2" title="Clear Filter"><i class="fas fa-times-circle"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div> 
+                    
+                    <div class="table-responsive">
+                        <table class="clean-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Branch</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emp in employees %}
+                                <tr class="staff-row">
+                                    <td class="fw-bold">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 35px; height: 35px; background: var(--light-accent); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                                {{ emp.user.username|slice:":1"|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="staff-name-element">
+                                                    {% if emp.user.first_name %}{{ emp.user.first_name }} {{ emp.user.last_name }}{% else %}{{ emp.user.username }}{% endif %}
+                                                </div>
+                                                <div class="small text-muted fw-normal">{{ emp.user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge">{{ emp.display_role }}</span></td>
+                                    <td>
+                                        {% if emp.branch %}<span class="text-success fw-bold"><i class="fas fa-check-circle"></i> {{ emp.branch.name }}</span>
+                                        {% else %}<span class="badge bg-secondary">Unassigned</span>{% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn-icon-soft" onclick="openAdminModal('{{ emp.user.id }}')" title="Make Admin"><i class="fas fa-user-shield"></i></button>
+                                            <button class="btn-icon-soft" onclick="openAssignModal('{{ emp.user.id }}')" title="Edit Role"><i class="fas fa-pen"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center py-4 text-muted">No staff found for this role.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="tab-pane fade" id="policy-tab">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="table-container h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold m-0 text-dark">Attendance Rules</h5>
+                                <a href="{% url 'company_add_policy' company.slug %}" class="btn btn-sm btn-light border fw-bold text-primary"><i class="fas fa-plus me-1"></i> New Policy</a>
+                            </div>
+                            {% for p in policies %}
+                                <div class="p-3 mb-3 border rounded-4 bg-light bg-opacity-50">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <span class="text-muted small d-block mb-1">Required Work Hours</span>
+                                            <span class="fw-bold fs-5 text-dark">{{ p.work_hours_required }} Hrs</span>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'company_edit_policy' p.id %}" class="btn-icon-soft" title="Edit"><i class="fas fa-pen text-primary"></i></a>
+                                            <a href="{% url 'company_delete_policy' p.id %}" class="btn-icon-soft delete" onclick="return confirm('Delete this attendance policy?')" title="Delete"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </div>
+                                    <hr class="my-3 opacity-10">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <span class="text-muted small d-block">Grace Time</span>
+                                            <span class="fw-bold text-success">{{ p.grace_time_minutes }} Mins</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <span class="text-muted small d-block mb-2">Week Off Days</span>
+                                            <div class="d-flex flex-wrap">
+                                                {% if '0' in p.week_off_days %}<span class="week-off-badge">M</span>{% endif %}
+                                                {% if '1' in p.week_off_days %}<span class="week-off-badge">T</span>{% endif %}
+                                                {% if '2' in p.week_off_days %}<span class="week-off-badge">W</span>{% endif %}
+                                                {% if '3' in p.week_off_days %}<span class="week-off-badge">T</span>{% endif %}
+                                                {% if '4' in p.week_off_days %}<span class="week-off-badge">F</span>{% endif %}
+                                                {% if '5' in p.week_off_days %}<span class="week-off-badge">S</span>{% endif %}
+                                                {% if '6' in p.week_off_days %}<span class="week-off-badge">S</span>{% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted text-center py-4">No rules set.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="table-container h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold m-0 text-dark">Holidays</h5>
+                                <a href="{% url 'company_add_holiday' company.slug %}" class="btn btn-sm btn-light border"><i class="fas fa-plus"></i></a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="clean-table">
+                                    <thead><tr><th>Date</th><th>Occasion</th><th class="text-end">Action</th></tr></thead>
+                                    <tbody>
+                                        {% for h in holidays %}
+                                        <tr>
+                                            <td class="text-primary fw-bold">{{ h.date }}</td>
+                                            <td>{{ h.name }}</td>
+                                            <td class="text-end">
+                                                <a href="{% url 'company_delete_holiday' h.id %}" class="text-danger" onclick="return confirm('Delete this holiday?')"><i class="fas fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted py-4">No holidays recorded.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="ops-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0">Shift Management</h5>
+                        <a href="{% url 'company_add_shift' company.slug %}" class="btn btn-sm btn-light border fw-bold text-primary"><i class="fas fa-plus me-1"></i> Add Shift</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="clean-table">
+                            <thead><tr><th>Shift Name</th><th>Timing</th><th class="text-end">Manage</th></tr></thead>
+                            <tbody>
+                                {% for s in shifts %}
+                                <tr>
+                                    <td class="fw-bold">{{ s.name }}</td>
+                                    <td><span class="badge bg-light text-dark border">{{ s.start_time }} - {{ s.end_time }}</span></td>
+                                    <td class="text-end">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="{% url 'company_edit_shift' s.id %}" class="btn-icon-soft"><i class="fas fa-pen"></i></a>
+                                            <a href="{% url 'company_delete_shift' s.id %}" class="btn-icon-soft delete" onclick="return confirm('Delete shift?')"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center text-muted py-4">No shifts found.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addBranchModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content modal-content-custom">
+            <div class="modal-header modal-header-custom" style="background: purple;">
+                <h5 class="modal-title modal-title-custom">
+                    <i class="fas fa-building-circle-plus"></i> Launch New Branch
+                </h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="create_branch" value="1">
+                <div class="modal-body p-3 p-md-4 p-lg-5">
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">Branch Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="branch_name" class="form-control form-control-custom" placeholder="e.g. IT Department" required>
+                            <i class="fas fa-store"></i>
+                        </div>
+                    </div>
+                    <div class="form-group-custom">
+                        <label class="form-label-custom">Branch Location</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="location" class="form-control form-control-custom" placeholder="City, Area" required>
+                            <i class="fas fa-map-location-dot"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i> Latitude</label>
+                            <input type="number" step="any" name="latitude" class="form-control" style="border-radius: 10px; background: #f8fafc;" placeholder="e.g. 23.0225" title="Get this from Google Maps">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-map-marker-alt text-primary me-1"></i> Longitude</label>
+                            <input type="number" step="any" name="longitude" class="form-control" style="border-radius: 10px; background: #f8fafc;" placeholder="e.g. 72.5714" title="Get this from Google Maps">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-draw-polygon text-success me-1"></i> Geofence Radius (Meters)</label>
+                            <input type="number" name="radius" class="form-control" style="border-radius: 10px; background: #f8fafc;" value="50" required>
+                            <p class="small text-muted mt-1 mb-0" style="font-size: 0.65rem;">Employees must be within this distance to check-in.</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-select-box p-3">
+                        <label class="form-label-custom" style="color: var(--primary);">
+                            <i class="fas fa-user-shield me-2"></i> Initial Branch Admin
+                        </label>
+                        <select name="branch_admin_id" class="form-select form-control-custom" style="padding-left: 15px !important;">
+                            <option value="" selected disabled>-- Select Admin User --</option>
+                            {% for emp in employees %}
+                                <option value="{{ emp.user.id }}">
+                                    {% if emp.user.first_name %}{{ emp.user.first_name }} {{ emp.user.last_name }}{% else %}{{ emp.user.username }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-muted small mt-2 mb-0"><i class="fas fa-circle-info me-1"></i> This user will manage this branch.</p>
+                    </div>
+                </div>
+                <div class="p-3 p-md-4 p-lg-5 pt-0">
+                    <button type="submit" class="btn-submit-custom">
+                        <span>Deploy Branch</span> <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editBranchModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content modal-content-custom">
+            <div class="modal-header modal-header-custom"><h5 class="modal-title modal-title-custom">Edit Branch</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="edit_branch" value="1">
+                <input type="hidden" name="branch_id" id="editBranchId">
+                <div class="modal-body p-4">
+                    <div class="form-group-custom"><label class="form-label-custom">Branch Name</label><input type="text" name="branch_name" id="editBranchName" class="form-control form-control-custom" required></div>
+                    <div class="form-group-custom"><label class="form-label-custom">Location</label><input type="text" name="location" id="editBranchLocation" class="form-control form-control-custom" required></div>
+                    
+                    <div class="row g-3 mt-1 border-top pt-3">
+                        <div class="col-6">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-map-marker-alt text-danger me-1"></i> Latitude</label>
+                            <input type="number" step="any" name="latitude" id="editBranchLat" class="form-control" style="border-radius: 10px;">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-map-marker-alt text-primary me-1"></i> Longitude</label>
+                            <input type="number" step="any" name="longitude" id="editBranchLng" class="form-control" style="border-radius: 10px;">
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="form-label-custom" style="font-size: 0.7rem;"><i class="fas fa-draw-polygon text-success me-1"></i> Radius (Meters)</label>
+                            <input type="number" name="radius" id="editBranchRad" class="form-control" style="border-radius: 10px;" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 pt-0"><button type="submit" class="btn-submit-custom">Save Changes</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignStaffModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content modal-content-premium">
+            <div class="modal-header modal-header-premium" style="background: #92487A;">
+                <h5 class="modal-title fw-bold" style="color: white;">Manage Roles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="assign_staff_role" value="1">
+                <div class="modal-body p-4 p-lg-5">
+                    <label class="form-label-premium">Target Employee</label>
+                    <div class="select-wrapper">
+                        <i class="fas fa-user-circle"></i>
+                        <select name="user_id" id="modalStaffUserSelect" class="form-select form-select-premium" required>
+                            <option value="" selected disabled>Select member...</option>
+                            {% for emp in employees %}
+                            <option value="{{ emp.user.id }}">
+                                {% if emp.user.first_name %}{{ emp.user.first_name }} {{ emp.user.last_name }}{% else %}{{ emp.user.username }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <label class="form-label-premium mt-3">Assign to Branch</label>
+                    <div class="select-wrapper">
+                        <i class="fas fa-location-dot"></i>
+                        <select name="branch_id" id="modalBranchSelect" class="form-select form-select-premium" required>
+                            <option value="" selected disabled>Choose Branch...</option>
+                            {% for b in branches %}
+                            <option value="{{ b.id }}">{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <label class="form-label-premium mt-3">Authority Level</label>
+                    <div class="select-wrapper">
+                        <i class="fas fa-shield-halved"></i>
+                        <select name="role_name" class="form-select form-select-premium" required>
+                            <option value="Employee">Employee</option>
+                            <option value="Team Leader">Team Leader </option>
+                            <option value="Manager">Manager </option>
+                            <option value="HR">HR </option>
+                            <option value="Admin">Admin </option>
+                        </select>
+                    </div>
+                
+                    <button type="submit" class="btn-update-premium mt-4">
+                        <span>Update Access Rights</span>
+                        <i class="fas fa-key"></i>
+                    </button>
+                    <p class="text-center mt-3 small text-muted">
+                        <i class="fas fa-info-circle me-1"></i> Changes will take effect on next login.
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignAdminModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content modal-content-premium">
+            <div class="modal-header modal-header-premium" style="background: purple;">
+                <h5 class="modal-title fw-bold" style="color: #dcfce7;">Assign Admin</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" style="background: #FFD3D5;">
+                {% csrf_token %}
+                <input type="hidden" name="assign_admin" value="1">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label-premium">Employee</label>
+                        <select name="user_id" id="modalAdminUserSelect" class="form-select form-select-premium" required>
+                            {% for emp in employees %}
+                            <option value="{{ emp.user.id }}">
+                                {% if emp.user.first_name or emp.user.last_name %}{{ emp.user.first_name }} {{ emp.user.last_name }}{% else %}{{ emp.user.username }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-premium">Branch</label>
+                        <select name="branch_id" id="modalAdminBranchSelect" class="form-select form-select-premium" required>
+                            {% for b in branches %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="p-4 pt-0"><button type="submit" class="btn-submit">Assign Admin</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// 🔥 REAL-TIME SEARCH SCRIPT 🔥
+document.addEventListener("DOMContentLoaded", function() {
+    const globalSearchInput = document.getElementById("globalStaffSearch");
+    
+    if(globalSearchInput) {
+        globalSearchInput.addEventListener("keyup", function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll(".staff-row");
+            
+            rows.forEach(row => {
+                const nameElement = row.querySelector(".staff-name-element");
+                if(nameElement) {
+                    const nameText = nameElement.textContent.toLowerCase();
+                    if(nameText.includes(query)) {
+                        row.style.display = ""; // Show matching row
+                    } else {
+                        row.style.display = "none"; // Hide non-matching row
+                    }
+                }
+            });
+        });
+    }
+});
+
+function openCurrentAdminModal(branchId, adminUserId) {
+    const branchSelect = document.getElementById('modalAdminBranchSelect');
+    if(branchId) branchSelect.value = branchId;
+
+    const userSelect = document.getElementById('modalAdminUserSelect');
+    if(adminUserId && adminUserId.trim() !== "") {
+        userSelect.value = adminUserId.trim();
+    } else {
+        userSelect.selectedIndex = 0;
+    }
+    new bootstrap.Modal(document.getElementById('assignAdminModal')).show();
+}
+
+function updateClock() {
+    const now = new Date();
+    const liveClock = document.getElementById('liveClock');
+    if (liveClock) {
+        liveClock.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function openEditBranchModal(id, name, location, lat, lng, rad) {
+    document.getElementById('editBranchId').value = id;
+    document.getElementById('editBranchName').value = name;
+    document.getElementById('editBranchLocation').value = location;
+    document.getElementById('editBranchLat').value = lat !== 'None' ? lat : '';
+    document.getElementById('editBranchLng').value = lng !== 'None' ? lng : '';
+    document.getElementById('editBranchRad').value = rad !== 'None' ? rad : '50';
+    new bootstrap.Modal(document.getElementById('editBranchModal')).show();
+}
+
+function openAssignModal(userId, branchId = null) {
+    if(userId) document.getElementById('modalStaffUserSelect').value = userId;
+    if(branchId) document.getElementById('modalBranchSelect').value = branchId;
+    new bootstrap.Modal(document.getElementById('assignStaffModal')).show();
+}
+
+function openAdminModal(userId) {
+    if(userId) document.getElementById('modalAdminUserSelect').value = userId;
+    new bootstrap.Modal(document.getElementById('assignAdminModal')).show();
+}
+
+function prefillBranch(branchId) {
+    document.getElementById('modalAdminBranchSelect').value = branchId;
+}
+</script>
+{% endwith %}
+{% endblock %}

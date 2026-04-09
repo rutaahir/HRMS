@@ -1,0 +1,279 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 Page Locks */
+    * { box-sizing: border-box; }
+    html, body { max-width: 100vw; overflow-x: hidden; }
+
+    .page-wrapper {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: calc(100vh - 70px);
+        padding: 40px 15px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    /* ===== HEADER AREA ===== */
+    .page-header {
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        padding: 35px 45px;
+        border-radius: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 40px rgba(84, 8, 99, 0.15);
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-info h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 0;
+    }
+
+    /* ===== MAIN CARD ===== */
+    .card {
+        background: var(--white);
+        padding: 35px;
+        border-radius: 35px;
+        box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    /* ===== TABLE STYLING (Desktop) ===== */
+    .table-responsive { width: 100%; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+
+    th {
+        text-align: left;
+        padding: 15px 20px;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 22px 20px;
+        background-color: #fdfaff;
+        font-size: 0.95rem;
+        color: #334155;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+
+    td:first-child { border-left: 1px solid #f1f5f9; border-radius: 20px 0 0 20px; }
+    td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 20px 20px 0; }
+
+    /* Status & Type Elements */
+    .status-pill {
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+    }
+
+    .pending { background: #fff8e1; color: #b45309; }
+    .approved { background: #e6fffa; color: #008080; }
+    .rejected { background: #fff1f2; color: #e11d48; }
+
+    .type-tag { font-weight: 800; font-size: 0.75rem; padding: 5px 12px; border-radius: 10px; text-transform: uppercase; }
+    .type-in { background: #f0e6ff; color: var(--deep-amethyst); }
+    .type-out { background: #fdf2f8; color: var(--royal-purple); }
+
+    .time-flow { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+    .old-val { color: #94a3b8; text-decoration: line-through; font-size: 0.85rem; }
+    .new-val { color: var(--deep-amethyst); font-weight: 800; font-size: 1rem; }
+
+    .reason-box { max-width: 250px; font-size: 0.85rem; color: #64748b; font-style: italic; }
+
+    /* Navigation */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 35px;
+        text-decoration: none;
+        color: var(--royal-purple);
+        font-weight: 800;
+        transition: var(--transition);
+    }
+
+    .back-link:hover { color: var(--deep-amethyst); transform: translateX(-8px); }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVE (STACKED VIEW)
+       ========================================= */
+    @media (max-width: 768px) {
+        .page-header { padding: 25px; text-align: center; justify-content: center; }
+        .header-info h2 { font-size: 1.4rem; justify-content: center; }
+        .card { padding: 15px; border-radius: 25px; }
+
+        /* Force table to stack */
+        table, thead, tbody, th, td, tr { display: block; width: 100%; }
+        thead { display: none; }
+        
+        tbody tr { 
+            margin-bottom: 20px; 
+            border: 1px solid #f1f5f9; 
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+            padding: 15px;
+            border: none;
+            border-bottom: 1px solid #f8fafc;
+            background-color: #fff;
+        }
+
+        td:last-child { border-bottom: none; }
+
+        td::before {
+            content: attr(data-label);
+            font-weight: 800;
+            color: var(--royal-purple);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            text-align: left;
+        }
+
+        .reason-box { max-width: 100%; }
+        .time-flow { justify-content: flex-end; }
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="wrapper">
+
+        <header class="page-header">
+            <div class="header-info">
+                <h2><i class="fas fa-history"></i> My Correction Logs</h2>
+                <p>Track the status of your attendance adjustments</p>
+            </div>
+            <div class="status-pill" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                <i class="fas fa-user-check me-2"></i> 
+                {{ request.user.username|title }}
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request Date</th>
+                            <th>Log Type</th>
+                            <th>Time Adjustment</th>
+                            <th>Reasoning</th>
+                            <th>Review Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in corrections %}
+                        <tr>
+                            <td data-label="Request Date" style="font-weight: 800;">
+                                {{ c.date|date:"d M, Y" }}
+                            </td>
+
+                            <td data-label="Log Type">
+                                {% if c.new_check_in %}
+                                    <span class="type-tag type-in">Check-In</span>
+                                {% else %}
+                                    <span class="type-tag type-out">Check-Out</span>
+                                {% endif %}
+                            </td>
+
+                            <td data-label="Time Adjustment">
+                                <div class="time-flow">
+                                    <span class="old-val">
+                                        {% if c.new_check_in %}
+                                            {{ c.old_check_in|time:"h:i A"|default:"None" }}
+                                        {% else %}
+                                            {{ c.old_check_out|time:"h:i A"|default:"None" }}
+                                        {% endif %}
+                                    </span>
+                                    <i class="fas fa-arrow-right small opacity-50"></i>
+                                    <span class="new-val">
+                                        {% if c.new_check_in %}
+                                            {{ c.new_check_in|time:"h:i A" }}
+                                        {% else %}
+                                            {{ c.new_check_out|time:"h:i A" }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td data-label="Reasoning">
+                                <div class="reason-box">"{{ c.reason|truncatechars:30 }}"</div>
+                            </td>
+
+                            <td data-label="Review Status">
+                                <span class="status-pill {{ c.status|lower }}">
+                                    {% if c.status == "PENDING" %}
+                                        <i class="fas fa-hourglass-half"></i> Pending
+                                    {% elif c.status == "APPROVED" %}
+                                        <i class="fas fa-check-double"></i> Approved
+                                    {% else %}
+                                        <i class="fas fa-times-circle"></i> Rejected
+                                    {% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 60px; background: transparent;">
+                                <i class="fas fa-inbox fa-3x mb-3 opacity-20"></i>
+                                <p class="text-muted">No correction requests found.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="back-link" href="{% url 'dashboard' %}">
+                <i class="fas fa-chevron-left"></i> Return to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

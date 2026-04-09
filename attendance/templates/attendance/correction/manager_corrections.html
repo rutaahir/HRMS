@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Corrections | HR Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        header {
+            margin-bottom: 35px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #edf2f7;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .manager-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-initial {
+            width: 40px;
+            height: 40px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .manager-info b {
+            display: block;
+            color: var(--deep-amethyst);
+            font-size: 0.95rem;
+        }
+
+        /* Time Comparison UI */
+        .comparison-grid {
+            display: flex;
+            gap: 25px;
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .label-xs {
+            font-size: 10px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .old-time {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        .new-time {
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .PENDING { background: #fff8e1; color: #b45309; }
+        .APPROVED { background: #e6fffa; color: #008080; }
+        .REJECTED { background: #fff1f2; color: #e11d48; }
+
+        .reason-text {
+            max-width: 250px;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-style: italic;
+            line-height: 1.5;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover { transform: translateX(-5px); color: var(--deep-amethyst); }
+
+        @media (max-width: 900px) {
+            .card { padding: 25px; }
+            header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <header>
+            <h2><i class="fas fa-user-edit"></i> Manager Correction Logs</h2>
+            <div class="status-pill APPROVED" style="background: var(--deep-amethyst); color: white; padding: 8px 20px;">
+                <i class="fas fa-shield-halved me-1"></i> HR Admin Review
+            </div>
+        </header>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Manager</th>
+                        <th>Request Date</th>
+                        <th>Timing Adjustment</th>
+                        <th>Reasoning</th>
+                        <th>Current Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td>
+                            <div class="manager-cell">
+                                <div class="avatar-initial">{{ r.user.username|first|upper }}</div>
+                                <div class="manager-info">
+                                    <b>@{{ r.user.username }}</b>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td style="font-weight: 700; color: #64748b;">{{ r.date }}</td>
+
+                        <td>
+                            <div class="comparison-grid">
+                                <div class="time-block">
+                                    <span class="label-xs">In Time</span>
+                                    <span class="old-time">{{ r.old_check_in|default:"—" }}</span>
+                                    <span class="new-time">{{ r.new_check_in|default:"—" }}</span>
+                                </div>
+                                <div class="time-block">
+                                    <span class="label-xs">Out Time</span>
+                                    <span class="old-time">{{ r.old_check_out|default:"—" }}</span>
+                                    <span class="new-time">{{ r.new_check_out|default:"—" }}</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="reason-text">
+                                "{{ r.reason }}"
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="status-pill {{ r.status }}">
+                                <i class="fas {% if r.status == 'PENDING' %}fa-clock{% elif r.status == 'APPROVED' %}fa-check-circle{% else %}fa-times-circle{% endif %} me-1"></i>
+                                {{ r.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 80px; color: #94a3b8;">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 d-block" style="opacity: 0.3;"></i>
+                            <p style="font-weight: 600;">No manager correction requests found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="/attendance/dashboard/hr/" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to HR Dashboard
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

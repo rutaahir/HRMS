@@ -1,0 +1,307 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* CRITICAL LOCKS FOR MOBILE RESPONSIVENESS */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+    html, body { max-width: 100vw !important; overflow-x: hidden !important; }
+    
+    body { background-color: var(--pale-blush); color: #1e293b; min-height: 100vh; }
+    
+    .monitor-container { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 40px 20px;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+    }
+
+    /* ===== HEADER AREA ===== */
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
+    .header-title h2 { color: var(--deep-amethyst); font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; white-space: normal; word-wrap: break-word; }
+    
+    .date-badge { display: inline-flex; align-items: center; background: var(--royal-purple); color: white; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 4px 12px rgba(146, 72, 122, 0.2); }
+    
+    /* Send Mail Button */
+    .btn-luxury-mail { background: linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple)); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2); transition: var(--transition); cursor: pointer; text-decoration: none; width: auto; }
+    .btn-luxury-mail:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(84, 8, 99, 0.3); color: white; }
+
+    /* ===== STATS WIDGETS ===== */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 35px; width: 100%; }
+    .box { background: var(--white); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(84, 8, 99, 0.05); display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255, 255, 255, 0.6); transition: var(--transition); }
+    .box:hover { transform: translateY(-5px); border-color: var(--blush-pink); }
+    .stat-icon { width: 55px; height: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;}
+    .icon-total { background: #f0e6ff; color: var(--deep-amethyst); }
+    .icon-present { background: #e6fffa; color: #008080; }
+    .icon-absent { background: #fff1f2; color: #e11d48; }
+    .stat-info span { display: block; font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-info b { font-size: 1.8rem; font-weight: 800; color: #1e293b; line-height: 1.1; }
+
+    /* ===== TABLE CARD & STRICT RESPONSIVENESS ===== */
+    .table-card { 
+        background: var(--white); 
+        padding: 30px; 
+        border-radius: 30px; 
+        box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05); 
+        border: 1px solid rgba(255, 255, 255, 0.6); 
+        width: 100%;
+        max-width: 100%;
+        min-width: 0; /* Prevents flex/grid blowouts */
+        box-sizing: border-box;
+    }
+    
+    .table-responsive { 
+        display: block !important; /* CRITICAL */
+        width: 100% !important; 
+        max-width: 100% !important;
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch; 
+    }
+    
+    table { width: 100%; border-collapse: collapse; min-width: 700px; white-space: nowrap; }
+    th { text-align: left; padding: 18px; color: var(--royal-purple); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #f1f5f9; }
+    td { padding: 20px 18px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #f8fafc; vertical-align: middle; }
+    tr:hover td { background-color: #fdfaff; }
+
+    /* Status Badges & Identity */
+    .status-pill { padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; }
+    .st-present { background: #e6fffa; color: #008080; }
+    .st-late { background: #fff8e1; color: #b45309; }
+    .st-half { background: #fff7ed; color: #c2410c; }
+    .st-working { background: #f0f9ff; color: #0369a1; }
+    .st-partial { background: #f5f3ff; color: #7c3aed; }
+    .st-absent { background: #fff1f2; color: #e11d48; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 38px; height: 38px; background: var(--pale-blush); color: var(--deep-amethyst); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0;}
+
+    .back-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; text-decoration: none; color: var(--royal-purple); font-weight: 700; transition: var(--transition); }
+    .back-link:hover { color: var(--deep-amethyst); transform: translateX(-5px); }
+
+    /* Modal UI Styling */
+    .email-recipient-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; transition: 0.2s; width: 100%; box-sizing: border-box; }
+    .email-recipient-item:hover { border-color: var(--royal-purple); background: #fff; box-shadow: 0 4px 12px rgba(84, 8, 99, 0.05); }
+    .form-check-input:checked { background-color: var(--deep-amethyst); border-color: var(--deep-amethyst); }
+    .custom-textarea { border: 1px solid #e2e8f0; border-radius: 15px; padding: 15px; background: #f8fafc; width: 100%; transition: 0.3s; box-sizing: border-box; }
+    .custom-textarea:focus { outline: none; border-color: var(--blush-pink); background: #fff; box-shadow: 0 0 0 4px rgba(228, 155, 166, 0.1); }
+
+    /* 🔥 ULTRA RESPONSIVE MOBILE STYLES 🔥 */
+    @media (max-width: 768px) {
+        .monitor-container { padding: 20px 10px; }
+        
+        .page-header { 
+            flex-direction: column; 
+            align-items: stretch; 
+            text-align: center; 
+            gap: 15px;
+        }
+        
+        .header-title h2 { font-size: 1.6rem; }
+        .btn-luxury-mail { width: 100%; }
+
+        .stats { grid-template-columns: 1fr; gap: 15px;}
+        .box { padding: 20px; }
+
+        .table-card { padding: 15px; border-radius: 20px; }
+        
+        /* Modal Adjustments for Mobile */
+        .modal-body { padding: 1.2rem !important; }
+        .modal-header { padding: 1.2rem !important; }
+        .email-recipient-item { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 10px; 
+        }
+        .email-recipient-item .form-switch { 
+            align-self: flex-end; 
+            margin-top: -30px; /* Aligns switch with text on small screens */
+        }
+    }
+</style>
+
+<div class="monitor-container">
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="border-radius: 15px; font-weight: 600;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="page-header">
+        <div class="header-title">
+            <h2>Daily Attendance Monitor</h2>
+            <div class="date-badge"><i class="far fa-calendar-alt me-2"></i>{{ today|date:"d M Y" }}</div>
+        </div>
+        
+        <button class="btn-luxury-mail" data-bs-toggle="modal" data-bs-target="#emailReportModal">
+            <i class="fas fa-paper-plane"></i> E-Mail Daily Report
+        </button>
+    </div>
+
+    <div class="stats">
+        <div class="box">
+            <div class="stat-icon icon-total"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <span>Total Employees</span>
+                <b>{{ total_staff }}</b>
+            </div>
+        </div>
+        <div class="box">
+            <div class="stat-icon icon-present"><i class="fas fa-user-check"></i></div>
+            <div class="stat-info">
+                <span>Present Today</span>
+                <b style="color: #008080">{{ present_today }}</b>
+            </div>
+        </div>
+        <div class="box">
+            <div class="stat-icon icon-absent"><i class="fas fa-user-times"></i></div>
+            <div class="stat-info">
+                <span>Absent Today</span>
+                <b style="color: #e11d48">{{ absent_today }}</b>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th><i class="far fa-clock me-1"></i> Check-In</th>
+                        <th><i class="far fa-clock me-1"></i> Check-Out</th>
+                        <th>Live Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in employees %}
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar">{{ r.user.username|first|upper }}</div>
+                                <span style="font-weight: 700; color: var(--deep-amethyst);">
+                                    {{ r.user.first_name|default:r.user.username|title }}
+                                </span>
+                            </div>
+                        </td>
+                    
+                        <td style="font-weight: 600; color: #64748b;">
+                            {% if r.check_in %}
+                                {{ r.check_in|time:"h:i A" }}
+                            {% else %}
+                                <span style="opacity: 0.4">—</span>
+                            {% endif %}
+                        </td>
+                    
+                        <td style="font-weight: 600; color: #64748b;">
+                            {% if r.check_out %}
+                                {{ r.check_out|time:"h:i A" }}
+                            {% else %}
+                                <span style="opacity: 0.4">—</span>
+                            {% endif %}
+                        </td>
+                    
+                        <td>
+                            {% if r.status == "Present" %}
+                                <span class="status-pill st-present"><i class="fas fa-check-circle"></i> Present</span>
+                            {% elif r.status == "Late" %}
+                                <span class="status-pill st-late"><i class="fas fa-exclamation-circle"></i> Late</span>
+                            {% elif r.status == "Half Day" %}
+                                <span class="status-pill st-half"><i class="fas fa-adjust"></i> Half Day</span>
+                            {% elif r.status == "Partial" %}
+                                <span class="status-pill st-partial"><i class="fas fa-hourglass-half"></i> Partial</span>
+                            {% elif r.status == "Working" %}
+                                <span class="status-pill st-working"><i class="fas fa-spinner fa-spin"></i> Working</span>
+                            {% else %}
+                                <span class="status-pill st-absent"><i class="fas fa-times-circle"></i> Absent</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 50px; color: #94a3b8;">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 d-block"></i>
+                            No employees found in this branch/company.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="/attendance/dashboard/hr/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Return to HR Dashboard
+    </a>
+</div>
+
+<div class="modal fade" id="emailReportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered px-2">
+        <div class="modal-content" style="border-radius: 25px; border: none; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--deep-amethyst), var(--royal-purple)); color: white; border: none; padding: 20px 25px;">
+                <h5 class="modal-title fw-bold"><i class="fas fa-envelope-open-text me-2"></i> Dispatch Daily Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="send_daily_report" value="1">
+                
+                <div class="modal-body p-4">
+                    <div class="alert" style="background: var(--pale-blush); color: var(--deep-amethyst); border-radius: 12px; font-weight: 600; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle me-2"></i> This will email today's summary (Present: {{ present_today }}, Absent: {{ absent_today }}) to the selected authorities below.
+                    </div>
+
+                    <h6 class="fw-bold mb-3" style="color: #475569;">Select Recipients:</h6>
+                    
+                    {% for rec in report_recipients %}
+                    <div class="email-recipient-item">
+                        <div>
+                            <div class="fw-bold" style="color: var(--deep-amethyst);">
+                                {{ rec.first_name|default:rec.username|title }}
+                                <span class="badge bg-secondary ms-1" style="font-size: 0.65rem;">{{ rec.groups.first.name|title }}</span>
+                            </div>
+                            <div class="small text-muted">{{ rec.email }}</div>
+                        </div>
+                        <div class="form-check form-switch fs-4 m-0">
+                            <input class="form-check-input shadow-none" type="checkbox" name="target_emails" value="{{ rec.email }}" checked>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <p class="text-danger small">No Admins or Owners with valid emails found!</p>
+                    {% endfor %}
+
+                    <h6 class="fw-bold mt-4 mb-2" style="color: #475569;">Add Remarks (Optional):</h6>
+                    <textarea class="custom-textarea" name="custom_note" rows="3" placeholder="E.g., Production team is short-staffed today due to heavy rain..."></textarea>
+                </div>
+                
+                <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 15px 25px;">
+                    <button type="button" class="btn text-muted fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-luxury-mail m-0 px-4">
+                        <i class="fas fa-paper-plane me-2"></i> Send Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Role | Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --bg-light: #fdfaff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush); /* મુખ્ય બેકગ્રાઉન્ડ */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ===== ASSIGN ROLE CARD ===== */
+        .assignment-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.1);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .user-highlight {
+            color: var(--royal-purple);
+            display: block;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            color: var(--deep-amethyst);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #f1f5f9;
+            background-color: #f8fafc;
+            color: #334155;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none; /* Default arrow hide */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23540863'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+
+        select:focus {
+            border-color: var(--blush-pink);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(228, 155, 166, 0.1);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-save {
+            width: 100%;
+            padding: 16px;
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: var(--deep-amethyst);
+        }
+
+        @media (max-width: 480px) {
+            .assignment-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="assignment-card">
+        <div class="icon-circle">
+            <i class="fas fa-user-shield"></i>
+        </div>
+
+        <h2>Assign Access Role</h2>
+        <span class="user-highlight">Configuring permissions for: @{{ profile.user.username }}</span>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="role">Select Organizational Role</label>
+                <select name="role" id="role">
+                    {% for r in roles %}
+                        <option value="{{ r.name }}" {% if r.name == profile.role %}selected{% endif %}>
+                            {{ r.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fas fa-check-circle"></i> Save Permissions
+            </button>
+        </form>
+
+        <a href="{% url 'admin_list' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Admin List
+        </a>
+    </div>
+
+</body>
+</html>

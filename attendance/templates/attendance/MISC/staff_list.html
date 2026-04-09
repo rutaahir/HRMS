@@ -1,0 +1,191 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --bg-body: #f8faff;
+    }
+
+    body { background-color: var(--bg-body); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+
+    /* HEADER - Kept your original design */
+    .page-header {
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        padding: 2.5rem 2rem 4rem;
+        border-radius: 0 0 40px 40px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(84, 8, 99, 0.15);
+        margin-bottom: -3rem;
+    }
+
+    /* CARD - Kept your original design */
+    .content-card {
+        background: var(--white);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(84, 8, 99, 0.05);
+        margin: 0 auto 3rem;
+        max-width: 1100px;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    /* TABLE BASE - Kept original design with Mobile Scroll Fix */
+    .table-responsive { 
+        width: 100%; 
+        overflow-x: auto; /* 📱 This allows swiping on mobile without breaking design */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .custom-table { width: 100%; border-collapse: collapse; min-width: 600px; } /* Min-width ensures it stays a table */
+    
+    .custom-table th {
+        background: #f8fafc;
+        color: var(--royal-purple);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+    }
+    .custom-table td {
+        padding: 1.2rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        white-space: nowrap; /* Prevents text wrapping to keep table clean */
+    }
+    .custom-table tr:hover td { background-color: #fdfaff; }
+
+    /* BADGES & AVATARS - Kept original */
+    .badge-role {
+        padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700;
+    }
+    .role-tl { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+    .role-emp { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    
+    .status-present { color: #16a34a; font-weight: 700; background: #dcfce7; padding: 5px 12px; border-radius: 8px; }
+    .status-late { color: #ea580c; font-weight: 700; background: #ffedd5; padding: 5px 12px; border-radius: 8px; }
+
+    .avatar-circle {
+        width: 45px; height: 45px; border-radius: 50%;
+        background: var(--pale-blush); color: var(--deep-amethyst);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 1.1rem;
+        border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVE TWEAKS (No Design Changes)
+       ========================================= */
+    @media (max-width: 768px) {
+        .page-header { padding: 2rem 1rem 4rem; }
+        .page-header .container { flex-direction: column; text-align: center; gap: 1rem; }
+        .page-header h2 { font-size: 1.5rem; }
+        
+        .content-card { margin: 0 15px 3rem; }
+        
+        /* Ensure the back button is visible and centered on mobile */
+        .page-header a { width: 100%; text-align: center; }
+    }
+</style>
+
+<div class="page-header">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fas fa-users-viewfinder me-2"></i> {{ page_title }}</h2>
+            <p class="mb-0 opacity-75">Manager: {{ request.user.username }}</p>
+        </div>
+        <a href="{% url 'manager_dashboard' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="content-card">
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Employee Name</th>
+                        <th>Email ID</th>
+                        {% if is_attendance_view %}
+                            <th>Check-In Time</th>
+                            <th>Status</th>
+                        {% else %}
+                            <th>Role / Designation</th>
+                            <th class="text-end pe-4">Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_list %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-circle">
+                                    {{ staff.user.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        {% if staff.user.first_name %}{{ staff.user.first_name }} {{ staff.user.last_name }}{% else %}{{ staff.user.username }}{% endif %}
+                                    </div>
+                                    <div class="small text-muted">ID: #{{ staff.user.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>{{ staff.email }}</td>
+
+                        {% if is_attendance_view %}
+                            <td>
+                                <i class="far fa-clock me-1 text-muted"></i> 
+                                <strong>{{ staff.check_in_time|default:"--" }}</strong>
+                            </td>
+                            <td>
+                                {% if staff.role == 'Late' %}
+                                    <span class="status-late">Late</span>
+                                {% else %}
+                                    <span class="status-present">Present</span>
+                                {% endif %}
+                            </td>
+                        {% else %}
+                            <td>
+                                {% if staff.is_tl %}
+                                    <span class="badge-role role-tl"><i class="fas fa-crown me-1"></i> Team Leader</span>
+                                {% else %}
+                                    <span class="badge-role role-emp">Employee</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'monthly_attendance' %}?user={{ staff.user.id }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                    <i class="fas fa-file-invoice me-1"></i> Report
+                                </a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <p class="text-muted fw-bold">No records found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+from django.db import models
+from django.contrib.auth.models import User, Group
+from django.utils import timezone
+
+# 1. COMPANY MODEL
+class Company(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    
+    def __str__(self):
+        return self.name
+
+# 2. SHIFT MODEL
+class Shift(models.Model):
+    name = models.CharField(max_length=50)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    break_minutes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.name} ({self.start_time} - {self.end_time})"
+
+# 3. ATTENDANCE POLICY
+class AttendancePolicy(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    work_hours_required = models.FloatField(default=8.0)
+    late_after_minutes = models.IntegerField(default=15)
+    grace_time_minutes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Policy for {self.company.name}"
+
+# 4. HOLIDAY MODEL
+class Holiday(models.Model):
+    name = models.CharField(max_length=100)
+    date = models.DateField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.date}"
+
+# 5. 🔥 PROFILE MODEL (Related Names Fix કર્યા છે) 🔥
+class Profile(models.Model):
+    # 'related_name' ઉમેર્યા છે જેથી 'accounts' એપ સાથે અથડામણ ના થાય
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='attendance_profile'
+    )
+    company = models.ForeignKey(
+        Company, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='attendance_profiles'
+    )
+    shift = models.ForeignKey(
+        Shift, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='attendance_profiles'
+    )
+    
+    # Manager Connection
+    manager = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='attendance_team_members'
+    )
+    
+    department = models.CharField(max_length=100, blank=True, null=True)
+    role = models.CharField(max_length=50, blank=True, null=True)
+    
+    group_role = models.ForeignKey(
+        Group, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role}"
+
+# 6. ATTENDANCE MODEL
+class Attendance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    check_in = models.TimeField(null=True, blank=True)
+    check_out = models.TimeField(null=True, blank=True)
+    status = models.CharField(max_length=20, default='Absent')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"
+
+# 7. LEAVE MODEL
+class Leave(models.Model):
+    STATUS_CHOICES = [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected')]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    from_date = models.DateField()
+    to_date = models.DateField()
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+
+# 8. CORRECTION MODEL
+class AttendanceCorrection(models.Model):
+    STATUS_CHOICES = [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected')]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField() 
+    new_check_in = models.TimeField(null=True, blank=True)
+    new_check_out = models.TimeField(null=True, blank=True)
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+
+# 9. TASK MODEL
+class Task(models.Model):
+    STATUS_CHOICES = [('PENDING', 'Pending'), ('IN_PROGRESS', 'In Progress'), ('COMPLETED', 'Completed')]
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_assigned')
+    assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks_created')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    due_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# 10. NOTIFICATION MODEL
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}"

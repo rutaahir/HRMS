@@ -1,0 +1,9 @@
+<h2>Notifications</h2>
+
+{% for n in notes %}
+<div>
+  {{ n.message }} — {{ n.created_at }}
+</div>
+{% empty %}
+No notifications yet.
+{% endfor %}

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Calendar | HR Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --danger: #e11d48;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 40px;
+            border-radius: 35px;
+            box-shadow: 0 25px 60px rgba(84, 8, 99, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== HEADER SECTION ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ===== BUTTON STYLES ===== */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: var(--pale-blush);
+            color: var(--deep-amethyst);
+        }
+
+        .btn-edit:hover {
+            background-color: var(--blush-pink);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #fff1f2;
+            color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        .holiday-date {
+            font-weight: 700;
+            color: var(--deep-amethyst);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .holiday-date i {
+            color: var(--blush-pink);
+            font-size: 1.1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 25px; }
+            .page-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+            td, th { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <h2><i class="fas fa-calendar-star"></i> Holiday List</h2>
+        <a class="btn btn-add" href="/attendance/hr/holidays/add/">
+            <i class="fas fa-plus-circle"></i> Add New Holiday
+        </a>
+    </header>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Celebration Date</th>
+                    <th>Holiday Name</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in holidays %}
+                <tr>
+                    <td>
+                        <div class="holiday-date">
+                            <i class="far fa-calendar-check"></i>
+                            {{ h.date }}
+                        </div>
+                    </td>
+                    <td style="font-weight: 500;">{{ h.name }}</td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <a class="btn btn-edit" href="/attendance/hr/holidays/edit/{{ h.id }}/">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a class="btn btn-delete" href="/attendance/hr/holidays/delete/{{ h.id }}/" onclick="return confirm('Are you sure you want to delete this holiday?')">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-calendar-day fa-3x mb-3 d-block"></i>
+                        No holidays found in the database.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/attendance/dashboard/hr/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to HR Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

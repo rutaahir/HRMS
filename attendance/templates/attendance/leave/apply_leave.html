@@ -1,0 +1,252 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 🔥 Page Wrapper for centering and mobile spacing */
+    .leave-page-wrapper {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: calc(100vh - 70px); /* Adjusts for potential navbar height */
+        padding: 40px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .box {
+        width: 100%;
+        max-width: 500px;
+        background: var(--white);
+        padding: 45px;
+        border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    /* Gradient accent line */
+    .box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--deep-amethyst), var(--royal-purple), var(--blush-pink));
+    }
+
+    h2 {
+        text-align: center;
+        color: var(--deep-amethyst);
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 30px;
+        letter-spacing: -1px;
+    }
+
+    label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--royal-purple);
+        margin-bottom: 8px;
+        margin-left: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        border: 2px solid #f1f5f9;
+        border-radius: 16px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background-color: #f8fafc;
+        transition: var(--transition);
+        color: #334155;
+        box-sizing: border-box;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--blush-pink);
+        background-color: var(--white);
+        box-shadow: 0 0 0 5px rgba(228, 155, 166, 0.1);
+    }
+
+    textarea {
+        height: 120px;
+        resize: none;
+        line-height: 1.6;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+    }
+
+    .note {
+        text-align: center;
+        margin-top: 25px;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    /* ===== MODERN TOAST SYSTEM (Mobile Responsive) ===== */
+    #toast-wrapper {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        left: 20px; /* Force small screens to contain toast */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    .toast {
+        width: 100%;
+        max-width: 320px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        border-radius: 15px;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+        animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast-success { background: linear-gradient(135deg, #00b09b, #96c93d); }
+    .toast-error { background: linear-gradient(135deg, #ff5f6d, #ffc371); }
+    .toast-info { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+    /* 🔥 ULTRA RESPONSIVE MOBILE TWEAKS 🔥 */
+    @media (max-width: 500px) {
+        .leave-page-wrapper { padding: 20px 10px; }
+        .box { padding: 30px 20px; border-radius: 25px; }
+        h2 { font-size: 1.6rem; margin-bottom: 20px; }
+        label { font-size: 0.8rem; }
+        input, textarea { padding: 12px 15px; font-size: 0.9rem; margin-bottom: 15px; }
+        .btn-submit { padding: 14px; font-size: 0.95rem; }
+        #toast-wrapper { align-items: center; left: 10px; right: 10px; }
+    }
+</style>
+
+<div class="leave-page-wrapper">
+    {% if messages %}
+    <div id="toast-wrapper">
+        {% for message in messages %}
+            <div class="toast toast-{{ message.level_tag }}">
+                <i class="fas {% if message.level_tag == 'success' %}fa-check-circle{% elif message.level_tag == 'error' %}fa-times-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="box">
+        <h2>Apply Leave</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="from_date"><i class="far fa-calendar-alt"></i> From Date</label>
+            <input type="date" name="from_date" id="from_date" min="{% now 'Y-m-d' %}" required>
+
+            <label for="to_date"><i class="far fa-calendar-check"></i> To Date</label>
+            <input type="date" name="to_date" id="to_date" min="{% now 'Y-m-d' %}" required>
+
+            <label for="reason"><i class="fas fa-comment-dots"></i> Reason for Leave</label>
+            <textarea name="reason" id="reason" placeholder="Write a short reason for your leave request..." required></textarea>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Submit Leave Request
+            </button>
+        </form>
+
+        <p class="note">
+            <i class="fas fa-user-shield"></i> Your Manager will review your request.
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Automatically hide toasts after 4 seconds
+        setTimeout(() => {
+            document.querySelectorAll(".toast").forEach(t => {
+                t.style.transition = "0.5s";
+                t.style.opacity = "0";
+                t.style.transform = "translateY(-20px)";
+                setTimeout(() => t.remove(), 500);
+            });
+        }, 4000);
+
+        // Date validation logic
+        const fromDateInput = document.getElementById('from_date');
+        const toDateInput = document.getElementById('to_date');
+
+        if (fromDateInput && toDateInput) {
+            fromDateInput.addEventListener('change', function() {
+                toDateInput.min = this.value;
+                if (toDateInput.value && toDateInput.value < this.value) {
+                    toDateInput.value = this.value;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company.name }} | Employee Directory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --bg-light: #fdfaff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== DIRECTORY CARD ===== */
+        .directory-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
+
+        .header-area h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .company-badge {
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 18px;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--blush-pink), var(--pale-blush));
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .username {
+            font-weight: 700;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        .email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .role-pill {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .btn-view {
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-back:hover {
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .directory-card { padding: 25px; }
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Hide email on small screens */
+            .header-area { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="directory-card">
+        <div class="header-area">
+            <h2><i class="fas fa-users-rectangle me-2"></i> Employee Directory</h2>
+            <span class="company-badge">{{ company.name }}</span>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Contact Email</th>
+                    <th>Role</th>
+                    <th>Activity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {{ u.user.username|first|upper }}
+                            </div>
+                            <div>
+                                <span class="username">{{ u.user.username }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="email">{{ u.user.email }}</span>
+                    </td>
+                    <td>
+                        <span class="role-pill">{{ u.role }}</span>
+                    </td>
+                    <td>
+                        <a href="/attendance/admin/attendance/{{ u.user.id }}/" class="btn-view">
+                            <i class="fas fa-eye"></i> View Attendance
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 50px; color: #94a3b8;">
+                        <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                        No employees found for this company.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Leave | Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --deep-amethyst: #540863;
+        --royal-purple: #92487A;
+        --blush-pink: #E49BA6;
+        --pale-blush: #FFD3D5;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+        background-color: var(--pale-blush);
+        color: #1e293b;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* ===== MAIN FORM CARD ===== */
+    .update-card {
+        width: 100%;
+        max-width: 500px;
+        background: var(--white);
+        padding: 45px;
+        border-radius: 35px;
+        box-shadow: 0 25px 60px rgba(84, 8, 99, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        position: relative;
+    }
+
+    h2 {
+        color: var(--deep-amethyst);
+        font-size: 1.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 30px;
+        letter-spacing: -0.5px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: 700;
+        color: var(--royal-purple);
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 14px 18px;
+        border-radius: 16px;
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #334155;
+        outline: none;
+        transition: var(--transition);
+    }
+
+    input:focus, textarea:focus {
+        border-color: var(--blush-pink);
+        background-color: var(--white);
+        box-shadow: 0 0 0 4px rgba(228, 155, 166, 0.1);
+    }
+
+    textarea {
+        height: 110px;
+        resize: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 16px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+        color: white;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 10px 20px rgba(84, 8, 99, 0.2);
+    }
+
+    button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(84, 8, 99, 0.3);
+    }
+
+    /* ===== MODERN TOASTS ===== */
+    .toast-container.center {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 100%;
+        max-width: 400px;
+        padding: 0 20px;
+    }
+
+    .toast {
+        background: var(--white);
+        padding: 16px 24px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        animation: slideIn 0.5s ease forwards;
+        border-left: 6px solid var(--deep-amethyst);
+    }
+
+    .toast.success { border-color: #2ecc71; color: #27ae60; }
+    .toast.error { border-color: #e74c3c; color: #c0392b; }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 25px;
+        text-decoration: none;
+        color: var(--royal-purple);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .back-link:hover { color: var(--deep-amethyst); }
+</style>
+</head>
+
+<body>
+
+{% if messages %}
+<div class="toast-container center">
+    {% for message in messages %}
+        <div class="toast {{ message.tags }}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="update-card">
+    <h2><i class="fas fa-edit me-2"></i> Update Request</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label><i class="far fa-calendar-alt me-1"></i> From Date</label>
+            <input type="date" name="from_date"
+                   value="{{ leave.from_date|date:'Y-m-d' }}"
+                   min="{{ today }}"
+                   required>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="far fa-calendar-check me-1"></i> To Date</label>
+            <input type="date" name="to_date"
+                   value="{{ leave.to_date|date:'Y-m-d' }}"
+                   min="{{ today }}"
+                   required>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-comment-dots me-1"></i> Reason for Update</label>
+            <textarea name="reason" placeholder="Explain why you are updating this request...">{{ leave.reason }}</textarea>
+        </div>
+        
+        <button type="submit">
+            <i class="fas fa-sync-alt me-1"></i> Save Changes
+        </button>
+    </form>
+
+    <a href="javascript:history.back()" class="back-link">
+        <i class="fas fa-arrow-left me-1"></i> Cancel & Go Back
+    </a>
+</div>
+
+<script>
+    // Validation: To Date cannot be earlier than From Date
+    const fromDateInput = document.querySelector('input[name="from_date"]');
+    const toDateInput   = document.querySelector('input[name="to_date"]');
+    
+    fromDateInput.addEventListener("change", function () {
+        toDateInput.min = this.value;
+        if (toDateInput.value < this.value) {
+            toDateInput.value = this.value;
+        }
+    });
+
+    // Auto-remove toasts after 4 seconds
+    setTimeout(() => {
+        document.querySelectorAll(".toast").forEach(t => {
+            t.style.opacity = '0';
+            t.style.transform = 'translateY(-20px)';
+            t.style.transition = 'all 0.5s ease';
+            setTimeout(() => t.remove(), 500);
+        });
+    }, 4000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Attendance Report</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .wrapper {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 25px 35px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(84, 8, 99, 0.2);
+            margin-bottom: 25px;
+        }
+
+        .head-title h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-export {
+            background: var(--white);
+            color: var(--deep-amethyst);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* ===== STATS CARDS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(84, 8, 99, 0.05);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-card span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-card strong {
+            font-size: 1.8rem;
+            color: var(--deep-amethyst);
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-card {
+            background: var(--white);
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(84, 8, 99, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-card label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--royal-purple);
+        }
+
+        select {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            font-weight: 600;
+            background: #f8fafc;
+        }
+
+        .btn-view {
+            background: var(--deep-amethyst);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-view:hover {
+            background: var(--royal-purple);
+            transform: scale(1.02);
+        }
+
+        /* ===== TABLE AREA ===== */
+        .table-container {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(84, 8, 99, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--royal-purple);
+            padding: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #edf2f7;
+        }
+/* SweetAlert Popup Custom Styling */
+.swal-custom-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    border-radius: 18px;
+    border: 2px solid #f1f5f9;
+    background: #E49BA6;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-decoration: none;
+}
+
+.swal-custom-btn i {
+    font-size: 1.5rem;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.swal-custom-btn.monthly i { background: #e0f2fe; color: #0284c7; }
+.swal-custom-btn.yearly i { background: #dcfce7; color: #166534; }
+
+.swal-custom-btn .btn-title {
+    display: block;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.swal-custom-btn .btn-desc {
+    display: block;
+    font-size: 0.75rem;
+    color: #2d333d;
+    font-weight: 500;
+}
+
+.swal-custom-btn:hover {
+    transform: translateY(-3px);
+    border-color: #540863;
+    box-shadow: 0 10px 20px rgba(84, 8, 99, 0.1);
+}
+
+.swal2-close:focus { box-shadow: none !important; }
+        td {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Custom Row Colors */
+        tr.holiday-row { background-color: #d5e2f1; }
+        tr.weekend-row { background-color: #eed9d9; }
+        tr.leave-row { background-color: #f5ead4; }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-block;
+        }
+
+        .present { background: #e6fffa; color: #008080; }
+        .absent { background: #fff1f2; color: #e11d48; }
+        .late { background: #fef3c7; color: #d97706; }
+        .working { background: #f0f9ff; color: #0369a1; }
+        .holiday { color: #b45309; font-weight: 800; }
+        .leave { background: #fef3c7; color: #92400e; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            text-decoration: none;
+            color: var(--deep-amethyst);
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { transform: translateX(-5px); }
+
+        @media (max-width: 850px) {
+            .stats { grid-template-columns: 1fr; }
+            .filter-card { flex-direction: column; align-items: stretch; }
+            .header { flex-direction: column; text-align: center; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <header class="header">
+        <div class="head-title">
+            <h1>
+                <i class="fas fa-calendar-alt"></i>
+                Monthly Report — {{ month }}/{{ year }}
+            </h1>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="user-tag" style="margin-right: 15px; font-weight: 700;">
+                <i class="fas fa-user-circle"></i> 
+                {% if target.first_name %}
+                    {{ target.first_name|title }} {{ target.last_name|title }}
+                {% else %}
+                    {{ target.username }}
+                {% endif %}
+            </span></br></br>
+            <!-- <a href="/attendance/monthly/export/?user={{ target.id }}&month={{ month }}&year={{ year }}" 
+   id="exportExcelBtn" 
+   class="btn-export">
+    <i class="fas fa-file-excel"></i> Export to Excel
+</a> -->
+<button type="button" class="btn-export" onclick="showExportOptions()">
+    <i class="fas fa-file-export me-2"></i> Export Data
+</button>
+
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat-card">
+            <span>Working Days</span>
+            <strong>{{ working_days }}</strong>
+        </div>
+        <div class="stat-card" style="border-bottom: 4px solid #2ecc71;">
+            <span>Present Count</span>
+            <strong style="color: #2ecc71;">{{ present_count }}</strong>
+        </div>
+        <div class="stat-card" style="border-bottom: 4px solid #e74c3c;">
+            <span>Absent Count</span>
+            <strong style="color: #e74c3c;">{{ absent_count }}</strong>
+        </div>
+    </div>
+
+    <div class="filter-card">
+        <form method="GET" style="display: flex; align-items: center; gap: 15px; width: 100%; flex-wrap: wrap;">
+            
+            {% if is_hr and employees %}
+                <label>Employee:</label>
+                <select name="user">
+                    {% for emp in employees %}
+                    <option value="{{ emp.id }}" {% if emp.id == target_user.id %}selected{% endif %}>
+                        {% if emp.first_name %}
+                            {{ emp.first_name|title }} {{ emp.last_name|title }}
+                        {% else %}
+                            {{ emp.username }}
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            
+            {% else %}
+                <input type="hidden" name="user" value="{{ target_user.id }}">
+                
+                <div style="background: #e0f2fe; color: #0284c7; padding: 8px 15px; border-radius: 10px; font-weight: bold;">
+                    <i class="fas fa-user me-1"></i> 
+                    {% if target_user.first_name %}
+                        {{ target_user.first_name|title }} {{ target_user.last_name|title }}
+                    {% else %}
+                        {{ target_user.username }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            <label>Month:</label>
+            <select name="month">
+                <option value="1" {% if month == 1 %}selected{% endif %}>January</option>
+                <option value="2" {% if month == 2 %}selected{% endif %}>February</option>
+                <option value="3" {% if month == 3 %}selected{% endif %}>March</option>
+                <option value="4" {% if month == 4 %}selected{% endif %}>April</option>
+                <option value="5" {% if month == 5 %}selected{% endif %}>May</option>
+                <option value="6" {% if month == 6 %}selected{% endif %}>June</option>
+                <option value="7" {% if month == 7 %}selected{% endif %}>July</option>
+                <option value="8" {% if month == 8 %}selected{% endif %}>August</option>
+                <option value="9" {% if month == 9 %}selected{% endif %}>September</option>
+                <option value="10" {% if month == 10 %}selected{% endif %}>October</option>
+                <option value="11" {% if month == 11 %}selected{% endif %}>November</option>
+                <option value="12" {% if month == 12 %}selected{% endif %}>December</option>
+            </select>
+    
+            <label>Year:</label>
+            <select name="year">
+                <option value="2024" {% if year == 2024 %}selected{% endif %}>2024</option>
+                <option value="2025" {% if year == 2025 %}selected{% endif %}>2025</option>
+                <option value="2026" {% if year == 2026 %}selected{% endif %}>2026</option>
+            </select>
+    
+            <button type="submit" class="btn-view">Update View</button>
+        </form>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in days %}
+                <tr class="{% if d.is_holiday %}holiday-row{% elif d.status == 'Leave' %}leave-row{% elif d.is_week_off %}weekend-row{% endif %}">
+                    
+                    <td style="font-weight: 700;">{{ d.date }}</td>
+                    <td>{{ d.check_in|default:"—" }}</td>
+                    <td>{{ d.check_out|default:"—" }}</td>
+                    <td>
+                        {% if d.is_holiday %}
+                            <span class="holiday"><i class="fas fa-star me-1"></i> {{ d.holiday_name }}</span>
+                            {% elif d.status == "Leave" %}
+                            <span class="status-pill leave">Approved Leave</span>
+                        {% elif d.status == "Present" %}
+                            <span class="status-pill present">Present</span>
+                        {% elif d.status == "Late" %}
+                            <span class="status-pill late">Late</span>
+                        {% elif d.status == "Half Day" %}
+                            <span class="status-pill late">Half Day</span>
+                        {% elif d.status == "Working" %}
+                            <span class="status-pill working">Working</span>
+                        {% elif d.status == "Partial" %}
+                            <span class="status-pill present" style="background:#f5f3ff; color:#7c3aed;">Partial</span>
+                        {% elif d.status == "Absent" %}
+                            <span class="status-pill absent">Absent</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="/attendance/dashboard/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <p style="font-size: 0.8rem; color: #64748b; font-weight: 600; margin-top: 25px;">
+            <i class="fas fa-info-circle me-1"></i> Weekend rows are highlighted in light red.
+        </p>
+    </div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ૧. બધા જરૂરી એલિમેન્ટ્સ પકડો
+        const monthSelect = document.querySelector('select[name="month"]');
+        const yearSelect = document.querySelector('select[name="year"]');
+        const userSelect = document.querySelector('select[name="user"]'); // જો HR હોય તો
+        const hiddenUser = document.querySelector('input[name="user"]'); // જો Employee હોય તો
+        const exportBtn = document.getElementById('exportExcelBtn');
+    
+        function updateExportLink() {
+            // ૨. અત્યારની વેલ્યુઝ મેળવો
+            const month = monthSelect.value;
+            const year = yearSelect.value;
+            const userId = userSelect ? userSelect.value : (hiddenUser ? hiddenUser.value : '{{ target.id }}');
+    
+            // ૩. નવી URL બનાવો
+            const newUrl = `/attendance/monthly/export/?user=${userId}&month=${month}&year=${year}`;
+            
+            // ૪. એક્સપોર્ટ બટનની લિંક અપડેટ કરો
+            exportBtn.setAttribute('href', newUrl);
+        }
+    
+        // જ્યારે પણ ડ્રોપડાઉન બદલાય ત્યારે લિંક અપડેટ કરો
+        monthSelect.addEventListener('change', updateExportLink);
+        yearSelect.addEventListener('change', updateExportLink);
+        if(userSelect) userSelect.addEventListener('change', updateExportLink);
+    
+        // પેજ લોડ થાય ત્યારે એકવાર રન કરો
+        updateExportLink();
+    });
+    </script>
+    <script>
+        function showExportOptions() {
+            // ૧. અત્યારના ફિલ્ટરમાંથી ડેટા પકડો
+            const monthSelect = document.querySelector('select[name="month"]');
+            const yearSelect = document.querySelector('select[name="year"]');
+            const userSelect = document.querySelector('select[name="user"]');
+            const hiddenUser = document.querySelector('input[name="user"]');
+        
+            const month = monthSelect.value;
+            const monthName = monthSelect.options[monthSelect.selectedIndex].text;
+            const year = yearSelect.value;
+            const userId = userSelect ? userSelect.value : (hiddenUser ? hiddenUser.value : '{{ target.id }}');
+        
+            // ૨. સુંદર Popup ખોલો
+            Swal.fire({
+                title: '<span style="color: #540863; font-weight: 800;">Choose Export Type</span>',
+                html: `
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Select the format for <b>${year}</b> report</p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button id="monthlyLink" class="swal-custom-btn monthly">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div style="text-align: left;">
+                                <span class="btn-title">Monthly Report</span>
+                                <span class="btn-desc">Download for ${monthName} ${year}</span>
+                            </div>
+                        </button>
+                        <button id="yearlyLink" class="swal-custom-btn yearly">
+                            <i class="fas fa-calendar-check"></i>
+                            <div style="text-align: left;">
+                                <span class="btn-title">Yearly Report</span>
+                                <span class="btn-desc">Full attendance log for year ${year}</span>
+                            </div>
+                        </button>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                background: '#ffffff',
+                borderRadius: '25px',
+                width: '380px',
+                didOpen: () => {
+                    // ૩. બટન પર ક્લિક કરવાથી ડાઉનલોડ ચાલુ થશે
+                    document.getElementById('monthlyLink').addEventListener('click', () => {
+                        window.location.href = `/attendance/monthly/export/?user=${userId}&month=${month}&year=${year}`;
+                        Swal.close();
+                    });
+                    document.getElementById('yearlyLink').addEventListener('click', () => {
+                        window.location.href = `/attendance/yearly/export/?user=${userId}&year=${year}`;
+                        Swal.close();
+                    });
+                }
+            });
+        }
+        </script>
+</body>
+</html>

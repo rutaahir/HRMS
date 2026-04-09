@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correction Approvals | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        header {
+            margin-bottom: 35px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            color: var(--deep-amethyst);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            background-color: #f8fafc;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #edf2f7;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        /* User Identity UI */
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-initial {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .emp-name { font-weight: 800; color: var(--deep-amethyst); display: block; }
+        .date-text { font-weight: 700; color: #64748b; font-size: 0.9rem; }
+        
+        /* Time Comparison UI */
+        .time-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 120px;
+        }
+        
+        .time-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .old-time { color: #94a3b8; text-decoration: line-through; font-size: 0.85rem; }
+        .new-time { color: var(--royal-purple); font-weight: 700; font-size: 0.95rem; }
+
+        .reason-cell {
+            max-width: 250px;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-style: italic;
+            line-height: 1.5;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* Status Badges */
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .PENDING { background: #fff8e1; color: #b45309; }
+        .APPROVED { background: #e6fffa; color: #008080; }
+        .REJECTED { background: #fff1f2; color: #e11d48; }
+
+        /* Action Buttons */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-approve { background: var(--success); box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2); }
+        .btn-reject { background: var(--danger); box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2); }
+        
+        .btn-action:hover {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover { transform: translateX(-5px); color: var(--deep-amethyst); }
+
+        @media (max-width: 900px) {
+            .card { padding: 25px; }
+            header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <header>
+            <h2><i class="fas fa-clipboard-check me-2"></i> Correction Approvals</h2>
+            <div class="status-pill APPROVED" style="font-size: 0.8rem; padding: 8px 20px; background: var(--deep-amethyst); color: white;">
+                <i class="fas fa-user-shield me-1"></i> HR Admin Mode
+            </div>
+        </header>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th>Time Changes</th>
+                        <th>Reasoning</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td>
+                            <div class="user-meta">
+                                <div class="avatar-initial">{{ r.user.username|first|upper }}</div>
+                                <span class="emp-name">@{{ r.user.username }}</span>
+                            </div>
+                        </td>
+                        <td class="date-text">{{ r.date }}</td>
+                        
+                        <td>
+                            <div class="time-wrapper">
+                                <div class="time-box">
+                                    <span class="time-label">Check-In</span>
+                                    <span class="old-time">{{ r.old_check_in|default:"—" }}</span>
+                                    <span class="new-time">{{ r.new_check_in|default:"—" }}</span>
+                                </div>
+                                <div class="time-box">
+                                    <span class="time-label">Check-Out</span>
+                                    <span class="old-time">{{ r.old_check_out|default:"—" }}</span>
+                                    <span class="new-time">{{ r.new_check_out|default:"—" }}</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="reason-cell">
+                                "{{ r.reason }}"
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="status-pill {{ r.status }}">
+                                <i class="fas {% if r.status == 'PENDING' %}fa-clock{% elif r.status == 'APPROVED' %}fa-check-circle{% else %}fa-times-circle{% endif %} me-1"></i>
+                                {{ r.status }}
+                            </span>
+                        </td>
+
+                        <td style="text-align: right;">
+                            {% if r.status == "PENDING" %}
+                            <div class="btn-group" style="justify-content: flex-end;">
+                                <a href="/attendance/hr/correction/approve/{{ r.id }}/" class="btn-action btn-approve" title="Approve Request">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="/attendance/hr/correction/reject/{{ r.id }}/" class="btn-action btn-reject" title="Reject Request">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                            {% else %}
+                                <span style="font-weight: 800; color: #cbd5e1; font-size: 0.75rem; letter-spacing: 1px;">FINALIZED</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 80px; color: #94a3b8;">
+                            <i class="fas fa-tasks fa-3x mb-3 d-block" style="opacity: 0.3;"></i>
+                            <p style="font-weight: 600; font-size: 1.1rem;">No pending correction requests!</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

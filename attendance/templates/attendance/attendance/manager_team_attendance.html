@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Attendance Overview | Manager Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --deep-amethyst: #540863;
+            --royal-purple: #92487A;
+            --blush-pink: #E49BA6;
+            --pale-blush: #FFD3D5;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--pale-blush);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER AREA ===== */
+        .page-header {
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(84, 8, 99, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header-info h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        /* ===== TABLE CARD ===== */
+        .card {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 30px;
+            box-shadow: 0 20px 45px rgba(84, 8, 99, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 18px;
+            color: var(--royal-purple);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        td {
+            padding: 20px 18px;
+            font-size: 0.95rem;
+            color: #334155;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background-color: #fdfaff;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--pale-blush);
+            color: var(--deep-amethyst);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(84, 8, 99, 0.05);
+        }
+
+        .username {
+            font-weight: 800;
+            color: var(--deep-amethyst);
+            display: block;
+        }
+
+        .email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .shift-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .shift-name {
+            font-weight: 700;
+            color: var(--royal-purple);
+            font-size: 0.9rem;
+        }
+
+        .shift-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .btn-view {
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--deep-amethyst) 0%, var(--royal-purple) 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(84, 8, 99, 0.2);
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(84, 8, 99, 0.3);
+            color: white;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--royal-purple);
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--deep-amethyst);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 850px) {
+            .page-header { flex-direction: column; text-align: center; gap: 15px; }
+            th:nth-child(2), td:nth-child(2) { display: none; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <div class="header-info">
+            <h2><i class="fas fa-users-viewfinder"></i> Team Attendance</h2>
+        </div>
+        <div class="team-badge">
+            <i class="fas fa-user-friends me-2"></i>Total Members: {{ team|length }}
+        </div>
+    </header>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Team Member</th>
+                    <th>Email Address</th>
+                    <th>Assigned Shift</th>
+                    <th style="text-align: right;">Reports</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in team_data %}
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar">{{ emp.user.username|first|upper }}</div>
+                            <div>
+                                <span class="username">@{{ emp.user.username }}</span>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td style="color: #64748b; font-size: 0.85rem;">{{ emp.user.email }}</td>
+
+                    <td>
+                        <div class="shift-info">
+                            {% if emp.shift %}
+                                <span class="shift-name">{{ emp.shift.name }}</span>
+                                <div>
+                                    <span class="shift-time">
+                                        <i class="far fa-clock me-1"></i> {{ emp.shift.start_time|time:"h:i A" }} - {{ emp.shift.end_time|time:"h:i A" }}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <span style="color: #cbd5e1; font-style: italic;">No shift assigned</span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td style="text-align: right;">
+                        {% if role_perms.can_view_reports %}
+                        <a href="/attendance/monthly/?user={{ emp.user.id }}" class="btn-view">
+                            <i class="fas fa-chart-pie"></i> Monthly Report
+                        </a>
+                        {% else %}
+                        <span style="color: #cbd5e1; font-size: 0.85rem; font-style: italic;">
+                            <i class="fas fa-lock me-1"></i> Access Restricted
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 60px; color: #94a3b8;">
+                        <i class="fas fa-users-slash fa-3x mb-3 d-block"></i>
+                        No team members found under your management.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="back-link" href="javascript:history.back()">
+            <i class="fas fa-long-arrow-alt-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
