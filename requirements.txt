@@ -1,5 +1,4 @@
-﻿Django
+Django<6
 gunicorn
 whitenoise
 pymysql
-
